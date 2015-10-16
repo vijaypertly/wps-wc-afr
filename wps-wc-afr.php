@@ -18,6 +18,7 @@ define( 'WPS_WC_AFR_PLUGIN_NAME', trim( dirname( WPS_WC_AFR_PLUGIN_BASENAME ), '
 define( 'WPS_WC_AFR_PLUGIN_DIR', untrailingslashit( dirname( WPS_WC_AFR_PLUGIN ) ) );
 
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'wps-wc-afr.php';
+require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'wps-wc-afr-fns.php';
 
 
 add_filter( "plugin_action_links_".WPS_WC_AFR_PLUGIN_BASENAME, array('WpsWcAFR', 'pluginSettingsLink') );
@@ -39,6 +40,13 @@ add_filter( "woocommerce_cart_updated", array('WpsWcAFR', 'wcAddToCart'), 100 );
 add_filter( "woocommerce_checkout_update_order_meta", array('WpsWcAFR', 'wcProceedCheckout'), 100, 2 );//
 
 
+register_activation_hook( __FILE__, array('WpsWcAFRFns', 'activatePlugin') );
+register_deactivation_hook( __FILE__, array('WpsWcAFRFns', 'deactivatePlugin') );
+add_filter( 'cron_schedules', array('WpsWcAFRFns', 'setupCustomCronSchedule') );//Settingup custom cron time.
+add_action('wps_wc_afr_scheduled_event', array('WpsWcAFRFns', 'processCron'));
 
+//WpsWcAFRFns::activateCron();
+//echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;
+//echo "<pre>"; var_dump(WpsWcAFRFns::followUpTimes()); exit;
 
 ?>
