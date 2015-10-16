@@ -35,11 +35,44 @@ wpsAfr.loadTab = function(elem){
     }
 };
 
+wpsAfr.addTemplate = function(){
+	jQuery('#wps_afr_postbox').html('<div class="wpswcafr_loader"><img src="'+wpsAfr.loaderIcon+'" /></div>');
+	jQuery.ajax({
+		type: "POST",
+		url: ajaxurl,
+		data: { action: 'wps_afr', ac:'add_template' }
+	}).done(function( resp ) {
+		if(typeof resp.status!="undefined"){
+			if(resp.status=='success'){
+				jQuery('#wps_afr_postbox').html(resp.html);
+			}
+			else{
+				jQuery('#wps_afr_postbox').html('');
+			}
+		}
+		else{
+			jQuery('#wps_afr_postbox').html('');
+		}
+	});
+	
+};
 
 
 
 jQuery(document).ready(function(){
+		
     jQuery('.nav-tab-wps-afr').click(function(){
         wpsAfr.loadTab(this);
     });
+	
+	/* jQuery('.wps_add_template').click(function(){
+        wpsAfr.addTemplate();
+    }); */
+	
+	jQuery(document).on('click','.wps_add_template',function(event){
+		wpsAfr.addTemplate();
+		//event.preventDefault();
+	});
+	
+	//jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]').click();
 });

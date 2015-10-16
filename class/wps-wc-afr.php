@@ -34,6 +34,7 @@ class WpsWcAFR{
         if(!empty($file)){
             if(file_exists(WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR.$file.'.php')){
                 ob_start();
+				$data = $data;
                 include WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR.$file.'.php';
                 //$htmlData = ob_get_contents();
                 $htmlData = ob_get_clean();
@@ -312,6 +313,9 @@ class WpsWcAFR{
                 if($ac == 'load_tab'){
                     $arrResp = self::adminLoadTabSection();
                 }
+				else if($ac == 'add_template'){
+					$arrResp = self::adminAddTemplate();
+				}
             }
         }
 
@@ -336,6 +340,23 @@ class WpsWcAFR{
                 $arrResp['tab_html'] = $html;
             }
         }
+
+        return $arrResp;
+    }
+	
+    public static function adminAddTemplate(){
+        $arrResp = array(
+            'status'=>'error',
+            'mess'=>'Please try again later.',
+            'html'=>'',
+        );
+		
+		
+		$templateData = array(
+			'title'=>'This is a title.', 
+		);
+		$arrResp['status'] = 'success';
+		$arrResp['html'] = self::getHtml('add_template', $templateData);
 
         return $arrResp;
     }
