@@ -68,7 +68,7 @@
 						<label for="send_mail_duration_in_minutes">Send Mail Duration in minutes <span class="description">(required)</span></label>
 					</th>
 					<td>
-						<input type="number" size="6" min="0" max="99999999" value="<?php echo $data['send_mail_duration_in_minutes'];?>" id="send_mail_duration_in_minutes" name="send_mail_duration_in_minutes" required="required" title="Send Mail Duration in minutes">
+						<input type="number" size="6" min="15" max="99999999" value="<?php echo $data['send_mail_duration_in_minutes'];?>" id="send_mail_duration_in_minutes" name="send_mail_duration_in_minutes" required="required" title="Send Mail Duration in minutes">
 					</td>
 				</tr>
 				

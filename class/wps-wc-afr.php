@@ -416,7 +416,7 @@ class WpsWcAFR{
 				return $arrResp;
 			}
 			
-			if(isset($data['send_mail_duration_in_minutes']) && $data['send_mail_duration_in_minutes'] >= 0 )
+			if(isset($data['send_mail_duration_in_minutes']) && is_numeric($data['send_mail_duration_in_minutes']) && $data['send_mail_duration_in_minutes'] >= 15 )
 			{
 				$data_t['send_mail_duration_in_minutes'] = trim($data['send_mail_duration_in_minutes']);
 				$format_t[] = "%s";
@@ -425,7 +425,8 @@ class WpsWcAFR{
 				return $arrResp;
 			}
 			
-			if((isset($data['template_for'])))
+			$template_for = array('abandoned_cart','failed_payment','cancelled_payment');			
+			if((isset($data['template_for'])) && in_array($data['template_for'],$template_for))
 			{
 				$data_t['template_for'] = trim($data['template_for']);
 				$format_t[] = "%s";
