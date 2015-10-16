@@ -35,12 +35,17 @@ wpsAfr.loadTab = function(elem){
     }
 };
 
-wpsAfr.addTemplate = function(){
+wpsAfr.addTemplate = function(template_id){
+	
+	if(typeof template_id == "undefined"){
+		template_id = 0;
+	}
+	
 	jQuery('#wps_afr_postbox').html('<div class="wpswcafr_loader"><img src="'+wpsAfr.loaderIcon+'" /></div>');
 	jQuery.ajax({
 		type: "POST",
 		url: ajaxurl,
-		data: { action: 'wps_afr', ac:'add_template' }
+		data: { action: 'wps_afr', ac:'add_template',template_id:template_id }
 	}).done(function( resp ) {
 		if(typeof resp.status!="undefined"){
 			if(resp.status=='success'){
@@ -57,6 +62,36 @@ wpsAfr.addTemplate = function(){
 	
 };
 
+wpsAfr.updateTemplate = function(){	
+	jQuery.ajax({
+		url: ajaxurl,
+		type:"POST",
+		dataType: "json",
+		data: jQuery('form#js-afrcreatetemplate').serialize(),
+		beforeSend : function(data) {
+			
+		},
+		error: function( jqXHR, textStatus, errorThrown ){
+			
+		},
+		success: function(resp) {					
+			if(typeof resp.status!="undefined"){
+				if(resp.status=='success'){
+					jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]').click();
+				}
+				else{
+					jQuery('.js-error').html(resp.mess);
+					jQuery('.js-error').css({"color":"red","display":"table"});
+				}
+			}
+			else{
+				jQuery('.js-error').html('Please try again');
+			}
+		}
+	});
+	
+};
+
 
 
 jQuery(document).ready(function(){
@@ -65,13 +100,24 @@ jQuery(document).ready(function(){
         wpsAfr.loadTab(this);
     });
 	
-	/* jQuery('.wps_add_template').click(function(){
-        wpsAfr.addTemplate();
-    }); */
+	jQuery(document).on('click','.wps_edit_template',function(event){
+		var template_id = jQuery(this).data('template_id');
+		if(typeof template_id != "undefined" ){
+			wpsAfr.addTemplate(template_id);
+		}
+	});
+	
+	jQuery(document).on('submit','form#js-afrcreatetemplate',function(event){
+		wpsAfr.updateTemplate();
+		event.preventDefault();
+	});
+	
+	jQuery(document).on('click','.js-cancel-template',function(event){
+		jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]').click();
+	});
 	
 	jQuery(document).on('click','.wps_add_template',function(event){
 		wpsAfr.addTemplate();
-		//event.preventDefault();
 	});
 	
 	//jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]').click();

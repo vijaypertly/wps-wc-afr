@@ -314,7 +314,10 @@ class WpsWcAFR{
                     $arrResp = self::adminLoadTabSection();
                 }
 				else if($ac == 'add_template'){
-					$arrResp = self::adminAddTemplate();
+					$arrResp = self::adminAddTemplate(@$_REQUEST['template_id']);
+				}
+				else if($ac == 'update_template'){
+					$arrResp = self::adminUpdateTemplate($_REQUEST);
 				}
             }
         }
@@ -344,21 +347,118 @@ class WpsWcAFR{
         return $arrResp;
     }
 	
-    public static function adminAddTemplate(){
+    public static function adminAddTemplate($template_id = 0){
+		global $wpdb;
+		
         $arrResp = array(
             'status'=>'error',
             'mess'=>'Please try again later.',
             'html'=>'',
         );
 		
-		
 		$templateData = array(
-			'title'=>'This is a title.', 
+			'id' => '',
+			'template_name' => '',
+			'template_status' => '',
+			'template_for' => '',
+			'send_mail_duration_in_minutes' => '',
+			'template_message' => '',
 		);
+		if(!empty($template_id) && $template_id > 0){
+			$S_Query = "SELECT * FROM wp_wps_wcafr_templates WHERE id = '$template_id' and is_deleted = '0'";
+			$temp = $wpdb -> get_row($S_Query, ARRAY_A);
+			if(!empty($temp)){
+				$templateData = $temp;
+			}
+		}
 		$arrResp['status'] = 'success';
 		$arrResp['html'] = self::getHtml('add_template', $templateData);
 
         return $arrResp;
+    }
+	public static function adminUpdateTemplate($data = array()){
+		global $wpdb;
+		$arrResp = array(
+            'status'=>'error',
+            'mess'=>'Please try again later.',
+            'html'=>'',
+        );
+		if(isset($data) && !empty($data)){
+			
+			$table_t = "wp_wps_wcafr_templates";
+			$data_t = array();
+			$format_t = array();
+						
+			if((isset($data['template_name']) && !empty($data['template_name'])))
+			{
+				$data_t['template_name'] = trim($data['template_name']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please enter the template name";
+				return $arrResp;
+			}
+			
+			if((isset($data['template_message']) && !empty($data['template_message'])))
+			{
+				$data_t['template_message'] = trim($data['template_message']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please enter the template message";
+				return $arrResp;
+			}
+			
+			if((isset($data['template_status'])))
+			{
+				$data_t['template_status'] = trim($data['template_status']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please select the template status";
+				return $arrResp;
+			}
+			
+			if(isset($data['send_mail_duration_in_minutes']) && $data['send_mail_duration_in_minutes'] >= 0 )
+			{
+				$data_t['send_mail_duration_in_minutes'] = trim($data['send_mail_duration_in_minutes']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please enter the send mail duration";
+				return $arrResp;
+			}
+			
+			if((isset($data['template_for'])))
+			{
+				$data_t['template_for'] = trim($data['template_for']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please select the template for";
+				return $arrResp;
+			}
+			
+			
+			if((isset($data['id']) && empty($data['id'])) || !isset($data['id']))
+			{
+				$data_t['created'] = date('Y-m-d H:i:s');
+				$format_t[] = "%s";
+				
+				$rs = $wpdb->insert( $table_t, $data_t,$format_t );
+				$template_id = $wpdb->insert_id;
+				$arrResp['status'] = 'success';
+				$arrResp['mess'] = "Template is added";
+			}
+			else
+			{
+				$id = trim($data['id']);
+				
+				$data_t['modified'] = date('Y-m-d H:i:s');
+				$format_t[] = "%s";
+				
+				$where_cond = array( 'id' => $id);
+				$rs = $wpdb->update( $table_t, $data_t, $where_cond, $format_t, '%s' );	
+				$arrResp['status'] = 'success';
+				$arrResp['mess'] = "Template is updated";
+			}
+		}
+		return $arrResp;
     }
 }
 
