@@ -1,0 +1,44 @@
+<?php
+/*
+Plugin Name: WPS Woocommerce Abandon and Failed Customer Recovery
+Plugin URI: http://www.wpsupport.io/
+Description: Woocommerce Abandon and Failed Customer Recovery by wpsupport.io team.
+Author: Vijay M
+Text Domain: wps-wc-afr
+Domain Path: /languages/
+Version: 1.0
+*/
+defined( 'ABSPATH' ) or die('');
+
+define( 'WPS_WC_AFR_ACCESS', true );
+define( 'WPS_WC_AFR', '1.0' );
+define( 'WPS_WC_AFR_PLUGIN', __FILE__ );
+define( 'WPS_WC_AFR_PLUGIN_BASENAME', plugin_basename( WPS_WC_AFR_PLUGIN ) );
+define( 'WPS_WC_AFR_PLUGIN_NAME', trim( dirname( WPS_WC_AFR_PLUGIN_BASENAME ), '/' ) );
+define( 'WPS_WC_AFR_PLUGIN_DIR', untrailingslashit( dirname( WPS_WC_AFR_PLUGIN ) ) );
+
+require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'wps-wc-afr.php';
+
+
+add_filter( "plugin_action_links_".WPS_WC_AFR_PLUGIN_BASENAME, array('WpsWcAFR', 'pluginSettingsLink') );
+add_action( 'admin_menu', array('WpsWcAFR', 'pluginAdminLinks') );
+add_action('wp_ajax_wps_afr', array('WpsWcAFR', 'wpsAdminAjax'));
+add_action( 'admin_enqueue_scripts', array('WpsWcAFR', 'wpsWcAfrScripts') );
+
+
+//add_filter( "woocommerce_add_to_cart_handler", array('WpsWcAFR', 'wcAddToCart'), 10, 2 );//$product_type, $adding_to_cart
+//add_filter( "woocommerce_add_to_cart_redirect", array('WpsWcAFR', 'wcAddToCart'), 10, 1 );//$cart_url
+
+//add_filter( "woocommerce_add_to_cart_validation", array('WpsWcAFR', 'wcAddToCart'), 10, 1 );//$product_id
+
+
+//add_filter( "woocommerce_add_to_cart", array('WpsWcAFR', 'wcAddToCart'), 100, 5 );//$product_id = 0, $quantity = 1, $variation_id = 0, $variation = array(), $cart_item_data = array()
+
+add_filter( "woocommerce_cart_updated", array('WpsWcAFR', 'wcAddToCart'), 100 );//
+
+add_filter( "woocommerce_checkout_update_order_meta", array('WpsWcAFR', 'wcProceedCheckout'), 100, 2 );//
+
+
+
+
+?>
