@@ -1,5 +1,28 @@
 <?php defined( 'ABSPATH' ) or die(''); ?>
-<?php
+<?php	
+	global $post;
+	$args = array(
+		'posts_per_page'   => -1,
+		'orderby'          => 'title',
+		'order'            => 'asc',
+		'post_type'        => 'shop_coupon',
+		'post_status'      => 'publish',
+	);  
+
+	if(isset($data['coupon_code']) && !empty($data['coupon_code']) && is_numeric($data['coupon_code'])){
+		$sel_args = array(
+			'post__in' => array($data['coupon_code']),
+			'posts_per_page'   => -1,
+			'orderby'          => 'title',
+			'order'            => 'asc',
+			'post_type'        => 'shop_coupon'
+		); 
+		$selected_coupon = get_posts( $sel_args );
+		$args['post__not_in'] = array($data['coupon_code']);
+	}
+	
+	$coupons = get_posts( $args );
+	
 	//echo "<pre>";print_r($data);echo "</pre>";
 	$content = "";
 	$editor_id = "template_message";
@@ -83,6 +106,40 @@
 						<textarea id="template_message" name="template_message" title="Template Message" required="required"><?php echo $data['template_message'];?></textarea>
 					</td>
 				</tr>
+				
+				<?php if((isset($coupons) && !empty($coupons)) || isset($selected_coupon)) { ?>
+					<tr class="form-field">
+						<th scope="row">
+							<label for="coupon_code">Coupon Code</label>
+						</th>
+						<td>
+							<select id="coupon_code" name="coupon_code" title="Coupon Code">	
+								<option value="">Select Option</option>
+								<?php foreach($selected_coupon as $coupon) { ?>
+									<option value="<?php echo $coupon->ID;?>" selected="selected"><?php echo $coupon->post_title;?></option>
+								<?php } ?>
+								
+								<?php foreach($coupons as $coupon) { ?>
+									<option value="<?php echo $coupon->ID;?>"><?php echo $coupon->post_title;?></option>
+								<?php } ?>
+							</select>
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th scope="row">
+							<label for="coupon_messages">Coupon Message</label>
+						</th>
+						<td>
+							<?php 
+								if(!isset($data['coupon_messages']) || empty($data['coupon_messages'])){
+									$data['coupon_messages'] = "Use the below voucher to avail {afr.offer_details} Coupon Code : {afr.coupon_code} Validity : {afr.coupon_validity}";
+								}
+							?>
+							<textarea id="coupon_messages" name="coupon_messages" title="Coupon Message"><?php echo $data['coupon_messages'];?></textarea>
+						</td>
+					</tr>
+				<?php } ?>
+				
 		</table>
 		<p class="submit">
 			<button class="button button-primary js-add-template" type="submit">

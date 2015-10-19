@@ -364,6 +364,8 @@ class WpsWcAFR{
 			'template_for' => '',
 			'send_mail_duration_in_minutes' => '',
 			'template_message' => '',
+			'coupon_code'=>'',
+			'coupon_messages'=>''
 		);
 		if(!empty($template_id) && $template_id > 0){
 			$S_Query = "SELECT * FROM wp_wps_wcafr_templates WHERE id = '$template_id' and is_deleted = '0'";
@@ -434,6 +436,16 @@ class WpsWcAFR{
 			}else{
 				$arrResp['mess'] = "Please select the template for";
 				return $arrResp;
+			}
+			
+			if(isset($data['coupon_code'])){
+				$data_t['coupon_code'] = trim($data['coupon_code']);
+				$format_t[] = "%s";
+			}
+			
+			if(isset($data['coupon_messages'])){
+				$data_t['coupon_messages'] = trim($data['coupon_messages']);
+				$format_t[] = "%s";
 			}
 			
 			
