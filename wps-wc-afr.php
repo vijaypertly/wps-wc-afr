@@ -37,6 +37,9 @@ add_action( 'admin_enqueue_scripts', array('WpsWcAFR', 'wpsWcAfrScripts') );
 
 //add_filter( "woocommerce_add_to_cart", array('WpsWcAFR', 'wcAddToCart'), 100, 5 );//$product_id = 0, $quantity = 1, $variation_id = 0, $variation = array(), $cart_item_data = array()
 
+//add_filter( "woocommerce_ajax_added_to_cart", array('WpsWcAFR', 'wcAddToCart'), 100 );//
+//add_filter( "shutdown", array('WpsWcAFR', 'wcAddToCart'), 100 );//
+
 add_filter( "woocommerce_cart_updated", array('WpsWcAFR', 'wcAddToCart'), 100 );//
 
 add_filter( "woocommerce_checkout_update_order_meta", array('WpsWcAFR', 'wcProceedCheckout'), 100, 2 );//
@@ -46,6 +49,16 @@ register_activation_hook( __FILE__, array('WpsWcAFRFns', 'activatePlugin') );
 register_deactivation_hook( __FILE__, array('WpsWcAFRFns', 'deactivatePlugin') );
 add_filter( 'cron_schedules', array('WpsWcAFRFns', 'setupCustomCronSchedule') );//Settingup custom cron time.
 add_action('wps_wc_afr_scheduled_event', array('WpsWcAFRFns', 'processCron'));
+
+
+//Woocommerce order status
+add_action( 'woocommerce_order_status_pending', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
+add_action( 'woocommerce_order_status_failed', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
+add_action( 'woocommerce_order_status_on-hold', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
+add_action( 'woocommerce_order_status_processing', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
+add_action( 'woocommerce_order_status_completed', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
+add_action( 'woocommerce_order_status_refunded', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
+add_action( 'woocommerce_order_status_cancelled', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
 
 //WpsWcAFRFns::activateCron();
 //echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;

@@ -100,6 +100,60 @@ class WpsWcAFRFns{
         return $arrResp;
     }
 
+    public static function wcOrderStatusChanged($order_id){
+        global $wpdb;
+
+        self::debugLog('Order status changed....'.$order_id);
+        if(!empty($order_id)){
+            $orderDetails = wc_get_order($order_id);
+            if(!empty($orderDetails)){
+                if(is_object($orderDetails)){
+                    $orderDetails = (array) $orderDetails;
+                }
+                if(is_object($orderDetails['post'])){
+                    $orderDetails['post'] = (array) $orderDetails['post'];
+                }
+                self::debugLog(json_encode($orderDetails));
+                $status = '';
+                if(in_array($orderDetails['post_status'], array('wc-failed'))){
+                    $status = 'payment_failed';
+                }
+                else if(in_array($orderDetails['post_status'], array('wc-cancelled'))){
+                    $status = 'order_cancelled';
+                }
+                else if(in_array($orderDetails['post_status'], array('wc-pending'))){
+                    $status = 'payment_pending';
+                }
+                else if(in_array($orderDetails['post_status'], array('wc-processing'))){
+                    $status = 'order_processing';
+                }
+
+                if(!empty($status)){
+                    $wpdb->update(
+                        $wpdb->prefix.'wps_wcafr',
+                        array(
+                            'status' => $status,
+                        ),
+                        array( 'order_id' => $order_id ),
+                        array(
+                            '%s',
+                        ),
+                        array( '%d' )
+                    );
+                }
+
+                if(in_array($orderDetails['post_status'], array('wc-completed'))){
+                    /*
+                     * For completed orders
+                     *  1. If already mail sent, then it is recovered order, else need to remove complete row from table.
+                     * */
+                    //
+                }
+
+            }
+        }
+    }
+
     public static function debugLog($mess = ''){
         $isDebug = true;
         if($isDebug){

@@ -52,8 +52,9 @@ class WpsWcAFR{
     }
 
     public static function wcAddToCart(/*$product_id = 0, $quantity = 1, $variation_id = 0, $variation = array(), $cart_item_data = array()*/ ){
+        add_filter( "shutdown", array('WpsWcAFR', 'woocommerceCartItems'), 100 );
         self::debugLog('debug...');
-        $cartItems = self::woocommerceCartItems();
+        //$cartItems = self::woocommerceCartItems();
     }
 
     public static function woocommerceCartItems(){
@@ -70,22 +71,28 @@ class WpsWcAFR{
             /*
              * If user with status new, then update. Else create new record.
              * */
+            self::debugLog('Logged user...');
             $userId = get_current_user_id();
 
             $newRecord = self::getNewRecord($userId);
             if(!empty($newRecord['id'])){
                 //Update existing record.
-                $wcSessionData = get_option('_wc_session_'.$userId);
+                self::debugLog('Record already exist in database. So, need to edit it. '.$newRecord['id']);
+
+                $wcActiveCartSession = self::getActiveCartData();
+                /*$wcSessionData = get_option('_wc_session_'.$userId);*/
 
                 $cStatus = 'new';
-                $wcSessionCart = unserialize($wcSessionData['cart']);
-                if(!empty($wcSessionCart)){
-                    $wcSessionData = serialize($wcSessionData);
+                /*$wcSessionCart = unserialize($wcSessionData['cart']);*/
+                /*if(!empty($wcSessionCart)){*/
+                if(!empty($wcActiveCartSession['cart_data_alone'])){
+                    self::debugLog('Woocommerce cart session exist.');
+                    /*$wcSessionData = serialize($wcSessionData);*/
                     $wpdb->update(
                         $wpdb->prefix.'wps_wcafr',
                         array(
                             'last_active_cart_added' => date('Y-m-d H:i:s'),
-                            'wc_session_data' => $wcSessionData,
+                            'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
                             'status' => $cStatus,
                         ),
                         array( 'id' => $newRecord['id'] ),
@@ -99,6 +106,7 @@ class WpsWcAFR{
                 }
                 else{
                     //Empty cart. So, delete the row completely.
+                    self::debugLog('Empty cart. Delete row in database '.$newRecord['id']);
                     $wpdb->delete( $wpdb->prefix.'wps_wcafr', array( 'id' => $newRecord['id'] ) );
                 }
 
@@ -106,18 +114,24 @@ class WpsWcAFR{
             }
             else{
                 //Create new record.
-                $wcSessionData = get_option('_wc_session_'.$userId);
-                $wcSessionCart = unserialize($wcSessionData['cart']);
+                self::debugLog('Need to create new record. As, no existing row in database for it. ');
+                /*$wcSessionData = get_option('_wc_session_'.$userId);*/
+
+                $wcActiveCartSession = self::getActiveCartData();
+                /*$wcSessionCart = unserialize($wcSessionData['cart']);
 
                 $wcSessionData = serialize($wcSessionData);
+                */
                 $loggedUserDetails = wp_get_current_user();
-                if(!empty($wcSessionCart)){
+                /*if(!empty($wcSessionCart)){*/
+                if(!empty($wcActiveCartSession['cart_data_alone'])){
+                    self::debugLog('Woocommerce session cart exist. So, creating new record in database.');
                     $wpdb->insert(
                         $wpdb->prefix.'wps_wcafr',
                         array(
                             'user_email' => $loggedUserDetails->user_email,
                             'user_id' => $loggedUserDetails->ID,
-                            'wc_session_data' => $wcSessionData,
+                            'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
                             'created' => date('Y-m-d H:i:s'),
                             'last_active_cart_added' => date('Y-m-d H:i:s'),
                             'status' => 'new',
@@ -132,11 +146,41 @@ class WpsWcAFR{
                         )
                     );
                 }
+                else{
+                    self::debugLog('Woocommerce cart session not exist in database. So, unable to create new record.');
+                }
             }
         }
         else{
             //For guest we can't able to do anything after adding to cart. We can able to do only after clicking proceed to cart.
+            self::debugLog('Guest user. So, can\'t do anything.');
         }
+    }
+
+    public static function getActiveCartData(){
+        /*
+         * 1. Check in woocommerce session i.e cookies.
+         * 2. Check in woocommerce session in database.
+         * */
+        $details = array(
+            'cart_data_alone'=>array(),
+            'wc_session_data_serialized'=>'',
+        );
+
+        $wcSession = new WC_Session_Handler();
+        $customerId = $wcSession->get_customer_id();
+        $userId = (is_user_logged_in())?get_current_user_id():0;
+        $wcCustId = (!empty($customerId))?$customerId:$userId;
+        if(!empty($wcCustId)){
+            $wcSessionData = get_option('_wc_session_'.$wcCustId);
+            self::debugLog(json_encode($wcSessionData));
+            if(!empty($wcSessionData)){
+                $details['cart_data_alone'] = unserialize($wcSessionData['cart']);
+                $details['wc_session_data_serialized'] = serialize($wcSessionData);
+            }
+        }
+
+        return $details;
     }
 
     public static function wcProceedCheckout($order_id, $postData){
@@ -255,7 +299,7 @@ class WpsWcAFR{
 
         $userId = (int) $userId;
         if(!empty($userId)){
-            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND status = 'new' limit 1", ARRAY_A );
+            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND `mail_status` = 'not_mailed' AND status = 'new' limit 1", ARRAY_A );
             if(!empty($results['0'])){
                 $details = $results['0'];
             }
