@@ -68,16 +68,15 @@ wpsAfr.updateTemplate = function(){
 		type:"POST",
 		dataType: "json",
 		data: jQuery('form#js-afrcreatetemplate').serialize(),
-		beforeSend : function(data) {
-			
+		beforeSend : function(xhrObj){
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
-			
 		},
 		success: function(resp) {					
 			if(typeof resp.status!="undefined"){
 				if(resp.status=='success'){
-					jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]').click();
+					var temp = jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]');
+					wpsAfr.loadTab(temp);
 				}
 				else{
 					jQuery('.js-error').html(resp.mess);
@@ -91,6 +90,7 @@ wpsAfr.updateTemplate = function(){
 	});
 	
 };
+
 
 
 
@@ -109,7 +109,6 @@ jQuery(document).ready(function(){
 	
 	jQuery(document).on('submit','form#js-afrcreatetemplate',function(event){
 		wpsAfr.updateTemplate();
-		event.preventDefault();
 	});
 	
 	jQuery(document).on('click','.js-cancel-template',function(event){
