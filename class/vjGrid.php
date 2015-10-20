@@ -30,7 +30,7 @@ class VjGrid{
     public $after_buttons_html = '';
     public $next_to_buttons_html = '';
     public $html_before_filters = '';
-    public $filters_name_concat = 'vespdashinp_';
+    public $filters_name_concat = 'wps_wc_afr_';
     public $row_checkbox_sel_value = '';
     public $is_checkboxes = false;
 
