@@ -1,7 +1,34 @@
 <?php defined( 'ABSPATH' ) or die(''); ?>
-<?php
+<?php	
+	global $post;
+	
+	$args = array(
+		'posts_per_page'   => -1,
+		'orderby'          => 'title',
+		'order'            => 'asc',
+		'post_type'        => 'shop_coupon',
+		'post_status'      => 'publish',
+	);  
+
+	if(isset($data['coupon_code']) && !empty($data['coupon_code']) && is_numeric($data['coupon_code'])){
+		$sel_args = array(
+			'post__in' => array($data['coupon_code']),
+			'posts_per_page'   => -1,
+			'orderby'          => 'title',
+			'order'            => 'asc',
+			'post_type'        => 'shop_coupon'
+		); 
+		$selected_coupon = get_posts( $sel_args );
+		$args['post__not_in'] = array($data['coupon_code']);
+	}
+	
+	$coupons = get_posts( $args );
+	
 	//echo "<pre>";print_r($data);echo "</pre>";
 	$content = "";
+	if(isset($data['template_message'])){
+		$content = $data['template_message'];
+	}
 	$editor_id = "template_message";
 	$settings = array('textarea_name' => 'template_message');
 ?>
@@ -19,7 +46,7 @@
 	<?php }?> 
 
 	<div class="js-error"></div>
-	<form id="js-afrcreatetemplate" name="afrcreatetemplate" method="post">
+	<form id="js-afrcreatetemplate" action="javascript:void(0);" name="afrcreatetemplate" method="post">
 		<table class="form-table">
 			<tbody>
 				<tr class="form-field form-required">
@@ -39,10 +66,10 @@
 						<label for="template_status">Template Status <span class="description">(required)</span></label>
 					</th>
 					<td>
-						<select id="template_status" name="template_status" required="required" title="Template Status">	
-							<option value="">Select Option</option>
+						<select id="template_status" name="template_status" required="required" title="Template Status">							
+							<option value="" <?php if(!isset($data['template_status']) || !in_array($data['template_status'],$template_status)){ ?> selected="selected"<?php }?> >Select Option</option>
 							<?php foreach($template_status as $key=>$value) { ?>
-								<option value="<?php echo $key;?>" <?php if(isset($data['template_status']) && $data['template_status'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
+								<option value="<?php echo $key;?>" <?php if(isset($data['template_status']) && is_numeric($data['template_status']) && $data['template_status'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
 							<?php } ?>
 						</select>
 					</td>
@@ -78,11 +105,57 @@
 					</th>
 					<td>
 						<?php 
-							//wp_editor( $content, $editor_id, $settings);
+							wp_editor( $content, $editor_id, $settings);
 						?>
+						<?php /* ?>
 						<textarea id="template_message" name="template_message" title="Template Message" required="required"><?php echo $data['template_message'];?></textarea>
+						<?php */ ?>
 					</td>
 				</tr>
+				
+				<?php if((isset($coupons) && !empty($coupons)) || isset($selected_coupon)) { ?>
+					<tr class="form-field">
+						<th scope="row">
+							<label for="coupon_code">Coupon Code</label>
+						</th>
+						<td>
+							<select id="coupon_code" name="coupon_code" title="Coupon Code">	
+								<option value="">Select Option</option>
+								<?php foreach($selected_coupon as $coupon) { ?>
+									<option value="<?php echo $coupon->ID;?>" selected="selected"><?php echo $coupon->post_title;?></option>
+								<?php } ?>
+								
+								<?php foreach($coupons as $coupon) { ?>
+									<option value="<?php echo $coupon->ID;?>"><?php echo $coupon->post_title;?></option>
+								<?php } ?>
+							</select>
+						</td>
+					</tr>
+					<tr class="form-field">
+						<th scope="row">
+							<label for="coupon_messages">Coupon Message</label>
+						</th>
+						<td>
+							<?php 
+								if(!isset($data['coupon_messages']) || empty($data['coupon_messages'])){
+									$data['coupon_messages'] = "Use the below voucher to avail {afr.offer_details}<br/> Coupon Code : {afr.coupon_code} <br/>Validity : {afr.coupon_validity}";
+								}
+								
+								$content = "";
+								if(isset($data['coupon_messages'])){
+									$content = $data['coupon_messages'];
+								}
+								$editor_id = "coupon_messages";
+								$settings = array('textarea_name' => 'coupon_messages');
+								wp_editor( $content, $editor_id, $settings);								
+							?>
+							<?php /* ?>
+							<textarea id="coupon_messages" name="coupon_messages" title="Coupon Message"><?php echo $data['coupon_messages'];?></textarea>
+							<?php */ ?>
+						</td>
+					</tr>
+				<?php } ?>
+				
 		</table>
 		<p class="submit">
 			<button class="button button-primary js-add-template" type="submit">
@@ -98,3 +171,8 @@
 		</p>
 	</form>
 </div>
+<?php 
+	\_WP_Editors::enqueue_scripts();
+	print_footer_scripts();
+	\_WP_Editors::editor_js();
+?>

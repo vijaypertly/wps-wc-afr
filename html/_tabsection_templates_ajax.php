@@ -54,19 +54,19 @@ $js_datepicker = '';
 $next_to_buttons_html = '';
 
 $vj_grid = new VjGrid();
-//$vj_grid->ajax_onclick_function = 'getDashboardData';
+$vj_grid->ajax_onclick_function = 'getDashboardData';
 $vj_grid->action_from = '_default_table';
 $vj_grid->is_ajax = true;
+$vj_grid->ajax_disp_on = 'dvb_grid';
 $vj_grid->get_default_table = true;
 $vj_grid->query = $query;
 $vj_grid->query_count = $query_count;
 $vj_grid->display_coloumns = $display_coloumns;
 $vj_grid->filter_coloumns = $filter_coloumns;
 $vj_grid->filter_datas = $filter_datas;
-//$vj_grid->mod_row_data_fn = '_admin_view_purchased_add_packages_row_data';
 $vj_grid->setPage($cur_page);
-$vj_grid->pagination_prev_icon = '<img src="'.wpcf7_plugin_url( 'images/arleft.png' ).'">';
-$vj_grid->pagination_next_icon = '<img src="'.wpcf7_plugin_url( 'images/arright.png' ).'">';
+$vj_grid->pagination_prev_icon = '<img src="'.plugins_url( '/wps-wc-afr/assets/arleft.png' ).'">';
+$vj_grid->pagination_next_icon = '<img src="'.plugins_url( '/wps-wc-afr/assets/arright.png' ).'">';
 $vj_grid->next_to_buttons_html = $js_datepicker;
 
 echo $vj_grid->generateTable();
