@@ -1,9 +1,6 @@
 function getDashboardData(dothis, disp_on, ves_action, page_no){
-    console.log('1');
-    alert('hi');
-    return false;
-    var template_dir_url = 'c:/xampp/htdocs/wordpress_test/wp-content/themes/accesspress-store';
-    if(typeof dothis=='undefined'){ return; }
+    
+	if(typeof dothis=='undefined'){ return; }
     if(typeof ves_action=='undefined'){ var ves_action=''; }
     if(typeof page_no=='undefined'){ var page_no='1'; }
     if(typeof disp_on=='undefined'){ var disp_on='dvb_grid'; }else if(disp_on==''){ var disp_on='dvb_grid'; }
@@ -12,29 +9,29 @@ function getDashboardData(dothis, disp_on, ves_action, page_no){
         resetFiltersData(dothis, disp_on);
         return;
     }
-
-    _changeDashboardHighlight(dothis, disp_on);
-
-    var post = {'ac': dothis, 'data': getDefaultPageInputData('', disp_on), 'ves_action': ves_action, 'disp_on': disp_on, 'page_no': page_no};
+	var post = {action: 'wps_afr','ac': dothis, 'data': getDefaultPageInputData('', disp_on), 'ves_action': ves_action, 'disp_on': disp_on, 'page_no': page_no};
     jQuery.ajaxSettings.traditional = true;
-    loaderIconDashboard(disp_on);
+    //loaderIconDashboard(disp_on);
     jQuery.ajax({
         type: "POST",
         traditional: true,
-        url: template_dir_url+'/ajax.php',
+        url: ajaxurl,
         dataType: "json",
         data: post,
-        success: function(response) {
-            var array_th = [];
-            jQuery.each(response, function(key, value) {
-                array_th[key] = value;
-            });
-            if (array_th['status'] == 'error' || response == '') {
-                passErrorMess(array_th);
-            }
-            else if (array_th['status'] == 'success') {
-                jQuery('#'+disp_on).html(array_th['data']);
-            }
+        success: function(resp) {
+            if(typeof resp.status!="undefined"){
+				if(resp.status=='success'){
+					jQuery('.'+disp_on).html(resp.tab_html);
+				}
+				else{
+					//passErrorMess(resp.mess);
+					displayMessage(resp.mess, disp_on, 'error')
+				}
+			}
+			else{
+				displayMessage("Please try again later.", disp_on, 'error')
+				//passErrorMess("Please try again later.");
+			}
         }
     });
 }
@@ -54,10 +51,10 @@ function _changeDashboardHighlight(dothis, disp_on){
 
 function getDefaultPageInputData(fortype, disp_on){
     if(typeof fortype == 'undefined'){
-        var fortype = "vespdashinp_";
+        var fortype = "wps_wc_afr_";
     }
     else if(fortype == ''){
-        var fortype = "vespdashinp_";
+        var fortype = "wps_wc_afr_";
     }
 
     if(typeof disp_on == 'undefined'){
@@ -67,7 +64,7 @@ function getDefaultPageInputData(fortype, disp_on){
         var disp_on = "";
     }
     else{
-        var disp_on = "#"+disp_on;
+        var disp_on = "."+disp_on;
     }
 
     var data_vals = {};
@@ -122,15 +119,39 @@ function resetFiltersData(dothis, disp_on, fortype){
         var fortype = "wps_wc_afr_";
     }
 
-    jQuery('#'+disp_on+''+' input[name^="'+fortype+'"]').each(function(){
+    jQuery('.'+disp_on+''+' input[name^="'+fortype+'"]').each(function(){
         var nm = this.name.replace(fortype, '');
         this.value = '';
     });
 
-    jQuery('#'+disp_on+''+' select[name^="'+fortype+'"]').each(function(){
+    jQuery('.'+disp_on+''+' select[name^="'+fortype+'"]').each(function(){
         var nm = this.name.replace(fortype, '');
         this.value = jQuery(this).children(0).attr('value');
     });
 
     setTimeout(function(){ getDashboardData(dothis, disp_on); }, 150);
+}
+function displayMessage(message, inside_selector, message_type){
+	if(typeof message == 'undefined'){ return; }
+	if(typeof inside_selector == 'undefined'){ return; }
+	if(typeof message_type == 'undefined'){ var message_type='default'; }
+	var mess = '<div class="ntmesstype_'+message_type+'"><div class="fltl ntmess_'+message_type+'">'+message+'</div> <div class="fltr ntmess_close" onclick="closeMessage(\''+inside_selector+'\', \''+message_type+'\')">x</div></div>';
+	if(jQuery('.'+inside_selector).length>0){
+		if(jQuery('.'+inside_selector+' .ntmess').length<=0){//New
+			var div_th = '<div class="ntmess">'+mess+'</div>';
+			jQuery('.'+inside_selector+'').prepend(div_th);
+		}
+		else if(jQuery('.'+inside_selector+' .ntmess').length>0){
+			jQuery('.'+inside_selector+' .ntmess').html(mess);
+		}
+		jQuery('.'+inside_selector+' .ntmess').fadeIn();
+	}
+}
+
+function closeMessage(inside_selector, message_type){
+	if(typeof inside_selector == 'undefined'){ return; }
+	if(typeof message_type == 'undefined'){ var message_type='default'; }
+	if(jQuery('.'+inside_selector+' .ntmess').length>0){
+		jQuery('.'+inside_selector+' .ntmess').html('');
+	}
 }

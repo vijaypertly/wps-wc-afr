@@ -2,3 +2,122 @@
     margin-top: 50px;
     text-align: center;
 }
+
+/** Tables **/
+.table {
+	/*border:1px solid #d7d7d7;*/
+	padding:0;
+	clear: both;
+	color: #333;
+	margin: 10px 2px;
+	width: 100% !important;
+}
+.table tr th {
+	border:1px solid #d7d7d7;
+	background: linear-gradient(to bottom, #D7D7D7 0%, #FFFFFF 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+	text-align: left;
+	padding:4px;
+}
+.table tr th a {
+	display: block;
+	padding: 2px 4px;
+	text-decoration: none;
+}
+.table tr td {
+	padding: 6px;
+	text-align: left;
+	vertical-align: top;
+}
+
+.pagination > li > a, .pagination > li > span {
+	padding: 0;
+	margin-left:0;
+	color: #000;
+	background-color: #E2E2E2;
+	border: none;
+	font-family: adelle;
+	font-size: 17px;
+	font-weight: bold;
+	margin-right: 3px;
+	height: 25px;
+	width: 25px;
+	text-align: center;
+}
+
+ .pagination > li:first-child > a, .pagination > li:first-child > span {
+	background: none;
+	padding: 0;
+	border: none;
+	margin-left: 10px;
+	width: 11px;
+	position: relative;
+	top: -1px;
+}
+
+ .pagination > li:last-child > a, .pagination > li:last-child > span {
+	background: none;
+	padding: 0;
+	border: none;
+	margin-left: 0;
+	width: 11px;
+	position: relative;
+	top: -1px;
+}
+
+.pagination{
+	margin:0px;
+	margin-top: 3px;
+	float: right;
+}
+.pagination li{
+	float: left;
+}
+.pagination .current a {
+	background: #000;
+	color: #fff;
+}
+
+.pagination{
+	text-align: center;
+}
+.pagination span{
+	padding: 4px 12px;
+	color: #999999;
+	border-right: 1px solid #999999;
+}
+.pagination a{
+	padding: 4px 12px !important;
+	color: #283330;
+	border-right: 1px solid #999999;
+	text-decoration:none !important;
+}
+.pagination .next{
+	border: 0;
+}
+.pointer{
+	cursor: pointer;
+}
+.ntmess{
+	font-family: "adelle-sans";
+	font-size: 13px;
+    min-height: 25px;
+	width: 90%;
+	margin-top: 10px;
+}
+.ntmesstype_error{
+	min-height: 30px;
+    padding: 5px;
+	background: none repeat scroll 0 0 #F75454;
+	color: #FFFFFF;
+}
+.ntmesstype_success{
+	min-height: 30px;
+    padding: 5px;
+	background: none repeat scroll 0 0 #6fd655;
+	color: #FFFFFF;
+}
+.ntmess_close{
+	cursor: pointer;
+	font-weight: bold;
+	margin-right: 5px;
+}

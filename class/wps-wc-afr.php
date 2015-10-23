@@ -320,6 +320,11 @@ class WpsWcAFR{
 				else if($ac == 'update_template'){
 					$arrResp = self::adminUpdateTemplate($_REQUEST);
 				}
+				else if($ac == '_view_templates_list'){
+					$_REQUEST['tabaction'] = 'templates_ajax';
+					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
+				}
+				
             }
         }
 
@@ -339,6 +344,27 @@ class WpsWcAFR{
             $tab_file = WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR.'tabsection_'.$tabAction.'.php';
             if(file_exists($tab_file)){
                 $html = self::getHtml('tabsection_'.$tabAction);
+                $arrResp['status'] = 'success';
+                $arrResp['mess'] = '';
+                $arrResp['tab_html'] = $html;
+            }
+        }
+
+        return $arrResp;
+    }
+	
+	public static function adminLoadTabSectionPagination($data = array()){
+        $arrResp = array(
+            'status'=>'error',
+            'mess'=>'Please try again later.',
+            'tab_html'=>'',
+        );
+		
+        if(isset($data['tabaction']) && !empty($data['tabaction'])){			
+            $tabAction = $data['tabaction'];
+			$tab_file = WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR.'_tabsection_'.$tabAction.'.php';
+            if(file_exists($tab_file)){
+				$html = self::getHtml('_tabsection_'.$tabAction,$data);
                 $arrResp['status'] = 'success';
                 $arrResp['mess'] = '';
                 $arrResp['tab_html'] = $html;

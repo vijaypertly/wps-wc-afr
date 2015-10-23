@@ -21,6 +21,7 @@ require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARAT
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'wps-wc-afr-fns.php';
 
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'vjGrid.php';
+require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'ajax_fns.php';
 
 
 add_filter( "plugin_action_links_".WPS_WC_AFR_PLUGIN_BASENAME, array('WpsWcAFR', 'pluginSettingsLink') );
