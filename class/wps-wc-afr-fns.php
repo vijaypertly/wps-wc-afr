@@ -147,7 +147,39 @@ class WpsWcAFRFns{
                      * For completed orders
                      *  1. If already mail sent, then it is recovered order, else need to remove complete row from table.
                      * */
-                    //
+                    $query = "SELECT * FROM `".$wpdb->prefix."wps_wcafr` WHERE `order_id` = '".$order_id."' ";
+                    $results = $wpdb->get_results($query, ARRAY_A);
+                    if(!empty($results['0'])){
+                        $isRecoveredOrder = false;
+                        if($results['0']['mail_status']=='not_mailed'){
+                            //Remove row. As, user itself ordered.
+                        }
+                        else if($results['0']['mail_status']=='mailed'){
+                            //It is a recovered order
+                            $isRecoveredOrder = true;
+                        }
+                        else if($results['0']['mail_status']=='processed' || $results['0']['mail_status']=='in_mail_queue' ){
+                            //Stop on going mails if any.
+
+                            $qUpdt = "UPDATE ".$wpdb->prefix."wps_wcafr_mail_log SET `mail_status` = '1' WHERE `mail_status`!='3' AND `wp_wps_id` = '".$results['0']['id']."' ";
+                            $wpdb->query($qUpdt);
+                            $isRecoveredOrder = true;
+                        }
+                    }
+
+                    if($isRecoveredOrder){
+                        $wpdb->update(
+                            $wpdb->prefix.'wps_wcafr',
+                            array(
+                                'status' => 'recovered',
+                            ),
+                            array( 'order_id' => $order_id ),
+                            array(
+                                '%s',
+                            ),
+                            array( '%d' )
+                        );
+                    }
                 }
 
             }
