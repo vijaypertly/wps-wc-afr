@@ -11,14 +11,15 @@ class ExitIntent{
 		//add_action( 'admin_enqueue_scripts', array($this,'adminend_scripts') );									
 		# Register shortcodes	
 		//add_filter( 'the_content', 'do_shortcode');	
-		add_action( 'wp_footer', array($this, 'ouibounceModal') );						
+		add_action( 'wp_footer', array($this, 'ouibounceModal') );	
+		add_action( 'admin_init', array($this,'register_wps_ei_setting') );					
 		//$this->setup_actions();																
 
 	}
 	
 	public function frontend_scripts(){
-		wp_enqueue_style('indent', plugins_url('/wps-wc-afr/assets/exit-indent/ouibounce.min.css?v=0.0.11') );
-		wp_enqueue_script('indent', plugins_url('/wps-wc-afr/assets/exit-indent/ouibounce.min.js'), '', '0.0.11', true );
+		wp_enqueue_style('intent', plugins_url('/wps-wc-afr/assets/exit-intent/ouibounce.min.css?v=0.0.11') );
+		wp_enqueue_script('intent', plugins_url('/wps-wc-afr/assets/exit-intent/ouibounce.min.js'), '', '0.0.11', true );
 		if ( !wp_script_is( 'jquery', 'enqueued' ) ) {
 			wp_enqueue_script( 'jquery' );
 		}
@@ -35,11 +36,12 @@ class ExitIntent{
 			$str .= '<div class="modal">';
 			$str .= '<div class="modal-title"><h3>This is a Ouibounce modal</h3></div>';
 			$str .= '<div class="modal-body">';
-			$str .= '<p>Thanks for stoping by!</p>';
-			$str .= '<form action="" method="post" id="exit-indent-form" name="exit-indent-form">';
+			//$str .= '<p>Thanks for shopping by!</p>';
+			$str .= '<form action="" method="post" id="exit-intent-form" name="exit-intent-form">';
 			$str .= '<input type="text" name="email" placeholder="you@email.com">';
-			$str .= '<input type="submit" value="learn more &raquo;">';
-			$str .= '<p class="form-notice">*this is a fake form</p>';
+			$str .= '<input type="submit" value="register &raquo;">';
+			$str .= '<img id="wps-loading" src="'.plugins_url("/wps-wc-afr/assets/wpspin_light.gif").'" style="display:none;">';
+			$str .= '<p class="form-notice"></p>';
 			$str .= '</form>';
 			$str .= '</div>';
 			$str .= '<div class="modal-footer">';
@@ -52,7 +54,7 @@ class ExitIntent{
 					aggressive: true, //Making this true makes ouibounce not to obey "once per visitor" rule
 				});
 				jQuery(document).ready(function() {					
-					jQuery("#exit-indent-form").validate({
+					jQuery("#exit-intent-form").validate({
 						rules: {
 							email: {
 								required: true,
@@ -62,14 +64,23 @@ class ExitIntent{
 						messages: {							
 							email: "Please enter a valid email address"
 						},
-						submitHandler: function(form) {														
+						submitHandler: function(form) {
+							jQuery("#wps-loading").show();
 							jQuery.ajax({
 								type: "post",
-								url: "'.plugins_url("/wps-wc-afr/includes/ajax/exit-indent.php").'",
-								data: jQuery("#exit-indent-form").serialize(),
-								success: function(res) {
-								  console.log(res);
-								  alert("form was submitted");
+								url: "'.plugins_url("/wps-wc-afr/includes/ajax/exit-intent.php").'",
+								data: jQuery("#exit-intent-form").serialize(),
+								success: function(res){									
+									rs = JSON.parse(res);
+									if( rs.error != "" && rs.error != undefined ){ 
+										jQuery(".form-notice").removeClass("success").addClass("error");
+										jQuery(".form-notice").html(rs.error);	
+									}
+									if( rs.success != "" && rs.success != undefined ){ 
+										jQuery(".form-notice").removeClass("error").addClass("success");
+										jQuery(".form-notice").html(rs.success);	
+									}
+									jQuery("#wps-loading").hide();								  
 								}
 							  });
 						 }
@@ -80,9 +91,14 @@ class ExitIntent{
 		}
 		echo stripslashes($str);
 	}
-	
-	public function indent_cutom_handler(){
-		echo "my Code"; 
+			
+	public function register_wps_ei_setting() {
+		register_setting( 'wps_ei_options', 'wps_ei_settings', array($this,'wps_ei_settings_options') ); 
+	} 
+	// Update Settings	
+	public function wps_ei_settings_options($options){			
+		$options['wps-ei-title'] = sanitize_text_field( (isset($_POST['wps-ei-title'])) ? $_POST['wps-ei-title'] : '' );						
+		return $options;		
 	}
 	
 	
