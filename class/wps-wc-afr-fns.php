@@ -29,6 +29,7 @@ class WpsWcAFRFns{
                 'enable_cron'=> true,
                 'cron_time_in_minutes'=> 15,
                 'abandoned_time_in_minutes'=> 15,
+                'consider_un_recovered_order_after_minutes'=> 2*24*60,
             );
             $settings = $settings;
         }
@@ -157,6 +158,7 @@ class WpsWcAFRFns{
                     );
              * */
             $isSent = true;
+            wp_mail( 'vijay+customertest@pertly.co.in', $arrParams['subject'], $arrParams['message'] );
         }
 
         return $isSent;
@@ -276,13 +278,27 @@ class WpsWcAFRFns{
 
     private static function deleteWpsRow($rowId = 0){
         if(!empty($rowId)){
-            $arrUpdtRw = array(
-                'id'=> $rowId,
-                'set'=> array(
-                    'status'=>'deleted',
-                ),
-            );
-            self::updateRow($arrUpdtRw);
+            $rowDetails = self::rowDetails($rowId);
+            $isDelete = false;
+            if(!empty($rowDetails['last_active_cart_added'])){
+                $settings = self::getSettings();
+                if(!empty($settings['consider_un_recovered_order_after_minutes'])){
+                    $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime($rowDetails['last_active_cart_added'])) / 60,2);
+                    if($minutes>=$settings['consider_un_recovered_order_after_minutes']){
+                        $isDelete = true;
+                    }
+                }
+            }
+
+            if($isDelete){
+                $arrUpdtRw = array(
+                    'id'=> $rowId,
+                    'set'=> array(
+                        'status'=>'deleted',
+                    ),
+                );
+                self::updateRow($arrUpdtRw);
+            }
         }
     }
 

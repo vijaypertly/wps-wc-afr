@@ -299,7 +299,13 @@ class WpsWcAFR{
 
         $userId = (int) $userId;
         if(!empty($userId)){
-            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND `mail_status` = 'not_mailed' AND status = 'new' limit 1", ARRAY_A );
+            //$results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND `mail_status` = 'not_mailed' AND status = 'new' limit 1", ARRAY_A );
+            //$results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND `mail_status` = 'not_mailed' AND (status = 'new' OR status = 'abandoned') limit 1", ARRAY_A );
+            $settings = WpsWcAFRFns::getSettings();
+            $maxExp = !empty($settings['consider_un_recovered_order_after_minutes'])?$settings['consider_un_recovered_order_after_minutes']:0;
+            $wcActiveCartSession = self::getActiveCartData();
+            $wcSessionData = $wcActiveCartSession['wc_session_data_serialized'];
+            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND (`mail_status` = 'not_mailed' OR MD5(`wc_session_data`) = '".md5($wcSessionData)."') AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."')<".$maxExp." AND (status = 'new' OR status = 'abandoned') limit 1", ARRAY_A );
             if(!empty($results['0'])){
                 $details = $results['0'];
             }
@@ -313,7 +319,8 @@ class WpsWcAFR{
         $details = array();
 
         if(!empty($email)){
-            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_email = '".$email."' AND status = 'new' limit 1", ARRAY_A );
+            //$results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_email = '".$email."' AND status = 'new' limit 1", ARRAY_A );
+            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_email = '".$email."' AND (status = 'new' OR status = 'abandoned') limit 1", ARRAY_A );
             if(!empty($results['0'])){
                 $details = $results['0'];
             }

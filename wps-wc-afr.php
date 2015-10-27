@@ -61,8 +61,8 @@ add_action( 'woocommerce_order_status_completed', array('WpsWcAFRFns', 'wcOrderS
 add_action( 'woocommerce_order_status_refunded', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
 add_action( 'woocommerce_order_status_cancelled', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
 
-WpsWcAFRFns::processCron();
-//WpsWcAFRFns::activateCron();
+//WpsWcAFRFns::processCron();
+WpsWcAFRFns::activateCron();
 //echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;
 //echo "<pre>"; var_dump(WpsWcAFRFns::followUpTimes()); exit;
 
