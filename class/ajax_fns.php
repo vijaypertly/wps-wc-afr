@@ -57,6 +57,14 @@
 			elseif($key=='send_mail_duration_in_minutes'){
 				return $value.' mins';
 			}
+			elseif($key=='template_id'){
+				$names = getTemplateNames($value);
+				if(isset($names[$value])){
+					return $names[$value];
+				}else{
+					return ' - ';
+				}
+			}
 			elseif($key=='mail_status'){				
 				$mail_status = array(0=> 'Not sent', 1=> 'Terminiated', 2=> 'in_queue', 3=>'Sent');
 				if(isset($mail_status[$value])){
@@ -71,6 +79,47 @@
 				}
 				else{
 					return 'Read';
+				}
+			}
+		}
+		return $data[$key];
+	}
+	function _admin_view_list_row_data($key='', $data=''){		
+		if(!empty($key)){
+			$value = $data[$key];
+			if($key=='created'){
+				return date('d-m-Y', strtotime($value));
+			}
+			elseif($key=='last_active_cart_added'){
+				return date('H:i:s d-m-Y', strtotime($value));
+			}
+			elseif($key=='last_mailed_for_minutes'){
+				if(!empty($value))
+					return '-';
+				else
+					return $value.' mins';
+			}
+			elseif($key=='mail_status'){				
+				$mail_status = array('not_mailed'=>'Not Mailed','processed'=>'Processed','in_mail_queue'=>'In Mail Queue','mailed'=>'Mailed');
+				if(isset($mail_status[$value])){
+					return $mail_status[$value];
+				}else{
+					return " - ";
+				}
+			}
+			else if($key == 'status'){
+				$status = array('new'=>'New','abandoned'=>'Abandoned','order_created'=>'Order Created','order_processing'=>'Order Processing','order_cancelled'=>'Order Cancelled','payment_pending'=>'Payment Pending','payment_failed'=>'Payment Failed','recovered'=>'Recovered','deleted'=>'Deleted');
+				if(isset($status[$value])){
+					return $status[$value];
+				}else{
+					return $value;
+				}
+			}
+			else if($key == 'order_id'){
+				if(is_null($value) || empty($value) || !isset($value) || $value == "NULL"){
+					return ' - ';					
+				}else{
+					return $value;
 				}
 			}
 		}

@@ -376,6 +376,10 @@ class WpsWcAFR{
 					$_REQUEST['tabaction'] = 'mail_log_ajax';
 					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
 				}
+				else if($ac == '_view_list'){
+					$_REQUEST['tabaction'] = 'list_ajax';
+					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
+				}
 				
             }
         }
