@@ -1,5 +1,5 @@
 <?php defined( 'ABSPATH' ) or die(''); ?>
-<div class="wrap">
+<div class="complete-wrap">
 <h2 class="nav-tab-wrapper">
     <a class="nav-tab nav-tab-active nav-tab-wps-afr" data-tabaction="settings">Settings</a>
     <a class="nav-tab nav-tab-wps-afr" data-tabaction="list">List</a>
