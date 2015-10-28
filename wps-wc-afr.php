@@ -9,6 +9,7 @@ Domain Path: /languages/
 Version: 1.0
 */
 defined( 'ABSPATH' ) or die('');
+date_default_timezone_set('Asia/Kolkata');//Vijay: Todo: temp for testing. Neet to remove in live
 
 define( 'WPS_WC_AFR_ACCESS', true );
 define( 'WPS_WC_AFR', '1.0' );

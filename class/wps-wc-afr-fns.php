@@ -27,6 +27,8 @@ class WpsWcAFRFns{
             $settings = array(
                 /*'enable_cron'=> false,*/
                 'enable_cron'=> true,
+                'send_mail_to_admin_after_recovery'=> true,
+                'admin_email'=> 'vijay+adminemail@pertly.co.in',
                 'cron_time_in_minutes'=> 15,
                 'abandoned_time_in_minutes'=> 15,
                 'consider_un_recovered_order_after_minutes'=> 2*24*60,
@@ -158,7 +160,13 @@ class WpsWcAFRFns{
                     );
              * */
             $isSent = true;
-            wp_mail( 'vijay+customertest@pertly.co.in', $arrParams['subject'], $arrParams['message'] );
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+
+
+            $arrParams['to'] = 'vijay+customertest@pertly.co.in';
+
+
+            wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
         }
 
         return $isSent;
@@ -183,6 +191,8 @@ class WpsWcAFRFns{
 
             $templateDetails = self::selectTemplate($activeRow);
             $templateId = !empty($templateDetails['id'])?$templateDetails['id']:0;
+
+            self::debugLog('Processing active row: '.json_encode($activeRow));
 
             if(in_array($activeRow['status'], array('new', 'abandoned'))){
                 //New record, but abandoned.
@@ -276,14 +286,27 @@ class WpsWcAFRFns{
         }
     }
 
+    private static function addAbandonedTime($dateTime = ''){
+        if(!empty($dateTime)){
+            $settings = self::getSettings();
+            $abnCartMins = $settings['abandoned_time_in_minutes'];
+            if($abnCartMins>0){
+                $dateTime = date('Y-m-d H:i:s', strtotime($dateTime.' +'.$abnCartMins.' minute'));
+            }
+        }
+
+        return $dateTime;
+    }
+
     private static function deleteWpsRow($rowId = 0){
         if(!empty($rowId)){
             $rowDetails = self::rowDetails($rowId);
             $isDelete = false;
             if(!empty($rowDetails['last_active_cart_added'])){
                 $settings = self::getSettings();
+
                 if(!empty($settings['consider_un_recovered_order_after_minutes'])){
-                    $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime($rowDetails['last_active_cart_added'])) / 60,2);
+                    $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime(self::addAbandonedTime($rowDetails['last_active_cart_added']))) / 60,2);
                     if($minutes>=$settings['consider_un_recovered_order_after_minutes']){
                         $isDelete = true;
                     }
@@ -322,7 +345,10 @@ class WpsWcAFRFns{
             }
 
             if(!empty($templateFor)){
-                $query = "SELECT * FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$activeRow['created']."', '".date('Y-m-d H:i:s')."') ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
+                $tmc = self::addAbandonedTime($activeRow['last_active_cart_added']);
+                $nw = date('Y-m-d H:i:s');
+                $query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
+                self::debugLog("".$query);
                 $results = $wpdb->get_results($query, ARRAY_A );
                 if(!empty($results['0'])){
                     $templateDetails = $results['0'];
@@ -382,9 +408,21 @@ class WpsWcAFRFns{
                     );
                     $templateSubject = self::replaceTemplateMess($templateDetails['template_subject'], $arrReplace);
                     $templateMessage = self::replaceTemplateMess($templateDetails['template_message'], $arrReplace);
+                    $couponMess = "";
+                    if(!empty($templateDetails['coupon_code']) && !empty($templateDetails['coupon_messages'])){
+                        $couponDetails = get_post($templateDetails['coupon_code']);
+                        if(!empty($couponDetails->post_title)){
+                            $couponMess = str_ireplace('{wps.coupon_code}', $couponDetails->post_title, $templateDetails['coupon_messages']);
+                        }
+                    }
+                    $templateMessage .= $couponMess;
+
                     $params = array(
                         'replace_arr'=>$arrReplace,
                     );
+
+                    $layout = WpsWcAFR::getHtml('_mail_template_default');
+                    $templateMessage = str_ireplace('__MESSAGE__', $templateMessage, $layout);
 
                     if(!empty($templateMessage)){
                         $wpdb->insert(
@@ -482,8 +520,9 @@ class WpsWcAFRFns{
 
         $settings = self::getSettings();
 
-        $query = "SELECT  * FROM `wp_wps_wcafr` WHERE `status` != 'deleted'  AND `status` != 'recovered'  AND `status` != 'order_processing' AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') >= '".$settings['abandoned_time_in_minutes']."'";
+        $query = "SELECT  *, TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') as minutes_from_last_status FROM `wp_wps_wcafr` WHERE `status` != 'deleted'  AND `status` != 'recovered'  AND `status` != 'order_processing' AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') >= '".$settings['abandoned_time_in_minutes']."'";
         //self::debugLog($query);
+        self::debugLog($query);
         $results = $wpdb->get_results($query, ARRAY_A);
         if(!empty($results)){
             $activeRows = $results;
@@ -555,11 +594,12 @@ class WpsWcAFRFns{
                     $status = 'order_processing';
                 }
 
-                if(!empty($status)){
+                if(!empty($status) && in_array($status, array('payment_failed', 'order_cancelled', 'payment_pending', 'order_processing'))){
                     $wpdb->update(
                         $wpdb->prefix.'wps_wcafr',
                         array(
                             'status' => $status,
+                            'last_active_cart_added' => date('Y-m-d H:i:s'),
                         ),
                         array( 'order_id' => $order_id ),
                         array(
@@ -602,6 +642,7 @@ class WpsWcAFRFns{
                         $wpdb->update(
                             $wpdb->prefix.'wps_wcafr',
                             array(
+                                'last_active_cart_added'=>date('Y-m-d H:i:s'),
                                 'status' => 'recovered',
                             ),
                             array( 'order_id' => $order_id ),
@@ -621,7 +662,23 @@ class WpsWcAFRFns{
 
     public static function wpsOrderRecovered($wpsId = 0){
         if(!empty($wpsId)){
-            //Cart recovered after sending mails.
+            //Cart recovered after sending follow up mails.
+            $getRecordDetails = self::rowDetails($wpsId);
+            if(!empty($getRecordDetails['order_id']) && $getRecordDetails['status'] == 'recovered'){
+                $settings = self::getSettings();
+                if($settings['send_mail_to_admin_after_recovery']){
+                    $adminEmail = $settings['admin_email'];
+                    if(!empty($adminEmail)){
+                        $arrParams = array(
+                            'to'=>$adminEmail,
+                            'subject'=>'Order id '.$getRecordDetails['order_id'].' has been recovered by WPS',
+                            'message'=>'Hi Admin, <br /> <p>An order has been successfully recovered by sending followup mails. We are glad to tell you, if not wish to receive notifications turn off from site admin panel.</p>',
+                        );
+
+                        self::sendMail($arrParams);
+                    }
+                }
+            }
         }
     }
 

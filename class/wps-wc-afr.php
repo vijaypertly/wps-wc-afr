@@ -28,7 +28,7 @@ class WpsWcAFR{
         echo $dashboardPage;
     }
 
-    private static function getHtml($file = '', $data = array()){
+    public static function getHtml($file = '', $data = array()){
         $htmlData = '';
 
         if(!empty($file)){
@@ -88,20 +88,18 @@ class WpsWcAFR{
                 if(!empty($wcActiveCartSession['cart_data_alone'])){
                     self::debugLog('Woocommerce cart session exist.');
                     /*$wcSessionData = serialize($wcSessionData);*/
+
+                    $arrUpdt = array(
+                        'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
+                        /*'status' => $cStatus,*/
+                    );
+                    if($newRecord['status'] == 'new'){
+                        $arrUpdt['last_active_cart_added'] = date('Y-m-d H:i:s');
+                    }
                     $wpdb->update(
                         $wpdb->prefix.'wps_wcafr',
-                        array(
-                            'last_active_cart_added' => date('Y-m-d H:i:s'),
-                            'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
-                            'status' => $cStatus,
-                        ),
-                        array( 'id' => $newRecord['id'] ),
-                        array(
-                            '%s',
-                            '%s',
-                            '%s',
-                        ),
-                        array( '%d' )
+                        $arrUpdt,
+                        array( 'id' => $newRecord['id'] )
                     );
                 }
                 else{
@@ -126,25 +124,27 @@ class WpsWcAFR{
                 /*if(!empty($wcSessionCart)){*/
                 if(!empty($wcActiveCartSession['cart_data_alone'])){
                     self::debugLog('Woocommerce session cart exist. So, creating new record in database.');
-                    $wpdb->insert(
-                        $wpdb->prefix.'wps_wcafr',
-                        array(
-                            'user_email' => $loggedUserDetails->user_email,
-                            'user_id' => $loggedUserDetails->ID,
-                            'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
-                            'created' => date('Y-m-d H:i:s'),
-                            'last_active_cart_added' => date('Y-m-d H:i:s'),
-                            'status' => 'new',
-                        ),
-                        array(
-                            '%s',
-                            '%d',
-                            '%s',
-                            '%s',
-                            '%s',
-                            '%s',
-                        )
-                    );
+                    if(!self::isCartAddingWhileCheckout($loggedUserDetails->ID)){
+                        $wpdb->insert(
+                            $wpdb->prefix.'wps_wcafr',
+                            array(
+                                'user_email' => $loggedUserDetails->user_email,
+                                'user_id' => $loggedUserDetails->ID,
+                                'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
+                                'created' => date('Y-m-d H:i:s'),
+                                'last_active_cart_added' => date('Y-m-d H:i:s'),
+                                'status' => 'new',
+                            ),
+                            array(
+                                '%s',
+                                '%d',
+                                '%s',
+                                '%s',
+                                '%s',
+                                '%s',
+                            )
+                        );
+                    }
                 }
                 else{
                     self::debugLog('Woocommerce cart session not exist in database. So, unable to create new record.');
@@ -155,6 +155,25 @@ class WpsWcAFR{
             //For guest we can't able to do anything after adding to cart. We can able to do only after clicking proceed to cart.
             self::debugLog('Guest user. So, can\'t do anything.');
         }
+    }
+
+    public static function isCartAddingWhileCheckout($userId = 0){
+        /*
+         * Why?
+         * A) Woocommerce will keep the cart data till completing checkout, so we need not to create a new row while creating order.
+         * */
+        global $wpdb;
+        $isExist = false;
+
+        if(!empty($userId)){
+            $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=5 AND `status` = 'order_created' AND `user_id` = '".$userId."' ";
+            $results = $wpdb->get_results($q);
+            if(!empty($results)){
+                $isExist = true;
+            }
+        }
+
+        return $isExist;
     }
 
     public static function getActiveCartData(){
@@ -197,18 +216,11 @@ class WpsWcAFR{
                     $wpdb->prefix.'wps_wcafr',
                     array(
                         'last_active_cart_added' => date('Y-m-d H:i:s'),
-                        'wc_session_data' => NULL,
+                        /*'wc_session_data' => NULL,*/
                         'order_id' => $order_id,
                         'status' => 'order_created',
                     ),
-                    array( 'id' => $newRecord['id'] ),
-                    array(
-                        '%s',
-                        '%s',
-                        '%d',
-                        '%s',
-                    ),
-                    array( '%d' )
+                    array( 'id' => $newRecord['id'] )
                 );
             }
             else{
@@ -222,14 +234,6 @@ class WpsWcAFR{
                         'last_active_cart_added' => date('Y-m-d H:i:s'),
                         'order_id' => $order_id,
                         'status' => 'order_created',
-                    ),
-                    array(
-                        '%s',
-                        '%d',
-                        '%s',
-                        '%s',
-                        '%d',
-                        '%s',
                     )
                 );
             }
@@ -249,19 +253,12 @@ class WpsWcAFR{
                     $wpdb->prefix.'wps_wcafr',
                     array(
                         'last_active_cart_added' => date('Y-m-d H:i:s'),
-                        'wc_session_data' => NULL,
+                        /*'wc_session_data' => NULL,*/
                         'user_id' => $userIdGot,
                         'order_id' => $order_id,
                         'status' => 'order_created',
                     ),
                     array( 'id' => $newRecord['id'] ),
-                    array(
-                        '%s',
-                        '%s',
-                        '%d',
-                        '%d',
-                        '%s',
-                    ),
                     array( '%d' )
                 );
             }

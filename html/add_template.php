@@ -138,7 +138,7 @@
 						<td>
 							<?php 
 								if(!isset($data['coupon_messages']) || empty($data['coupon_messages'])){
-									$data['coupon_messages'] = "Use the below voucher to avail {afr.offer_details}<br/> Coupon Code : {afr.coupon_code} <br/>Validity : {afr.coupon_validity}";
+									$data['coupon_messages'] = "Use the below voucher to avail offer <br/> Coupon Code : {wps.coupon_code}";
 								}
 								
 								$content = "";
