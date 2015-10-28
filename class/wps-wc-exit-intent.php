@@ -1,22 +1,14 @@
 <?php
 defined( 'ABSPATH' ) or die('');
 if( !class_exists('ExitIntent') ){ return; }
-class ExitIntent{
-    
-
+class ExitIntent{    
     public function __construct() {	
-
 		global $wpdb, $woocommerce, $post;	
-		add_action( 'wp_enqueue_scripts', array($this, 'frontend_scripts') );	
-		//add_action( 'admin_enqueue_scripts', array($this,'adminend_scripts') );									
-		# Register shortcodes	
-		//add_filter( 'the_content', 'do_shortcode');	
+		add_action( 'wp_enqueue_scripts', array($this, 'frontend_scripts') );			
 		add_action( 'wp_footer', array($this, 'ouibounceModal') );	
-		add_action( 'admin_init', array($this,'register_wps_ei_setting') );					
-		//$this->setup_actions();																
-
+		add_action( 'admin_init', array($this, 'register_wps_ei_setting') );			
 	}
-	
+	// Load Front end scripts
 	public function frontend_scripts(){
 		wp_enqueue_style('intent', plugins_url('/wps-wc-afr/assets/exit-intent/ouibounce.min.css?v=0.0.11') );
 		wp_enqueue_script('intent', plugins_url('/wps-wc-afr/assets/exit-intent/ouibounce.min.js'), '', '0.0.11', true );
@@ -24,17 +16,25 @@ class ExitIntent{
 			wp_enqueue_script( 'jquery' );
 		}
 		if ( !wp_script_is( 'jquery-validation-plugin', 'enqueued' ) ) {
-			wp_register_script('jquery-validation-plugin', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js', '', true );
+			wp_register_script('jquery-validation-plugin', plugins_url('/wps-wc-afr/assets/exit-intent/jquery.validate.min.js'), '', '1.11.1', true );
 			wp_enqueue_script('jquery-validation-plugin');
 		}
 	}
+	// Exit Intent Modal
 	public function ouibounceModal(){
-		$str = '';		
+		$str = '';	
+		$opts = get_option('wps_wc_ei_settings');
+		if( !empty($opts['wps-ei-title']) ){
+			$title = esc_html($opts['wps-ei-title']);
+		}else{
+			$title = "Exit Intent"	;
+		}
+			
 		if ( WC()->cart->get_cart_contents_count() != 0 && !is_user_logged_in()  ) {			
 			$str .= '<div id="ouibounce-modal">';
 			$str .= '<div class="underlay"></div>';
 			$str .= '<div class="modal">';
-			$str .= '<div class="modal-title"><h3>This is a Ouibounce modal</h3></div>';
+			$str .= '<div class="modal-title"><h3>'.$title.'</h3></div>';
 			$str .= '<div class="modal-body">';
 			//$str .= '<p>Thanks for shopping by!</p>';
 			$str .= '<form action="" method="post" id="exit-intent-form" name="exit-intent-form">';
@@ -91,18 +91,18 @@ class ExitIntent{
 		}
 		echo stripslashes($str);
 	}
-			
-	public function register_wps_ei_setting() {
-		register_setting( 'wps_ei_options', 'wps_ei_settings', array($this,'wps_ei_settings_options') ); 
+	// Register settings		
+	public function register_wps_ei_setting() {		
+		register_setting( 'wps_wc_options', 'wps_wc_ei_settings', array($this,'wps_wc_ei_settings_options') ); 
 	} 
 	// Update Settings	
-	public function wps_ei_settings_options($options){			
+	public function wps_wc_ei_settings_options($options){			
 		$options['wps-ei-title'] = sanitize_text_field( (isset($_POST['wps-ei-title'])) ? $_POST['wps-ei-title'] : '' );						
 		return $options;		
 	}
+		
+
 	
-	
-    
 }
 
 ?>
