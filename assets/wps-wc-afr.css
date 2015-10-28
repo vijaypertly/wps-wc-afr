@@ -104,6 +104,12 @@
 	width: 90%;
 	margin-top: 10px;
 }
+.ntmesstype_error .fltl,.ntmesstype_success .fltl{
+	float:left;
+}
+.ntmesstype_error .ntmess_close,.ntmesstype_success .ntmess_close{
+	float:right;
+}
 .ntmesstype_error{
 	min-height: 30px;
     padding: 5px;

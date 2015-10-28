@@ -98,7 +98,15 @@
 						<input type="number" size="6" min="15" max="99999999" value="<?php echo $data['send_mail_duration_in_minutes'];?>" id="send_mail_duration_in_minutes" name="send_mail_duration_in_minutes" required="required" title="Send Mail Duration in minutes">
 					</td>
 				</tr>
-				
+				 	
+				<tr class="form-field form-required">
+					<th scope="row">
+						<label for="template_subject">Template Subject <span class="description">(required)</span></label>
+					</th>
+					<td>
+						<textarea id="template_subject" name="template_subject" title="Template Subject" required="required"><?php echo $data['template_subject'];?></textarea>
+					</td>
+				</tr>
 				<tr class="form-field form-required">
 					<th scope="row">
 						<label for="template_message">Template Message <span class="description">(required)</span></label>

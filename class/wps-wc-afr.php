@@ -372,6 +372,10 @@ class WpsWcAFR{
 					$_REQUEST['tabaction'] = 'templates_ajax';
 					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
 				}
+				else if($ac == '_view_log_mail_list'){
+					$_REQUEST['tabaction'] = 'mail_log_ajax';
+					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
+				}
 				
             }
         }
@@ -436,6 +440,7 @@ class WpsWcAFR{
 			'template_name' => '',
 			'template_status' => '',
 			'template_for' => '',
+			'template_subject'=>'',
 			'send_mail_duration_in_minutes' => '',
 			'template_message' => '',
 			'coupon_code'=>'',
