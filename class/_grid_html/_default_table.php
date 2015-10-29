@@ -41,7 +41,7 @@
 							echo '<td><input type="checkbox" class="clsvchk_bx" value="on" name="'.$this->filters_name_concat.'vchk_bx['.$chk_bx_id.']"/></td>'; 
 						}
 						foreach($this->display_coloumns as $ky=>$dc){
-							if(isset($dta[$ky])){
+							if((isset($dta[$ky]) || is_null(@$dta[$ky])) && $ky != '_custom_actions' ){
 								$dc_val = $this->tableRowData($ky, $dta);
 								echo "<td>$dc_val</td>";
 							}

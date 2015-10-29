@@ -112,10 +112,10 @@
 				return date('H:i:s d-m-Y', strtotime($value));
 			}
 			elseif($key=='last_mailed_for_minutes'){
-				if(!empty($value))
+				if(empty($value))
 					return '- N/A -';
 				else
-					return $value.' mins';
+					return $value.' Mins';
 			}
 			elseif($key=='mail_status'){				
 				$mail_status = array('not_mailed'=>'Not Mailed','processed'=>'Processed','in_mail_queue'=>'In Mail Queue','mailed'=>'Mailed');
