@@ -10,9 +10,12 @@
 			'admin_email'=> get_option( 'admin_email' ),
 			'cron_time_in_minutes'=> 15,
 			'abandoned_time_in_minutes'=> 15,
-			'consider_un_recovered_order_after_minutes'=> 2*24*60,
+			//'consider_un_recovered_order_after_minutes'=> 2*24*60,
+			'consider_un_recovered_order_after'=> '2',
+			'consider_un_recovered_order_after_time_type'=> 'days',
 		);
 	}
+	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
 ?>
 <div class="complete-wrap">
 	<h1 id="js-add-new-template">Settings</h1>
@@ -71,12 +74,18 @@
 				
 				<tr class="form-field form-required">
 					<th scope="row">
-						<label for="consider_un_recovered_order_after_minutes">Consider Unrecovered Order After Minutes <span class="description">(required) (Ex: 2days*24hours*60min = 2880)</span></label>
+						<label for="consider_un_recovered_order_after">Consider Unrecovered Order After <span class="description">(required)</span></label>
 					</th>
 					<td>
-						<input type="number" size="6" min="15" max="99999999" value="<?php echo $data['consider_un_recovered_order_after_minutes'];?>" id="consider_un_recovered_order_after_minutes" name="data[consider_un_recovered_order_after_minutes]" required="required" title="Consider Unrecovered Order After Minutes">
-					</td>
-				</tr>	
+						<input style="float:left; margin-right:2%;width:50%;" type="number" size="6" min="1" max="99999999" value="<?php echo $data['consider_un_recovered_order_after'];?>" id="consider_un_recovered_order_after" name="data[consider_un_recovered_order_after]" required="required" title="Consider Unrecovered Order After">
+						<select style="float:left;width:43%;" id="consider_un_recovered_order_after_time_type" name="data[consider_un_recovered_order_after_time_type]" required="required" title="Time Type">	
+						<?php foreach($time_types as $key=>$value) { ?>
+							<option value="<?php echo $key;?>" <?php if(isset($data['consider_un_recovered_order_after_time_type']) && $data['consider_un_recovered_order_after_time_type'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
+						<?php } ?>
+						</select>
+					</td>						
+				</tr>			
+				
 			</tbody>
 		</table>
 		<p class="submit">

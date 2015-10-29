@@ -574,6 +574,7 @@ class WpsWcAFR{
             'html'=>'',
         );
 		if(isset($data) && !empty($data) && isset($data['data']) && !empty($data['data'])){
+			$suc = 1;
 			
 			$data_t = array();
 			$data_t = $data['data'];
@@ -584,15 +585,37 @@ class WpsWcAFR{
 				$data_t['send_mail_to_admin_after_recovery'] = false;
 			}
 			
-			if (FALSE === get_option('wps_wc_afr_settings') && FALSE === update_option('wps_wc_afr_settings',FALSE)){ 
-				add_option('wps_wc_afr_settings',$data_t);
-			}else{
-				update_option('wps_wc_afr_settings',$data_t);
-			}
-
+			$time_types = array('mins'=> 1,'hours' => 60,'days' => 24*60);
 			
-			$arrResp['status'] = 'success';
-			$arrResp['mess'] = "Updated the settings";
+			if(!isset($data_t['consider_un_recovered_order_after']) || empty($data_t['consider_un_recovered_order_after']) || !is_numeric($data_t['consider_un_recovered_order_after']) || !isset($data_t['consider_un_recovered_order_after_time_type']) || !isset($time_types[$data_t['consider_un_recovered_order_after_time_type']]) ){
+				$arrResp['mess'] = "Please enter/select the valid time for un-recovered order";
+				$suc = 0;
+			}else{
+				$data_t['consider_un_recovered_order_after_minutes'] = $data_t['consider_un_recovered_order_after'] * $time_types[$data_t['consider_un_recovered_order_after_time_type']];
+				
+				if($data_t['consider_un_recovered_order_after_time_type'] == 'mins'){
+					if($data_t['consider_un_recovered_order_after'] < 15){
+						$arrResp['mess'] = "Please enter minimum 15 mins for un-recovered order";
+						$suc = 0;
+					}
+				}
+				if($data_t['consider_un_recovered_order_after'] > 99999999){
+					$arrResp['mess'] = "Please enter maximum 99999999 for un-recovered order";
+					$suc = 0;
+				}
+			}			
+			
+			if($suc == 1){
+				if (FALSE === get_option('wps_wc_afr_settings') && FALSE === update_option('wps_wc_afr_settings',FALSE)){ 
+					add_option('wps_wc_afr_settings',$data_t);
+				}else{
+					update_option('wps_wc_afr_settings',$data_t);
+				}
+
+				
+				$arrResp['status'] = 'success';
+				$arrResp['mess'] = "Updated the settings";
+			}
 		}
 		return $arrResp;
     }
