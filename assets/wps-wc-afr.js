@@ -49,7 +49,10 @@ wpsAfr.addTemplate = function(template_id){
 	}).done(function( resp ) {
 		if(typeof resp.status!="undefined"){
 			if(resp.status=='success'){
+				jQuery('#wps_afr_postbox').addClass('wps_wc_afr_css_block');
+				jQuery('.mce-toolbar-grp').remove();
 				jQuery('#wps_afr_postbox').html(resp.html);
+				setTimeout(function(){ jQuery('#wps_afr_postbox').removeClass('wps_wc_afr_css_block'); }, 3000);				
 			}
 			else{
 				jQuery('#wps_afr_postbox').html('');
@@ -119,9 +122,6 @@ wpsAfr.updateSettings = function(){
 	});
 	
 };
-
-
-
 
 jQuery(document).ready(function(){
 		

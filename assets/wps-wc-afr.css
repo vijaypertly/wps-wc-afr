@@ -127,3 +127,24 @@
 	font-weight: bold;
 	margin-right: 5px;
 }
+.wps_wc_afr_css_block{
+	-webkit-transition:0.5s;
+	-moz-transition:0.5s;
+	-o-transition:0.5s;
+	transition:0.5s;
+	pointer-events: none;
+	position:relative;
+}
+
+.wps_wc_afr_css_block:after{
+	background: url('wpspin_light-2x.gif') center center no-repeat;
+	content:'';
+	display: block;
+	position: absolute;
+	z-index: 999;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(241, 241, 241, 0.67);
+}
