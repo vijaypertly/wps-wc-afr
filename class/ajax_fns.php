@@ -13,16 +13,14 @@
 	function _admin_view_list_row_data_last($data=array(), $row_no=''){
 		if(isset($data) && !empty($data) && isset($data['last_active_cart_added']) && !empty($data['last_active_cart_added'])){
 			
-			/*$date1 = $data['last_active_cart_added'];
-			$date2 = date('Y-m-d H:i:s');*/
+			$date1 = $data['last_active_cart_added'];
+			$date2 = date('Y-m-d H:i:s');
 			
-			//$diff = abs(strtotime($date2) - strtotime($date1));
-			//$mins = floor($diff / (60*60));
-
-            $mins = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime($data['last_active_cart_added'])) / 60);
+			$diff = abs(strtotime($date2) - strtotime($date1));
+			$mins = floor($diff / 60);
 			
 			$tr_app = array();			
-			$tr_app[] = '<td>'.$mins.' Mins</td>';
+			$tr_app[] = '<td>'.getNiceTime($mins).'</td>';
 			if(!empty($tr_app) && is_array($tr_app)){
 				return implode('', $tr_app);
 			}
@@ -180,6 +178,39 @@
 			}
 		}
 		return $result;	
+	}
+	function getNiceTime($min = 0){
+		if ($min < 1 || !is_numeric($min))
+		{
+			return '0 mins';
+		}
+
+		$a = array( 365 * 24 * 60  =>  'year',
+					 30 * 24 * 60  =>  'month',
+						  24 * 60  =>  'day',
+							   60  =>  'hour',
+								1  =>  'min'
+					);
+		$a_plural = array( 'year'   => 'years',
+						   'month'  => 'months',
+						   'day'    => 'days',
+						   'hour'   => 'hours',
+						   'min'    => 'mins'
+					);
+
+		$result = '';
+		foreach ($a as $mins => $str)
+		{
+			$d = $min / $mins;
+			if ($d >= 1)
+			{
+				$r = floor($d);
+				$result .= $r. ' ' . ($r > 1 ? $a_plural[$str] : $str).' ';				
+				$min = $min - ($mins * $r);
+			}
+		}
+		$result .= 'ago';
+		return $result;
 	}
 
 
