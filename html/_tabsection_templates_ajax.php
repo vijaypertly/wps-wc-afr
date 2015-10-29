@@ -33,7 +33,9 @@ $display_coloumns = array(
     'template_name'=>'Template Name',
     'template_for'=>'Template For',
     'template_status'=>'Status',
-    'send_mail_duration_in_minutes'=>'Duration',
+	'send_mail_duration'=>'Duration',
+	'send_mail_duration_time_type'=>'Time Type',
+    'send_mail_duration_in_minutes'=>'Duration(mins)',
 	'_custom_actions'=>'Actions',
 );
 

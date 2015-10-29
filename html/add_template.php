@@ -35,6 +35,7 @@
 <?php
 	$template_for = array('abandoned_cart'=> 'Abandoned Cart','failed_payment' => 'Failed Payment','cancelled_payment' => 'Cancelled Payment');
 	$template_status = array(1 => 'Active',0=> 'Inactive');
+	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
 ?>
 <div class="wrap">
 	<?php if(isset($data['id']) && $data['id'] > 0){?> 
@@ -90,12 +91,28 @@
 					</td>
 				</tr>
 			<?php } ?>
+				<?php /* ?>
 				<tr class="form-field form-required">
 					<th scope="row">
 						<label for="send_mail_duration_in_minutes">Send Mail Duration in minutes <span class="description">(required)</span></label>
 					</th>
 					<td>
 						<input type="number" size="6" min="15" max="99999999" value="<?php echo $data['send_mail_duration_in_minutes'];?>" id="send_mail_duration_in_minutes" name="send_mail_duration_in_minutes" required="required" title="Send Mail Duration in minutes">
+					</td>
+				</tr>
+				<?php */ ?>
+				<tr class="form-field form-required">
+					<th scope="row">
+						<label for="send_mail_duration">Send Mail Duration <span class="description">(required)</span></label>
+					</th>
+					<td>
+						<input style="float:left; margin-right:2%;width:50%;" type="number" size="6" min="1" value="<?php echo $data['send_mail_duration'];?>" id="send_mail_duration" name="send_mail_duration" required="required" title="Send Mail Duration">
+						<select style="float:left;width:43%;" id="send_mail_duration_time_type" name="send_mail_duration_time_type" required="required" title="Time Type">	
+							<option value="">Select Time Type</option>
+						<?php foreach($time_types as $key=>$value) { ?>
+							<option value="<?php echo $key;?>" <?php if(isset($data['send_mail_duration_time_type']) && $data['send_mail_duration_time_type'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
+						<?php } ?>
+						</select>
 					</td>
 				</tr>
 				 	

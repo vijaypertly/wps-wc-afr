@@ -449,6 +449,8 @@ class WpsWcAFR{
 			'template_for' => '',
 			'template_subject'=>'',
 			'send_mail_duration_in_minutes' => '',
+			'send_mail_duration' => '',
+			'send_mail_duration_time_type' => '',
 			'template_message' => '',
 			'coupon_code'=>'',
 			'coupon_messages'=>''
@@ -504,6 +506,41 @@ class WpsWcAFR{
 				$arrResp['mess'] = "Please select the template status";
 				return $arrResp;
 			}
+			
+			if(!isset($data['send_mail_duration']) || empty($data['send_mail_duration']) || !is_numeric($data['send_mail_duration']))
+			{
+				$arrResp['mess'] = "Please enter the send mail duration";
+				return $arrResp;
+			}
+			
+			$time_types = array('mins'=> 1,'hours' => 60,'days' => 24*60);
+			
+			if(!isset($time_types[$data['send_mail_duration_time_type']]))
+			{
+				$arrResp['mess'] = "Please select the send mail duration time type";
+				return $arrResp;
+			}
+			
+			if($data['send_mail_duration_time_type'] == 'mins')
+			{
+				if($data['send_mail_duration'] < 15 ){
+					$arrResp['mess'] = "Please enter the send mail duration minimum 15 mins";
+				}
+				return $arrResp;
+			}
+			if($data['send_mail_duration'] > 99999999 ){
+				$arrResp['mess'] = "Please enter the send mail duration max 99999999";
+				return $arrResp;
+			}
+			
+			$data_t['send_mail_duration'] = trim($data['send_mail_duration']);
+			$format_t[] = "%s";
+			
+			$data_t['send_mail_duration_time_type'] = trim($data['send_mail_duration_time_type']);
+			$format_t[] = "%s";
+			
+			$data['send_mail_duration_in_minutes'] = $data['send_mail_duration'] * $time_types[$data['send_mail_duration_time_type']];
+			
 			
 			if(isset($data['send_mail_duration_in_minutes']) && is_numeric($data['send_mail_duration_in_minutes']) && $data['send_mail_duration_in_minutes'] >= 15 )
 			{
