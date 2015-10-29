@@ -72,10 +72,13 @@ wpsAfr.updateTemplate = function(){
 		dataType: "json",
 		data: jQuery('form#js-afrcreatetemplate').serialize(),
 		beforeSend : function(xhrObj){
+			jQuery('form#js-afrcreatetemplate').addClass('wps_wc_afr_css_block');
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
+			jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
 		},
-		success: function(resp) {					
+		success: function(resp) {	
+			jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
 			if(typeof resp.status!="undefined"){
 				if(resp.status=='success'){
 					var temp = jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]');
@@ -101,10 +104,13 @@ wpsAfr.updateSettings = function(){
 		dataType: "json",
 		data: jQuery('form#js-afrsettings').serialize(),
 		beforeSend : function(xhrObj){
+			jQuery('form#js-afrsettings').addClass('wps_wc_afr_css_block');
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
+			jQuery('form#js-afrsettings').removeClass('wps_wc_afr_css_block');
 		},
-		success: function(resp) {					
+		success: function(resp) {	
+			jQuery('form#js-afrsettings').removeClass('wps_wc_afr_css_block');
 			if(typeof resp.status!="undefined"){
 				if(resp.status=='success'){
 					jQuery('.js-error').html(resp.mess);
