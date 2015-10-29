@@ -14,7 +14,7 @@
 		);
 	}
 ?>
-<div class="wrap">
+<div class="complete-wrap">
 	<h1 id="js-add-new-template">Settings</h1>
 	<p>set your settings</p>	
 
