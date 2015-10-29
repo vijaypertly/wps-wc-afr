@@ -214,6 +214,20 @@ class WpsWcAFRFns{
                 }
                 else{
                     //No template found for selected cat. It seems expired with no use. So delete.
+                    if($activeRow['status'] == 'new'){
+                        $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime(self::addAbandonedTime($activeRow['last_active_cart_added']))) / 60,2);
+                        $settings = self::getSettings();
+                        if($minutes>=$settings['abandoned_time_in_minutes']){
+                            //Abandoned cart
+                            $arrUpdtRw = array(
+                                'id'=> $activeRow['id'],
+                                'set'=> array(
+                                    'status'=>'abandoned',
+                                ),
+                            );
+                            self::updateRow($arrUpdtRw);
+                        }
+                    }
                     self::deleteWpsRow($activeRow['id']);
                 }
             }
@@ -347,7 +361,9 @@ class WpsWcAFRFns{
             if(!empty($templateFor)){
                 $tmc = self::addAbandonedTime($activeRow['last_active_cart_added']);
                 $nw = date('Y-m-d H:i:s');
-                $query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
+                $query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  ( (`send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)) OR (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)<10 ) ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
+                //$query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  `send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)  ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
+
                 self::debugLog("".$query);
                 $results = $wpdb->get_results($query, ARRAY_A );
                 if(!empty($results['0'])){
