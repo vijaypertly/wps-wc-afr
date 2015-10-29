@@ -19,7 +19,7 @@ if(!empty($filter_datas['template_id']) && is_numeric($filter_datas['template_id
 }
 
 if(!empty($filter_datas['send_to_email'])){
-    $filters[] = " AND send_to_email = '".$filter_datas['send_to_email']."'";
+    $filters[] = " AND send_to_email LIKE '".$filter_datas['send_to_email']."%'";
 }
 
 if(isset($filter_datas['mail_status']) && is_numeric($filter_datas['mail_status']) && $filter_datas['mail_status'] > -1){
@@ -61,12 +61,11 @@ $order_by = ' ORDER BY `id` DESC ';
 $query = "SELECT * FROM `wp_wps_wcafr_mail_log` WHERE `is_deleted`='0'  ".$q_filters .$order_by;
 $query_count = "SELECT count(*) FROM `wp_wps_wcafr_mail_log` WHERE `is_deleted`='0'  ".$q_filters .$order_by;
 
+
 $display_coloumns = array(
 	'id'=>'ID',
-	'wp_wps_id'=>'WPS',
 	'template_id'=>'Template',
 	'subject'=>'Subject',
-	'message'=>'Message',
 	'send_to_email'=>'Email',
 	'mail_status'=>'Email Status',
 	'mail_sent_on'=>'Email Sent On',
@@ -74,7 +73,7 @@ $display_coloumns = array(
 	'user_read_on'=>'User Read On'
 );
 
-$mail_status = array(-1 =>'All' ,0=> 'Not sent', 1=> 'Terminiated', 2=> 'in_queue', 3=>'Sent');
+$mail_status = array(-1 =>'All' ,0=> 'Not sent', 1=> 'Terminiated', 2=> 'In-Queue', 3=>'Sent');
 $user_read = array(-1 =>'All' ,0=> 'Unread', 1=> 'Read');
 $filter_coloumns = array(
     'template_id'=>array(
@@ -85,9 +84,8 @@ $filter_coloumns = array(
     ),
     'send_to_email'=>array(
         'label'=>'Email',
-        'default_value'=>'0',
-        'type'=>'select', 
-		'options'=>array_merge(array('0'=>'All'),getSendToEmail()),  
+        'default_value'=>'',
+        'type'=>'text',   
     ),
     'mail_status'=>array(
         'label'=>'Email Status',

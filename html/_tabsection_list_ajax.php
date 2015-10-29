@@ -17,10 +17,15 @@ $filters = array();
 if(!empty($filter_datas['status'])){
     $filters[] = " AND status = '".$filter_datas['status']."'";
 }
+if(!empty($filter_datas['user_email'])){
+    $filters[] = " AND user_email LIKE '".$filter_datas['user_email']."%'";
+}
 if(!empty($filter_datas['mail_status'])){
     $filters[] = " AND mail_status = '".$filter_datas['mail_status']."'";
 }
-
+if(!empty($filter_datas['user_id']) && is_numeric($filter_datas['user_id']) && $filter_datas['user_id'] > 0){
+    $filters[] = " AND user_id = '".$filter_datas['user_id']."'";
+}
 
 $q_filters = (!empty($filters))?implode(' ', $filters):'';
 
@@ -31,30 +36,30 @@ $query_count = "SELECT count(*) FROM `wp_wps_wcafr` WHERE 1=1  ".$q_filters .$or
 
 $display_coloumns = array(
     'id'=>'ID',
-    'user_email'=>'Email',
-    'user_id'=>'User Id',    
+	'user_id'=>'User Id',
+    'user_email'=>'Email',        
 	'mail_status'=>'Email Status',
 	'status'=>'Status',
-    'last_active_cart_added'=>'Last Active Cart Added',
+    'last_active_cart_added'=>'Last Updated Status',	
 	'order_id'=>'Order Id',
 	'last_mailed_for_minutes'=>'Last Mailed for minutes',	
+	'_custom_actions'=>'Minutes Elapsed',
 );
 
 
 $mail_status = array(''=>'All','not_mailed'=>'Not Mailed','processed'=>'Processed','in_mail_queue'=>'In Mail Queue','mailed'=>'Mailed');
 $status = array(''=>'All','new'=>'New','abandoned'=>'Abandoned','order_created'=>'Order Created','order_processing'=>'Order Processing','order_cancelled'=>'Order Cancelled','payment_pending'=>'Payment Pending','payment_failed'=>'Payment Failed','recovered'=>'Recovered','deleted'=>'Deleted');
 $filter_coloumns = array(
-    'template_id'=>array(
-        'label'=>'Template',
+    'user_id'=>array(
+        'label'=>'User',
         'default_value'=>'0',
         'type'=>'select', 
-		'options'=>array_merge(array('0'=>'All'),getTemplateNames()),  
+		'options'=>getSendToUser(),  
     ),
-    'send_to_email'=>array(
+    'user_email'=>array(
         'label'=>'Email',
-        'default_value'=>'0',
-        'type'=>'select', 
-		'options'=>array_merge(array('0'=>'All'),getSendToEmail()),  
+        'default_value'=>'',
+        'type'=>'text',   
     ),
     'mail_status'=>array(
         'label'=>'Email Status',
@@ -85,6 +90,7 @@ $vj_grid->display_coloumns = $display_coloumns;
 $vj_grid->filter_coloumns = $filter_coloumns;
 $vj_grid->filter_datas = $filter_datas;
 $vj_grid->mod_row_data_fn = '_admin_view_list_row_data';
+$vj_grid->mod_row_data_last_fn = '_admin_view_list_row_data_last';
 $vj_grid->setPage($cur_page);
 $vj_grid->pagination_prev_icon = '<img src="'.plugins_url( '/wps-wc-afr/assets/arleft.png' ).'">';
 $vj_grid->pagination_next_icon = '<img src="'.plugins_url( '/wps-wc-afr/assets/arright.png' ).'">';

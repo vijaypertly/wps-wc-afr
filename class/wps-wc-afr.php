@@ -368,6 +368,9 @@ class WpsWcAFR{
 				else if($ac == 'update_template'){
 					$arrResp = self::adminUpdateTemplate($_REQUEST);
 				}
+				else if($ac == 'update_settings'){
+					$arrResp = self::adminUpdateSettings($_REQUEST);
+				}
 				else if($ac == '_view_templates_list'){
 					$_REQUEST['tabaction'] = 'templates_ajax';
 					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
@@ -521,6 +524,11 @@ class WpsWcAFR{
 				return $arrResp;
 			}
 			
+			if(isset($data['template_subject'])){
+				$data_t['template_subject'] = trim($data['template_subject']);
+				$format_t[] = "%s";
+			}
+			
 			if(isset($data['coupon_code'])){
 				$data_t['coupon_code'] = trim($data['coupon_code']);
 				$format_t[] = "%s";
@@ -557,6 +565,38 @@ class WpsWcAFR{
 		}
 		return $arrResp;
     }
+
+	public static function adminUpdateSettings($data = array()){
+		global $wpdb;
+		$arrResp = array(
+            'status'=>'error',
+            'mess'=>'Please try again later.',
+            'html'=>'',
+        );
+		if(isset($data) && !empty($data) && isset($data['data']) && !empty($data['data'])){
+			
+			$data_t = array();
+			$data_t = $data['data'];
+			if(!isset($data_t['enable_cron'])){
+				$data_t['enable_cron'] = false;
+			}
+			if(!isset($data_t['send_mail_to_admin_after_recovery'])){
+				$data_t['send_mail_to_admin_after_recovery'] = false;
+			}
+			
+			if (FALSE === get_option('wps_wc_afr_settings') && FALSE === update_option('wps_wc_afr_settings',FALSE)){ 
+				add_option('wps_wc_afr_settings',$data_t);
+			}else{
+				update_option('wps_wc_afr_settings',$data_t);
+			}
+
+			
+			$arrResp['status'] = 'success';
+			$arrResp['mess'] = "Updated the settings";
+		}
+		return $arrResp;
+    }
+
 }
 
 

@@ -7,7 +7,25 @@
 				return implode('', $tr_app);
 			}
 		}
-		return 'sdfsd';
+		return '<td> - N/A - </td>';
+	}
+
+	function _admin_view_list_row_data_last($data=array(), $row_no=''){
+		if(isset($data) && !empty($data) && isset($data['last_active_cart_added']) && !empty($data['last_active_cart_added'])){
+			
+			$date1 = $data['last_active_cart_added'];
+			$date2 = date('Y-m-d H:i:s');
+			
+			$diff = abs(strtotime($date2) - strtotime($date1));
+			$mins = floor($diff / (60*60));
+			
+			$tr_app = array();			
+			$tr_app[] = '<td>'.$mins.' Mins</td>';
+			if(!empty($tr_app) && is_array($tr_app)){
+				return implode('', $tr_app);
+			}
+		}
+		return '<td> - N/A - </td>';
 	}
 
 	function _admin_view_template_row_data($key='', $data=''){
@@ -66,7 +84,7 @@
 				}
 			}
 			elseif($key=='mail_status'){				
-				$mail_status = array(0=> 'Not sent', 1=> 'Terminiated', 2=> 'in_queue', 3=>'Sent');
+				$mail_status = array(0=> 'Not sent', 1=> 'Terminiated', 2=> 'In-Queue', 3=>'Sent');
 				if(isset($mail_status[$value])){
 					return $mail_status[$value];
 				}else{
@@ -95,7 +113,7 @@
 			}
 			elseif($key=='last_mailed_for_minutes'){
 				if(!empty($value))
-					return '-';
+					return '- N/A -';
 				else
 					return $value.' mins';
 			}
@@ -117,7 +135,7 @@
 			}
 			else if($key == 'order_id'){
 				if(is_null($value) || empty($value) || !isset($value) || $value == "NULL"){
-					return ' - ';					
+					return '- N/A -';					
 				}else{
 					return $value;
 				}
@@ -140,14 +158,23 @@
 		}
 		return $result;	
 	}
-	function getSendToEmail(){
+	function getSendToUser($id = 0){
 		global $wpdb;
 		$result = array();
-		$S_Query = "SELECT DISTINCT(send_to_email) FROM wp_wps_wcafr_mail_log WHERE is_deleted = '0'";
+		$S_Query = "SELECT DISTINCT(user_id) FROM wp_wps_wcafr";
+		if(is_numeric($id) && $id > 0){
+			$S_Query = "SELECT user_id FROM wp_wps_wcafr WHERE user_id = '$id'";			
+		}
+		$result[0] = "All";
 		$temp = $wpdb -> get_results($S_Query, ARRAY_A);
 		if(!empty($temp)){
 			foreach($temp as $ddta){
-				$result[$ddta['send_to_email']] = $ddta['send_to_email'];
+				$user = get_user_by( 'id', $ddta['user_id'] );
+				if(!empty($user) && isset($user->user_email)){
+					$result[$ddta['user_id']] = $ddta['user_id'].' - '.$user->user_email;
+				}else{
+					$result[$ddta['user_id']] = $ddta['user_id'];
+				}				
 			}
 		}
 		return $result;	

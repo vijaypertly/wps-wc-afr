@@ -91,6 +91,35 @@ wpsAfr.updateTemplate = function(){
 	
 };
 
+wpsAfr.updateSettings = function(){	
+	jQuery.ajax({
+		url: ajaxurl,
+		type:"POST",
+		dataType: "json",
+		data: jQuery('form#js-afrsettings').serialize(),
+		beforeSend : function(xhrObj){
+		},
+		error: function( jqXHR, textStatus, errorThrown ){
+		},
+		success: function(resp) {					
+			if(typeof resp.status!="undefined"){
+				if(resp.status=='success'){
+					jQuery('.js-error').html(resp.mess);
+					jQuery('.js-error').css({"color":"green","display":"table"});
+				}
+				else{
+					jQuery('.js-error').html(resp.mess);
+					jQuery('.js-error').css({"color":"red","display":"table"});
+				}
+			}
+			else{
+				jQuery('.js-error').html('Please try again');
+			}
+		}
+	});
+	
+};
+
 
 
 
@@ -109,6 +138,10 @@ jQuery(document).ready(function(){
 	
 	jQuery(document).on('submit','form#js-afrcreatetemplate',function(event){
 		wpsAfr.updateTemplate();
+	});
+	
+	jQuery(document).on('submit','form#js-afrsettings',function(event){
+		wpsAfr.updateSettings();
 	});
 	
 	jQuery(document).on('click','.js-cancel-template',function(event){

@@ -113,7 +113,7 @@
 					</th>
 					<td>
 						<?php 
-							wp_editor( $content, $editor_id, $settings);
+							wp_editor( stripslashes($content), $editor_id, $settings);
 						?>
 						<?php /* ?>
 						<textarea id="template_message" name="template_message" title="Template Message" required="required"><?php echo $data['template_message'];?></textarea>
@@ -155,7 +155,7 @@
 								}
 								$editor_id = "coupon_messages";
 								$settings = array('textarea_name' => 'coupon_messages');
-								wp_editor( $content, $editor_id, $settings);								
+								wp_editor( stripslashes($content), $editor_id, $settings);								
 							?>
 							<?php /* ?>
 							<textarea id="coupon_messages" name="coupon_messages" title="Coupon Message"><?php echo $data['coupon_messages'];?></textarea>
