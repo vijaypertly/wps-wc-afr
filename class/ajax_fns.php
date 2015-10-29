@@ -13,11 +13,13 @@
 	function _admin_view_list_row_data_last($data=array(), $row_no=''){
 		if(isset($data) && !empty($data) && isset($data['last_active_cart_added']) && !empty($data['last_active_cart_added'])){
 			
-			$date1 = $data['last_active_cart_added'];
-			$date2 = date('Y-m-d H:i:s');
+			/*$date1 = $data['last_active_cart_added'];
+			$date2 = date('Y-m-d H:i:s');*/
 			
-			$diff = abs(strtotime($date2) - strtotime($date1));
-			$mins = floor($diff / (60*60));
+			//$diff = abs(strtotime($date2) - strtotime($date1));
+			//$mins = floor($diff / (60*60));
+
+            $mins = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime($data['last_active_cart_added'])) / 60);
 			
 			$tr_app = array();			
 			$tr_app[] = '<td>'.$mins.' Mins</td>';

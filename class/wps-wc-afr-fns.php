@@ -216,7 +216,7 @@ class WpsWcAFRFns{
                 else{
                     //No template found for selected cat. It seems expired with no use. So delete.
                     if($activeRow['status'] == 'new'){
-                        $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime(self::addAbandonedTime($activeRow['last_active_cart_added']))) / 60,2);
+                        $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime(self::addAbandonedTime($activeRow['last_active_cart_added']))) / 60);
                         $settings = self::getSettings();
                         if($minutes>=$settings['abandoned_time_in_minutes']){
                             //Abandoned cart
@@ -321,7 +321,7 @@ class WpsWcAFRFns{
                 $settings = self::getSettings();
 
                 if(!empty($settings['consider_un_recovered_order_after_minutes'])){
-                    $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime(self::addAbandonedTime($rowDetails['last_active_cart_added']))) / 60,2);
+                    $minutes = round(abs(strtotime(date('Y-m-d H:i:s')) - strtotime(self::addAbandonedTime($rowDetails['last_active_cart_added']))) / 60);
                     if($minutes>=$settings['consider_un_recovered_order_after_minutes']){
                         $isDelete = true;
                     }
