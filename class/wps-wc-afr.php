@@ -166,7 +166,7 @@ class WpsWcAFR{
         $isExist = false;
 
         if(!empty($userId)){
-            $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=5 AND `status` = 'order_created' AND `user_id` = '".$userId."' ";
+            $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(SECOND, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=10 AND `status` = 'order_created' AND `user_id` = '".$userId."' ";
             $results = $wpdb->get_results($q);
             if(!empty($results)){
                 $isExist = true;
