@@ -103,7 +103,7 @@ function getDefaultPageInputData(fortype, disp_on){
 }
 
 function loaderIconDashboard(th_id, ldr_cls){
-    var plugin_url = 'c:/xampp/htdocs/wordpress_test/wp-content/plugins';
+    var plugin_url = '';
     if(typeof th_id=='undefined'){
         return;
     }

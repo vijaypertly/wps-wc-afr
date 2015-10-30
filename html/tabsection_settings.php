@@ -8,6 +8,7 @@
 			'enable_cron'=> true,
 			'send_mail_to_admin_after_recovery'=> true,
 			'admin_email'=> get_option( 'admin_email' ),
+			'cart_url'=> get_site_url(),
 			'cron_time_in_minutes'=> 15,
 			'abandoned_time_in_minutes'=> 15,
 			//'consider_un_recovered_order_after_minutes'=> 2*24*60,

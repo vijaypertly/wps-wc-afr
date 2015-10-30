@@ -6,7 +6,7 @@ class WpsWcAFR{
     private static $logFile = '';
 
     public static function pluginSettingsLink($links){
-        $settings_link = '<a href="options-general.php?page=wps_wc_afr-settings">' . __( 'Settings' ) . '</a>';
+        $settings_link = '<a href="'.get_site_url().'/wp-admin/admin.php?page=wps-wc-afr">' . __( 'Settings' ) . '</a>';
         array_push( $links, $settings_link );
         return $links;
     }

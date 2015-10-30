@@ -88,6 +88,8 @@ class WpsWcAFRFns{
                 'cron_time_in_minutes'=> 15,
                 'abandoned_time_in_minutes'=> 15,
                 'consider_un_recovered_order_after_minutes'=> 2*24*60,
+                'consider_un_recovered_order_after'=> 2,
+                'consider_un_recovered_order_after_time_type'=> 'days',
                 'cart_url'=> get_site_url(),
             );
             $settings = $settings;
@@ -220,12 +222,13 @@ class WpsWcAFRFns{
             $headers = array('Content-Type: text/html; charset=UTF-8');
 
 
-            $arrParams['to'] = 'vijay+customertest@pertly.co.in';
+            $arrParams['to'] = 'vijay+wpsplugintest@pertly.co.in';
 
 
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
             if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
-                wp_mail( 'mohankumar@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
+                wp_mail( 'mohankumar+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
+                wp_mail( 'balamurugan+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
             }
         }
 

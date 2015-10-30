@@ -200,3 +200,11 @@
 .dvb_filters .dvb_filter_field{
     float: left;
 }
+.pre_code{
+    color: #333333;
+    font-weight: bold;
+    display: block;
+    unicode-bidi: embed;
+    font-family: monospace;
+    white-space: pre;
+}
