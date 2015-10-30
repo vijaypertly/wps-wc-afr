@@ -124,7 +124,7 @@ class WpsWcAFR{
                 /*if(!empty($wcSessionCart)){*/
                 if(!empty($wcActiveCartSession['cart_data_alone'])){
                     self::debugLog('Woocommerce session cart exist. So, creating new record in database.');
-                    if(!self::isCartAddingWhileCheckout($loggedUserDetails->ID)){
+                    if(!self::isCartAddingWhileCheckout($loggedUserDetails->ID) && !self::isCartAddingAfterImmediateCancel($loggedUserDetails->ID)){
                         $wpdb->insert(
                             $wpdb->prefix.'wps_wcafr',
                             array(
@@ -167,6 +167,27 @@ class WpsWcAFR{
 
         if(!empty($userId)){
             $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(SECOND, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=10 AND `status` = 'order_created' AND `user_id` = '".$userId."' ";
+            $results = $wpdb->get_results($q);
+            if(!empty($results)){
+                $isExist = true;
+            }
+        }
+
+        return $isExist;
+    }
+
+    public static function isCartAddingAfterImmediateCancel($userId = 0){
+        /*
+         * Why?
+         * A) Woocommerce will keep the cart data after cancelling the payment immediately , so we need not to create a new row till 15 minutes.
+         * */
+        global $wpdb;
+        $isExist = false;
+        $wcActiveCartSession = self::getActiveCartData();
+        $mdFiveLastWC = md5($wcActiveCartSession['wc_session_data_serialized']);
+
+        if(!empty($userId)){
+            $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=15 AND ( `status` = 'order_created' OR `status` = 'order_cancelled' ) AND MD5(`wc_session_data`) = '".$mdFiveLastWC."'  AND `user_id` = '".$userId."' ";
             $results = $wpdb->get_results($q);
             if(!empty($results)){
                 $isExist = true;

@@ -70,6 +70,9 @@
 				return date('H:i:s d-m-Y', strtotime($value));
 			}
 			elseif($key=='user_read_on'){
+                if(is_null($value) || $value == '0000-00-00 00:00:00'){
+                    return 'N/A';
+                }
 				return date('H:i:s d-m-Y', strtotime($value));
 			}
 			elseif($key=='send_mail_duration_in_minutes'){
@@ -102,6 +105,7 @@
 		}
 		return $data[$key];
 	}
+
 	function _admin_view_list_row_data($key='', $data=''){		
 		if(!empty($key)){
 			$value = $data[$key];

@@ -244,7 +244,7 @@ class VjGrid{
                             $x++;
                         }
                     }
-                    $arr_page[$i] = "<li><a class='active' style='background-color: #f5f5f5;' title='".$i."'>$i</a></li>";
+                    $arr_page[$i] = "<li><a class='active' style='background-color: #a3a2a0; color: #000000' title='".$i."'>$i</a></li>";
                     $pageflag = 1;
                     ksort($arr_page);
                     $pagenumber .= implode( "",$arr_page);
