@@ -91,8 +91,13 @@
 	border-right: 1px solid #999999;
 	text-decoration:none !important;
 }
+.pagination .prev{
+	border: 0;
+    top: -2px;
+}
 .pagination .next{
 	border: 0;
+    top: -2px;
 }
 .pointer{
 	cursor: pointer;

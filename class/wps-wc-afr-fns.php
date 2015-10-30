@@ -4,10 +4,12 @@ defined( 'ABSPATH' ) or die('');
 class WpsWcAFRFns{
     private static $logFile = '';
     private static $templateDetails = array();
+    private static $arrDetails = array();
 
     public static function activatePlugin(){
         /*
          * Todo:
+         * 0. Check woocommerce exist or not.
          * 1. Create table "wp_wps_wcafr"
          * 2. Create table "wp_wps_wcafr_templates"
          * */
@@ -105,7 +107,7 @@ class WpsWcAFRFns{
                     $arrParams = array(
                         'to'=>$mail['send_to_email'],
                         'subject'=>$mail['subject'],
-                        'message'=>$mail['message']."<br />WPS ID:".$mail['wp_wps_id'],
+                        'message'=>stripslashes(html_entity_decode( $mail['message']))."<br />WPS ID:".$mail['wp_wps_id'],
                     );
                     if(self::sendMail($arrParams)){
                         //Mail sent
@@ -195,7 +197,7 @@ class WpsWcAFRFns{
             $templateDetails = self::selectTemplate($activeRow);
             $templateId = !empty($templateDetails['id'])?$templateDetails['id']:0;
 
-            self::debugLog('Processing active row: '.json_encode($activeRow));
+            //self::debugLog('Processing active row: '.json_encode($activeRow));
 
             if(in_array($activeRow['status'], array('new', 'abandoned'))){
                 //New record, but abandoned.
@@ -367,7 +369,7 @@ class WpsWcAFRFns{
                 $query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  ( (`send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)) OR (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)<10 ) AND `template_status` = '1' ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
                 //$query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  `send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)  ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
 
-                self::debugLog("".$query);
+                //self::debugLog("".$query);
                 $results = $wpdb->get_results($query, ARRAY_A );
                 if(!empty($results['0'])){
                     $templateDetails = $results['0'];
@@ -411,22 +413,7 @@ class WpsWcAFRFns{
                     $userDetails = (!empty($rowDetails['user_id']))?self::getUserDetails($rowDetails['user_id']):array();
                     $userFirstName = !empty($userDetails['first_name']['0'])?$userDetails['first_name']['0']:'';
                     $userLastName = !empty($userDetails['last_name']['0'])?$userDetails['last_name']['0']:'';
-                    $arrReplace = array(
-                        '0'=>array(
-                            'replace_match'=>'{wps.firstname}',
-                            'replace_value'=>$userFirstName,
-                        ),
-                        '1'=>array(
-                            'replace_match'=>'{wps.lastname}',
-                            'replace_value'=>$userLastName,
-                        ),
-                        '2'=>array(
-                            'replace_match'=>'{wps.email}',
-                            'replace_value'=>$userEmail,
-                        ),
-                    );
-                    $templateSubject = self::replaceTemplateMess($templateDetails['template_subject'], $arrReplace);
-                    $templateMessage = self::replaceTemplateMess($templateDetails['template_message'], $arrReplace);
+
                     $couponMess = "";
                     if(!empty($templateDetails['coupon_code']) && !empty($templateDetails['coupon_messages'])){
                         $couponDetails = get_post($templateDetails['coupon_code']);
@@ -434,7 +421,47 @@ class WpsWcAFRFns{
                             $couponMess = str_ireplace('{wps.coupon_code}', $couponDetails->post_title, $templateDetails['coupon_messages']);
                         }
                     }
-                    $templateMessage .= $couponMess;
+
+                    $wpsProductDetails = self::wpsProductDetails($arrParams['wps_row_id']);
+
+                    $arrReplace = array(
+                        '0'=>array(
+                            'replace_match'=>'{wps.first_name}',
+                            'replace_value'=>$userFirstName,
+                        ),
+                        '1'=>array(
+                            'replace_match'=>'{wps.last_name}',
+                            'replace_value'=>$userLastName,
+                        ),
+                        '2'=>array(
+                            'replace_match'=>'{wps.email}',
+                            'replace_value'=>$userEmail,
+                        ),
+                        '3'=>array(
+                            'replace_match'=>'{wps.product_details}',
+                            'replace_value'=>$wpsProductDetails,
+                        ),
+                        '4'=>array(
+                            'replace_match'=>'{wps.coupon_details}',
+                            'replace_value'=>$couponMess,
+                        ),
+                        '5'=>array(
+                            'replace_match'=>"\n",
+                            'replace_value'=>"<br />",
+                        ),
+                    );
+
+                    $templateSubject = self::replaceTemplateMess($templateDetails['template_subject'], $arrReplace);
+                    $templateMessage = self::replaceTemplateMess($templateDetails['template_message'], $arrReplace);
+
+                    /*$couponMess = "";
+                    if(!empty($templateDetails['coupon_code']) && !empty($templateDetails['coupon_messages'])){
+                        $couponDetails = get_post($templateDetails['coupon_code']);
+                        if(!empty($couponDetails->post_title)){
+                            $couponMess = str_ireplace('{wps.coupon_code}', $couponDetails->post_title, $templateDetails['coupon_messages']);
+                        }
+                    }
+                    $templateMessage .= $couponMess;*/
 
                     $params = array(
                         'replace_arr'=>$arrReplace,
@@ -463,6 +490,42 @@ class WpsWcAFRFns{
                 }
             }
         }
+    }
+
+    public static function wpsProductDetails($wpsId = 0){
+        $html = '';
+        return '';
+        if(!empty($wpsId)){
+            $rowDetails = self::rowDetails($wpsId);
+            if(!empty($rowDetails['wc_session_data'])){
+                $wcSessionData = maybe_unserialize($rowDetails['wc_session_data']);
+                if(!empty($wcSessionData['cart'])){
+                    $cartContents = maybe_unserialize($wcSessionData['cart']);
+                    if(!empty($cartContents)){
+                        foreach($cartContents as $cart){
+                            if(!empty($cart['product_id'])){
+                                /*self::debugLog("Cart START INDV data ----- ");
+                                $crtCls = new WC_Cart();
+                                $wcPrdSimp = new WC_Product_Simple($cart['product_id']);
+                                $cartData = $cart;
+                                $cartData['data'] = $wcPrdSimp;
+                                self::debugLog(json_encode($cartData));
+                                //var_dump($wcPrdSimp); exit;
+                                var_dump($crtCls->get_item_data($cartData)); exit;
+                                self::debugLog($crtCls->get_item_data($cartData));
+                                self::debugLog("Cart END INDV data ----- ");*/
+                            }
+                        }
+                    }
+                    self::debugLog("Cart session data ----- ");
+                    self::debugLog(json_encode($cartContents));
+                }
+                self::debugLog("Complete session data ----- ");
+                self::debugLog(json_encode($wcSessionData));
+            }
+        }
+
+        return $html;
     }
 
     private static function replaceTemplateMess($templateMessage = '', $arrReplace = array()){
@@ -498,15 +561,19 @@ class WpsWcAFRFns{
         return $templateDetails;
     }
 
-    private static function rowDetails($rowId = 0 ){
+    private static function rowDetails($rowId = 0, $isForceRecheck = false){
         global $wpdb;
         $rowDetails = array();
 
-        if(!empty($rowId)){
+        if(!empty($rowId) && (empty(self::$arrDetails[$rowId]) || $isForceRecheck==true) ){
             $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE `id` = '".$rowId."' limit 1", ARRAY_A );
             if(!empty($results['0'])){
                 $rowDetails = $results['0'];
+                self::$arrDetails[$rowId] = $rowDetails;
             }
+        }
+        else if(!empty(self::$arrDetails[$rowId])){
+            $rowDetails = self::$arrDetails[$rowId];
         }
 
         return $rowDetails;
