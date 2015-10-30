@@ -525,8 +525,8 @@ class WpsWcAFR{
 			{
 				if($data['send_mail_duration'] < 15 ){
 					$arrResp['mess'] = "Please enter the send mail duration minimum 15 mins";
-				}
-				return $arrResp;
+					return $arrResp;
+				}				
 			}
 			if($data['send_mail_duration'] > 99999999 ){
 				$arrResp['mess'] = "Please enter the send mail duration max 99999999";
