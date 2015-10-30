@@ -167,7 +167,9 @@ class WpsWcAFRFns{
 
 
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
-            wp_mail( 'mohankumar@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
+            if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
+                wp_mail( 'mohankumar@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
+            }
         }
 
         return $isSent;
