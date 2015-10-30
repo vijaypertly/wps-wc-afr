@@ -9,7 +9,10 @@ Domain Path: /languages/
 Version: 1.0
 */
 defined( 'ABSPATH' ) or die('');
-date_default_timezone_set('Asia/Kolkata');//Vijay: Todo: temp for testing. Neet to remove in live
+$timezone = get_option('timezone_string');
+$timezone = empty($timezone)?'Europe/London':$timezone;
+
+date_default_timezone_set($timezone);
 
 define( 'WPS_WC_AFR_ACCESS', true );
 define( 'WPS_WC_AFR', '1.0' );
@@ -24,6 +27,9 @@ require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARAT
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'vjGrid.php';
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'ajax_fns.php';
 
+if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    return;
+}
 
 add_filter( "plugin_action_links_".WPS_WC_AFR_PLUGIN_BASENAME, array('WpsWcAFR', 'pluginSettingsLink') );
 add_action( 'admin_menu', array('WpsWcAFR', 'pluginAdminLinks') );

@@ -7,19 +7,73 @@ class WpsWcAFRFns{
     private static $arrDetails = array();
 
     public static function activatePlugin(){
-        /*
-         * Todo:
-         * 0. Check woocommerce exist or not.
-         * 1. Create table "wp_wps_wcafr"
-         * 2. Create table "wp_wps_wcafr_templates"
-         * */
+        if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+            exit;
+        }
 
+        self::installSql();
+    }
+
+    private static function installSql(){
+        global $wpdb;
+
+        $sql = array();
+
+        $sql[] = "CREATE TABLE IF NOT EXISTS `".$wpdb->prefix."wps_wcafr` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_email` varchar(255) DEFAULT NULL,
+  `user_id` bigint(20) DEFAULT NULL,
+  `wc_session_data` longtext,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_active_cart_added` datetime DEFAULT NULL,
+  `order_id` bigint(20) DEFAULT NULL,
+  `last_mailed_for_minutes` int(11) DEFAULT NULL COMMENT 'This minutes are copied from templates',
+  `mail_status` enum('not_mailed','processed','in_mail_queue','mailed') NOT NULL DEFAULT 'not_mailed',
+  `status` enum('new','abandoned','order_created','order_processing','order_cancelled','payment_pending','payment_failed','recovered','deleted') NOT NULL DEFAULT 'new',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 ;";
+
+        $sql[] = "CREATE TABLE IF NOT EXISTS `".$wpdb->prefix."wps_wcafr_mail_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `wp_wps_id` bigint(20) DEFAULT NULL,
+  `template_id` bigint(20) NOT NULL,
+  `subject` text,
+  `message` longtext,
+  `send_to_email` varchar(255) DEFAULT NULL,
+  `params` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mail_status` int(11) NOT NULL DEFAULT '0' COMMENT '0=> Not sent, 1=> Terminiated, 2=> in_queue, 3=>Sent',
+  `mail_sent_on` datetime DEFAULT NULL,
+  `is_user_read` int(11) NOT NULL DEFAULT '0',
+  `user_read_on` datetime DEFAULT NULL,
+  `is_deleted` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `wp_wps_id` (`wp_wps_id`,`template_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 ;";
+
+        $sql[] = "CREATE TABLE IF NOT EXISTS `".$wpdb->prefix."wps_wcafr_templates` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `template_name` varchar(255) DEFAULT NULL,
+  `template_status` int(11) NOT NULL DEFAULT '0' COMMENT '0=> Inactive, 1=> Active',
+  `template_for` enum('abandoned_cart','failed_payment','cancelled_payment','pending_payment') DEFAULT NULL,
+  `send_mail_duration_in_minutes` int(11) NOT NULL DEFAULT '0',
+  `template_subject` text,
+  `template_message` longtext,
+  `coupon_code` varchar(255) DEFAULT NULL,
+  `coupon_messages` text,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL,
+  `is_deleted` int(11) NOT NULL DEFAULT '0',
+  `send_mail_duration` varchar(10) DEFAULT '1',
+  `send_mail_duration_time_type` varchar(10) DEFAULT 'mins' COMMENT 'mins,hours,days',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 ;";
+        foreach($sql as $singleSql){
+            $wpdb->query($singleSql);
+        }
     }
 
     public static function deactivatePlugin(){
-        /*
-         * Todo:
-         * */
         self::deactivateCron();
     }
 
@@ -367,7 +421,7 @@ class WpsWcAFRFns{
             if(!empty($templateFor)){
                 $tmc = self::addAbandonedTime($activeRow['last_active_cart_added']);
                 $nw = date('Y-m-d H:i:s');
-                $query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  ( (`send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)) OR (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)<10 ) AND `template_status` = '1' ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
+                $query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `".$wpdb->prefix."wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  ( (`send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)) OR (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)<10 ) AND `template_status` = '1' ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
                 //$query = "SELECT *, TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') as minutes_from_last_status FROM `wp_wps_wcafr_templates` WHERE `send_mail_duration_in_minutes` >".$lastMailedForMinutes." AND `template_for` = '".$templateFor."' AND `send_mail_duration_in_minutes` <= TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') AND  `send_mail_duration_in_minutes` > (TIMESTAMPDIFF(MINUTE, '".$tmc."', '".$nw."') - 15)  ORDER BY `send_mail_duration_in_minutes` ASC LIMIT 1 ";
 
                 //self::debugLog("".$query);
@@ -387,7 +441,7 @@ class WpsWcAFRFns{
         $details = array();
 
         if(!empty($forWpsId)){
-            $query = "SELECT *  FROM `".$wpdb->prefix."wps_wcafr_mail_log` WHERE `wp_wps_id` = '".$forWpsId."' AND `is_deleted` = '0' ORDER BY `created` DESC LIMIT 1";
+            $query = "SELECT *  FROM `".$wpdb->prefix."wps_wcafr_mail_log` WHERE `".$wpdb->prefix."wps_id` = '".$forWpsId."' AND `is_deleted` = '0' ORDER BY `created` DESC LIMIT 1";
             $results = $wpdb->get_results($query, ARRAY_A );
             if(!empty($results['0'])){
                 $details = $results['0'];
@@ -625,7 +679,7 @@ class WpsWcAFRFns{
 
         $settings = self::getSettings();
 
-        $query = "SELECT  *, TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') as minutes_from_last_status FROM `wp_wps_wcafr` WHERE `status` != 'deleted'  AND `status` != 'recovered'  AND `status` != 'order_processing' AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') >= '".$settings['abandoned_time_in_minutes']."'";
+        $query = "SELECT  *, TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') as minutes_from_last_status FROM `".$wpdb->prefix."wps_wcafr` WHERE `status` != 'deleted'  AND `status` != 'recovered'  AND `status` != 'order_processing' AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') >= '".$settings['abandoned_time_in_minutes']."'";
         //self::debugLog($query);
         self::debugLog($query);
         $results = $wpdb->get_results($query, ARRAY_A);

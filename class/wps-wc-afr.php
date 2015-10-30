@@ -166,7 +166,7 @@ class WpsWcAFR{
         $isExist = false;
 
         if(!empty($userId)){
-            $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(SECOND, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=10 AND `status` = 'order_created' AND `user_id` = '".$userId."' ";
+            $q = "SELECT * FROM `".$wpdb->prefix."wps_wcafr` WHERE  TIMESTAMPDIFF(SECOND, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=10 AND `status` = 'order_created' AND `user_id` = '".$userId."' ";
             $results = $wpdb->get_results($q);
             if(!empty($results)){
                 $isExist = true;
@@ -187,7 +187,7 @@ class WpsWcAFR{
         $mdFiveLastWC = md5($wcActiveCartSession['wc_session_data_serialized']);
 
         if(!empty($userId)){
-            $q = "SELECT * FROM `wp_wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=15 AND ( `status` = 'order_created' OR `status` = 'order_cancelled' ) AND MD5(`wc_session_data`) = '".$mdFiveLastWC."'  AND `user_id` = '".$userId."' ";
+            $q = "SELECT * FROM `".$wpdb->prefix."wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=15 AND ( `status` = 'order_created' OR `status` = 'order_cancelled' ) AND MD5(`wc_session_data`) = '".$mdFiveLastWC."'  AND `user_id` = '".$userId."' ";
             $results = $wpdb->get_results($q);
             if(!empty($results)){
                 $isExist = true;
@@ -477,7 +477,7 @@ class WpsWcAFR{
 			'coupon_messages'=>''
 		);
 		if(!empty($template_id) && $template_id > 0){
-			$S_Query = "SELECT * FROM wp_wps_wcafr_templates WHERE id = '$template_id' and is_deleted = '0'";
+			$S_Query = "SELECT * FROM ".$wpdb->prefix."wps_wcafr_templates WHERE id = '$template_id' and is_deleted = '0'";
 			$temp = $wpdb -> get_row($S_Query, ARRAY_A);
 			if(!empty($temp)){
 				$templateData = $temp;
@@ -497,7 +497,7 @@ class WpsWcAFR{
         );
 		if(isset($data) && !empty($data)){
 			
-			$table_t = "wp_wps_wcafr_templates";
+			$table_t = "".$wpdb->prefix."wps_wcafr_templates";
 			$data_t = array();
 			$format_t = array();
 						

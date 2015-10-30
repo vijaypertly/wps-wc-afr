@@ -150,9 +150,9 @@
 	function getTemplateNames($id = 0){
 		global $wpdb;
 		$result = array();
-		$S_Query = "SELECT id,template_name FROM wp_wps_wcafr_templates WHERE is_deleted = '0'";
+		$S_Query = "SELECT id,template_name FROM ".$wpdb->prefix."wps_wcafr_templates WHERE is_deleted = '0'";
 		if(is_numeric($id) && $id > 0){
-			$S_Query = "SELECT id,template_name FROM wp_wps_wcafr_templates WHERE id = '$id' and is_deleted = '0'";			
+			$S_Query = "SELECT id,template_name FROM ".$wpdb->prefix."wps_wcafr_templates WHERE id = '$id' and is_deleted = '0'";
 		}
 		$temp = $wpdb -> get_results($S_Query, ARRAY_A);
 		if(!empty($temp)){
@@ -165,9 +165,9 @@
 	function getSendToUser($id = 0){
 		global $wpdb;
 		$result = array();
-		$S_Query = "SELECT DISTINCT(user_id) FROM wp_wps_wcafr";
+		$S_Query = "SELECT DISTINCT(user_id) FROM ".$wpdb->prefix."wps_wcafr";
 		if(is_numeric($id) && $id > 0){
-			$S_Query = "SELECT user_id FROM wp_wps_wcafr WHERE user_id = '$id'";			
+			$S_Query = "SELECT user_id FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '$id'";
 		}
 		$result[0] = "All";
 		$temp = $wpdb -> get_results($S_Query, ARRAY_A);
