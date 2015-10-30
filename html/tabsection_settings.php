@@ -53,6 +53,15 @@
 						<input type="email" id="admin_email" name="data[admin_email]" value="<?php if (isset($data['admin_email']) && !empty($data['admin_email'])){ echo $data['admin_email']; } ?>"  required>
 					</td>
 				</tr>
+
+				<tr class="form-field form-required">
+					<th scope="row">
+						<label for="cart_url">Cart Url<span class="description">(required)</span></label>
+					</th>
+					<td>
+						<input type="url" id="cart_url" name="data[cart_url]" value="<?php if (isset($data['cart_url']) && !empty($data['cart_url'])){ echo $data['cart_url']; } ?>"  required>
+					</td>
+				</tr>
 				
 				<tr class="form-field form-required">
 					<th scope="row">

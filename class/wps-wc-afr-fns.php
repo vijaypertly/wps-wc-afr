@@ -34,6 +34,7 @@ class WpsWcAFRFns{
                 'cron_time_in_minutes'=> 15,
                 'abandoned_time_in_minutes'=> 15,
                 'consider_un_recovered_order_after_minutes'=> 2*24*60,
+                'cart_url'=> get_site_url(),
             );
             $settings = $settings;
         }
@@ -424,6 +425,10 @@ class WpsWcAFRFns{
 
                     $wpsProductDetails = self::wpsProductDetails($arrParams['wps_row_id']);
 
+                    $settings = self::getSettings();
+
+                    $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+
                     $arrReplace = array(
                         '0'=>array(
                             'replace_match'=>'{wps.first_name}',
@@ -449,6 +454,14 @@ class WpsWcAFRFns{
                             'replace_match'=>"\n",
                             'replace_value'=>"<br />",
                         ),
+                        '6'=>array(
+                            'replace_match'=>"{wps.cart_url}",
+                            'replace_value'=>$cartUrl,
+                        ),
+                        '7'=>array(
+                            'replace_match'=>"{wps.order_id}",
+                            'replace_value'=>$rowDetails['order_id'],
+                        ),
                     );
 
                     $templateSubject = self::replaceTemplateMess($templateDetails['template_subject'], $arrReplace);
@@ -467,8 +480,14 @@ class WpsWcAFRFns{
                         'replace_arr'=>$arrReplace,
                     );
 
+
                     $layout = WpsWcAFR::getHtml('_mail_template_default');
                     $templateMessage = str_ireplace('__MESSAGE__', $templateMessage, $layout);
+                    $templateMessage = str_ireplace('__SITE_TITLE__', get_bloginfo('name'), $templateMessage);
+                    $templateMessage = str_ireplace('__SITE_DESCRIPTION__', get_bloginfo('description'), $templateMessage);
+                    $templateMessage = str_ireplace('__SITE_URL__', get_bloginfo('url'), $templateMessage);
+                    //$templateMessage = str_ireplace('__LOGO_URL__', $templateMessage, $templateMessage);
+                    //echo $templateMessage; exit;
 
                     if(!empty($templateMessage)){
                         $wpdb->insert(
