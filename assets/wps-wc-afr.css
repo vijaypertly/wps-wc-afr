@@ -13,8 +13,8 @@
 	width: 100% !important;
 }
 .table tr th {
-	border:1px solid #d7d7d7;
-	background: linear-gradient(to bottom, #D7D7D7 0%, #FFFFFF 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+	border:1px solid #a3a2a0;
+	background: #a3a2a0;
 	text-align: left;
 	padding:4px;
 }
@@ -147,4 +147,51 @@
 	left: 0;
 	right: 0;
 	background-color: rgba(241, 241, 241, 0.67);
+}
+.nav-tab-wrapper a{
+    cursor: pointer;
+}
+.complete-wrap input[type=submit]{
+    cursor: pointer;
+}
+
+.vespseclk, .wps-btn{
+    padding: 5px;
+    border-radius: 0;
+    cursor: pointer;
+    color: #ffffff;
+}
+.vespseclk:hover, .wps-btn:hover{
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+.vespseclk{
+    background: #00a0d2;
+    color: #ffffff;
+    border: 1px solid #00a0d2;
+}
+
+.wps-btn-blue{
+    background: #00a0d2;
+    color: #ffffff;
+    border: 1px solid #00a0d2;
+}
+
+.wps-btn-grey{
+    background: #333333;
+    color: #ffffff;
+    border: 1px solid #333333;
+}
+.dvb_filters div.sing_filter{
+    width: 100%;
+    float: left;
+    padding-bottom: 1px;
+}
+.dvb_filters .dvb_filter_label{
+    float: left;
+    width: 250px;
+}
+.dvb_filters .dvb_filter_field{
+    float: left;
 }

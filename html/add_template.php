@@ -183,14 +183,14 @@
 				
 		</table>
 		<p class="submit">
-			<button class="button button-primary js-add-template" type="submit">
+			<button class=" js-add-template wps-btn wps-btn-blue" type="submit">
 				<?php if(isset($data['id']) && $data['id'] > 0){?> 
 					<span class="text">Update</span>
 				<?php }else{?> 
 					<span class="text">Add New template</span>
 				<?php }?> 
 			</button>
-			<button class="button button-secondary js-cancel-template" type="button">
+			<button class="wps-btn wps-btn-grey js-cancel-template" type="button">
 				<span class="text">Cancel</span>
 			</button>
 		</p>

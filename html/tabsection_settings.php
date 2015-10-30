@@ -89,7 +89,7 @@
 			</tbody>
 		</table>
 		<p class="submit">
-			<button class="button button-primary" type="submit">
+			<button class="wps-btn wps-btn-blue" type="submit">
 				<span class="text">Update</span>
 			</button>
 		</p>
