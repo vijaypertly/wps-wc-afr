@@ -62,8 +62,8 @@ class ExitIntent{
 				jQuery(document).ready(function() {
                     var _ouibounce = ouibounce(document.getElementById("ouibounce-modal"),{
                         aggressive: true, //Making this true makes ouibounce not to obey "once per visitor" rule
+                        timer: 0
                     });
-                    
 					jQuery("#exit-intent-form").validate({
 						rules: {
 							email: {
