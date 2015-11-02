@@ -22,6 +22,10 @@ class ExitIntent{
 	}
 	// Exit Intent Modal
 	public function ouibounceModal(){
+        $mobileDetect = new Mobile_Detect();
+        if($mobileDetect->isMobile() || $mobileDetect->isTablet()){
+            return '';
+        }
 		$str = '';	
 		$opts = get_option('wps_wc_afr_settings');
 		if( !empty($opts['exit_intent_title']) ){
