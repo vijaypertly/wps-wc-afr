@@ -1,5 +1,6 @@
 <?php
 include_once('../../../../../wp-load.php');
+$_POST['email'] = !empty($_POST['email'])?$_POST['email']:'';
 $email = trim($_POST['email']);
 $msg = array();
 if( !email_exists( $email ) && is_email($email) ){

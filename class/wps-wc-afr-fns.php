@@ -81,7 +81,6 @@ class WpsWcAFRFns{
         $settings = get_option('wps_wc_afr_settings');
         if(empty($settings)){
             $settings = array(
-                /*'enable_cron'=> false,*/
                 'enable_cron'=> true,
                 'send_mail_to_admin_after_recovery'=> true,
                 'admin_email'=> get_option( 'admin_email' ),
@@ -91,8 +90,15 @@ class WpsWcAFRFns{
                 'consider_un_recovered_order_after'=> 2,
                 'consider_un_recovered_order_after_time_type'=> 'days',
                 'cart_url'=> get_site_url(),
+                'exit_intent_title'=> 'Are you sure to leave site?',
+                'exit_intent_description'=> '',
             );
-            $settings = $settings;
+
+            if (FALSE === get_option('wps_wc_afr_settings') && FALSE === update_option('wps_wc_afr_settings',FALSE)){
+                add_option('wps_wc_afr_settings',$settings);
+            }else{
+                update_option('wps_wc_afr_settings',$settings);
+            }
         }
 
         return $settings;
@@ -845,7 +851,7 @@ class WpsWcAFRFns{
     }
 
     public static function debugLog($mess = ''){
-        $isDebug = true;
+        $isDebug = false;
         if($isDebug){
             if(empty(self::$logFile)){
                 self::$logFile = 'cron_'.date('Y-m-d_H-i-s');

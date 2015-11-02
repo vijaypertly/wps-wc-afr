@@ -14,6 +14,9 @@
 			//'consider_un_recovered_order_after_minutes'=> 2*24*60,
 			'consider_un_recovered_order_after'=> '2',
 			'consider_un_recovered_order_after_time_type'=> 'days',
+			'consider_un_recovered_order_after_time_type'=> 'days',
+			'exit_intent_title'=> '',
+			'exit_intent_description'=> '',
 		);
 	}
 	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
@@ -50,6 +53,23 @@
 				</tr>
 				
 				<tr class="form-field form-required">
+					<th scope="row">
+						<label for="exit_intent_title">Exit intend Text</label>
+					</th>
+					<td>
+						<input type="text" id="exit_intent_title" name="data[exit_intent_title]" value="<?php if (isset($data['exit_intent_title']) && !empty($data['exit_intent_title'])){ echo $data['exit_intent_title']; } ?>" >
+					</td>
+				</tr>
+<tr class="form-field form-required">
+					<th scope="row">
+						<label for="exit_intent_description">Exit intend Description</label>
+					</th>
+					<td>
+						<input type="text" id="exit_intent_description" name="data[exit_intent_description]" value="<?php if (isset($data['exit_intent_description']) && !empty($data['exit_intent_description'])){ echo $data['exit_intent_description']; } ?>" >
+					</td>
+				</tr>
+
+<tr class="form-field form-required">
 					<th scope="row">
 						<label for="admin_email">Admin Email<span class="description">(required)</span></label>
 					</th>

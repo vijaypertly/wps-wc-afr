@@ -23,11 +23,17 @@ class ExitIntent{
 	// Exit Intent Modal
 	public function ouibounceModal(){
 		$str = '';	
-		$opts = get_option('wps_wc_ei_settings');
-		if( !empty($opts['wps-ei-title']) ){
-			$title = esc_html($opts['wps-ei-title']);
+		$opts = get_option('wps_wc_afr_settings');
+		if( !empty($opts['exit_intent_title']) ){
+			$title = esc_html($opts['exit_intent_title']);
 		}else{
-			$title = "Exit Intent"	;
+			$title = "Are you sure to leave site?"	;
+		}
+
+		if( !empty($opts['exit_intent_description']) ){
+			$description = $opts['exit_intent_description'];
+		}else{
+            $description = ""	;
 		}
 			
 		if ( WC()->cart->get_cart_contents_count() != 0 && !is_user_logged_in()  ) {			
@@ -37,11 +43,14 @@ class ExitIntent{
 			$str .= '<div class="modal-title"><h3>'.$title.'</h3></div>';
 			$str .= '<div class="modal-body">';
 			//$str .= '<p>Thanks for shopping by!</p>';
+            if(!empty($description)){
+			    $str .= '<p class="ei-description">'.$description.'</p>';
+            }
 			$str .= '<form action="" method="post" id="exit-intent-form" name="exit-intent-form">';
-			$str .= '<input type="text" name="email" placeholder="you@email.com">';
-			$str .= '<input type="submit" value="register &raquo;">';
-			$str .= '<img id="wps-loading" src="'.plugins_url("/wps-wc-afr/assets/wpspin_light.gif").'" style="display:none;">';
-			$str .= '<p class="form-notice"></p>';
+            $str .= '<p class="form-notice"></p>';
+			$str .= '<div class="ei-inpt-bx-holder"><input type="text" name="email" placeholder="you@email.com"></div>';
+			$str .= '<div class="ei-btn-bx-holder ei-btn-register"><input type="submit" value="register &raquo;"></div>';
+			$str .= '<img id="wps-loading-ei" src="'.plugins_url("/wps-wc-afr/assets/wpspin_light.gif").'" style="display:none;">';
 			$str .= '</form>';
 			$str .= '</div>';
 			$str .= '<div class="modal-footer">';
@@ -65,8 +74,9 @@ class ExitIntent{
 							email: "Please enter a valid email address"
 						},
 						submitHandler: function(form) {
-							jQuery("#wps-loading").show();
-							var redirecturl = window.location.href; 
+							jQuery(".ei-btn-register").hide();
+							jQuery("#wps-loading-ei").show();
+							var redirecturl = window.location.href;
 							jQuery.ajax({
 								type: "post",
 								url: "'.plugins_url("/wps-wc-afr/includes/ajax/exit-intent.php").'",
@@ -75,14 +85,15 @@ class ExitIntent{
 									rs = JSON.parse(res);
 									if( rs.error != "" && rs.error != undefined ){ 
 										jQuery(".form-notice").removeClass("success").addClass("error");
-										jQuery(".form-notice").html(rs.error);	
+										jQuery(".form-notice").html(rs.error);
+										jQuery(".ei-btn-register").show();
 									}
 									if( rs.success != "" && rs.success != undefined ){ 
 										jQuery(".form-notice").removeClass("error").addClass("success");
 										jQuery(".form-notice").html(rs.success);
 										window.location=redirecturl;	
 									}
-									jQuery("#wps-loading").hide();								  
+									jQuery("#wps-loading-ei").hide();
 								}
 							  });
 						 }

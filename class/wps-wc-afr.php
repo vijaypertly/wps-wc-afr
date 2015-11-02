@@ -358,7 +358,7 @@ class WpsWcAFR{
     }
 
     public static function debugLog($mess = ''){
-        $isDebug = true;
+        $isDebug = false;
         if($isDebug){
             if(empty(self::$logFile)){
                 self::$logFile = date('Y-m-d_H-i-s');
