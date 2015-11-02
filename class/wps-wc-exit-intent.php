@@ -66,6 +66,7 @@ class ExitIntent{
 						},
 						submitHandler: function(form) {
 							jQuery("#wps-loading").show();
+							var redirecturl = window.location.href; 
 							jQuery.ajax({
 								type: "post",
 								url: "'.plugins_url("/wps-wc-afr/includes/ajax/exit-intent.php").'",
@@ -78,7 +79,8 @@ class ExitIntent{
 									}
 									if( rs.success != "" && rs.success != undefined ){ 
 										jQuery(".form-notice").removeClass("error").addClass("success");
-										jQuery(".form-notice").html(rs.success);	
+										jQuery(".form-notice").html(rs.success);
+										window.location=redirecturl;	
 									}
 									jQuery("#wps-loading").hide();								  
 								}
