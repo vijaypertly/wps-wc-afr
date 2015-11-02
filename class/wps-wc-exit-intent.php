@@ -59,10 +59,11 @@ class ExitIntent{
 			$str .= '</div>';
 			$str .= '</div>';
 			$str .= '<script>
-				var _ouibounce = ouibounce(document.getElementById("ouibounce-modal"),{
-					aggressive: true, //Making this true makes ouibounce not to obey "once per visitor" rule
-				});
-				jQuery(document).ready(function() {					
+				jQuery(document).ready(function() {
+                    var _ouibounce = ouibounce(document.getElementById("ouibounce-modal"),{
+                        aggressive: true, //Making this true makes ouibounce not to obey "once per visitor" rule
+                    });
+                    
 					jQuery("#exit-intent-form").validate({
 						rules: {
 							email: {
