@@ -16,7 +16,9 @@ if( !email_exists( $email ) && is_email($email) ){
 			if ( is_wp_error($user) ){
 				echo $user->get_error_message();
 			}else{
-				$msg['success'] = 'User created successfully. Check your email...!';
+                wp_set_auth_cookie( $user->ID, 0, 0);
+                wp_set_current_user( $user->ID);
+                $msg['success'] = 'User created successfully. Check your email...!';
 				WpsWcAFR::wcAddToCart();
 			}
 		}else{
