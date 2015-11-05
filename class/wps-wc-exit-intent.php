@@ -31,13 +31,13 @@ class ExitIntent{
 		if( !empty($opts['exit_intent_title']) ){
 			$title = esc_html($opts['exit_intent_title']);
 		}else{
-			$title = "Are you sure to leave site?"	;
+			$title = "Did you forget something?";
 		}
 
 		if( !empty($opts['exit_intent_description']) ){
 			$description = $opts['exit_intent_description'];
 		}else{
-            $description = ""	;
+            $description = "Come back to our store now and get 10% off the items left in your shopping cart, Simply click the button below to redeem your discount and complete your purchase.";
 		}
 			
 		if ( WC()->cart->get_cart_contents_count() != 0 && !is_user_logged_in()  ) {			
@@ -53,7 +53,7 @@ class ExitIntent{
 			$str .= '<form action="" method="post" id="exit-intent-form" name="exit-intent-form">';
             $str .= '<p class="form-notice"></p>';
 			$str .= '<div class="ei-inpt-bx-holder"><input type="text" name="email" placeholder="you@email.com"></div>';
-			$str .= '<div class="ei-btn-bx-holder ei-btn-register"><input type="submit" value="register &raquo;"></div>';
+			$str .= '<div class="ei-btn-bx-holder ei-btn-register"><input type="submit" value="Get Coupon &raquo;"></div>';
 			$str .= '<img id="wps-loading-ei" src="'.plugins_url("/wps-wc-afr/assets/wpspin_light.gif").'" style="display:none;">';
 			$str .= '</form>';
 			$str .= '</div>';

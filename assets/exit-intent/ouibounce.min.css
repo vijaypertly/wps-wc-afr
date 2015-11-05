@@ -58,7 +58,7 @@
 }
 #ouibounce-modal form {
     text-align: center;
-    margin-top: 35px
+    margin-top: 15px
 }
 #ouibounce-modal form input[type=text] {
     padding: 12px;
@@ -202,12 +202,13 @@
     z-index: 9999;
 }
 #exit-intent-form{
-    margin-left: 40px;
+    /*margin-left: 40px;*/
 }
 #wps-loading-ei{
     float: left;
     margin: 20px;
 }
 .ei-description{
-
+    margin-top: 10px;
+    text-align: justify;
 }

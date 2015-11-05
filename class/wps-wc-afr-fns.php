@@ -576,7 +576,6 @@ class WpsWcAFRFns{
 
     public static function wpsProductDetails($wpsId = 0){
         $html = '';
-        return '';
         if(!empty($wpsId)){
             $rowDetails = self::rowDetails($wpsId);
             if(!empty($rowDetails['wc_session_data'])){
@@ -584,8 +583,19 @@ class WpsWcAFRFns{
                 if(!empty($wcSessionData['cart'])){
                     $cartContents = maybe_unserialize($wcSessionData['cart']);
                     if(!empty($cartContents)){
+                        $html .= '
+                            <table>
+                            <tr>
+                                <td>Product</td>
+                                <td>Price</td>
+                                <td>Quantity</td>
+                                <td>Total</td>
+                            </tr>
+                        ';
                         foreach($cartContents as $cart){
                             if(!empty($cart['product_id'])){
+                                $html .= self::_buildProductRow($cart);
+                                //echo $cart['product_id']."<br />";
                                 /*self::debugLog("Cart START INDV data ----- ");
                                 $crtCls = new WC_Cart();
                                 $wcPrdSimp = new WC_Product_Simple($cart['product_id']);
@@ -598,6 +608,35 @@ class WpsWcAFRFns{
                                 self::debugLog("Cart END INDV data ----- ");*/
                             }
                         }
+
+
+                        $shippingDetail =empty($wcSessionData['shipping_total'])?'Free':$wcSessionData['shipping_total'];
+                        $couponDetail =!empty($wcSessionData['discount_cart'])?'<tr><td>Discount</td><td>'.$wcSessionData['discount_cart'].'</td></tr>':'';
+                        $cartTotals = '
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Cart Totals</th>
+                                    </tr>
+                                </thead>
+                                <tr>
+                                    <td>Shipping</td> <td>'.$shippingDetail.'</td>
+                                </tr>
+                                '.$couponDetail.'
+                                <tr>
+                                    <td>Total</td> <td>'.$wcSessionData['total'].'</td>
+                                </tr>
+                            </table>
+                        ';
+
+                        $html .= '
+                            <tr>
+                                <td colspan="2">&nbsp;</td>
+                                <td colspan="2">'.$cartTotals.'</td>
+                            </tr>
+                            </table>
+                        ';
+
                     }
                     self::debugLog("Cart session data ----- ");
                     self::debugLog(json_encode($cartContents));
@@ -609,6 +648,45 @@ class WpsWcAFRFns{
 
         return $html;
     }
+
+    private static function _buildProductRow($cart = array()){
+        $html = '';
+        if(!empty($cart['product_id'])){
+            $productDetails = get_post($cart['product_id'], ARRAY_A);
+            if(!empty($productDetails['post_title'])){
+                if(!empty($cart['variation_id'])){
+                    $_product = new WC_Product( $cart['variation_id'] );
+                }
+                else{
+                    $_product = new WC_Product( $cart['product_id'] );
+                }
+
+                $imageSrc = wp_get_attachment_image_src( get_post_thumbnail_id($cart['product_id']),'thumbnail' , true);
+
+                $imageSrcHtml = !empty($imageSrc['0'])?'<img src="'.$imageSrc['0'].'" width="60" >':'-';
+
+                $html .= '
+                    <tr>
+                        <td>'.$imageSrcHtml.''.mb_strimwidth($productDetails['post_title'], 0, 45, "...").'</td>
+                        <td>'.($_product->get_price_html()).'</td>
+                        <td>'.($cart['quantity']).'</td>
+                        <td>'.wc_price($cart['line_subtotal']).'</td>
+                    </tr>
+                ';
+            }
+        }
+
+        return $html;
+    }
+
+    /*private static function get_variation_data_from_variation_id( $item_id ) {
+        $_product = new WC_Product_Variation( $item_id );
+        $variation_data = $_product->get_variation_attributes();
+        $variation_detail = wc_get_formatted_variation( $variation_data, true );  // this will give all variation detail in one line
+        // $variation_detail = woocommerce_get_formatted_variation( $variation_data, false);  // this will give all variation detail one by one
+        return $variation_detail; // $variation_detail will return string containing variation detail which can be used to print on website
+        // return $variation_data; // $variation_data will return only the data which can be used to store variation data
+    }*/
 
     private static function replaceTemplateMess($templateMessage = '', $arrReplace = array()){
         if(!empty($arrReplace)){
