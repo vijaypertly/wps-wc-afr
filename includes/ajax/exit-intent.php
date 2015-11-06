@@ -20,7 +20,8 @@ if( !email_exists( $email ) && is_email($email) ){
                 wp_set_auth_cookie( $user->ID, 0, 0);
                 wp_set_current_user( $user->ID);
                 $msg['success'] = 'User created successfully. Check your email...!';
-				WpsWcAFR::wcAddToCart();
+                add_action('after_new_wps_record', array('WpsWcAFRFns', 'sendCustomMailAfterGuestRegister'));
+                WpsWcAFR::wcAddToCart();
 			}
 		}else{
 			$msg['error'] = 'Notification not exists';

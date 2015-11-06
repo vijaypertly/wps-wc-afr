@@ -659,6 +659,8 @@ class WpsWcAFRFns{
                             </table>
                         ';*/
 
+                        $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+
                         $arrReplace = array(
                             '0'=>array(
                                 'replace_match'=>'__PRODUCT_ROWS__',
@@ -667,6 +669,10 @@ class WpsWcAFRFns{
                             '1'=>array(
                                 'replace_match'=>'__CART_TOTALS__',
                                 'replace_value'=>$cartTotalsHt,
+                            ),
+                            '2'=>array(
+                                'replace_match'=>'{wps.cart_url}',
+                                'replace_value'=>$cartUrl,
                             ),
                         );
 
@@ -997,6 +1003,118 @@ class WpsWcAFRFns{
                     'is_user_read' => 0
                 )
             );
+        }
+    }
+
+    public static function sendCustomMailAfterGuestRegister($wpsId = 0){
+        global $wpdb;
+
+        $wpsProductDetails = self::wpsProductDetails($wpsId);
+        if(!empty($wpsProductDetails)){
+
+            $rowDetails = self::rowDetails($wpsId);
+            $settings = self::getSettings();
+
+            $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+
+            $userDetails = (!empty($rowDetails['user_id']))?self::getUserDetails($rowDetails['user_id']):array();
+            $userFirstName = !empty($userDetails['first_name']['0'])?$userDetails['first_name']['0']:'';
+            $userLastName = !empty($userDetails['last_name']['0'])?$userDetails['last_name']['0']:'';
+
+            $userEmail = $rowDetails['user_email'];
+
+            $couponMess = '';
+
+            $wpdb->insert(
+                $wpdb->prefix.'wps_wcafr_mail_log',
+                array(
+                    'created' => date('Y-m-d H:i:s'),
+                    'mail_status' => 0,
+                    'is_deleted' => 0,
+                )
+            );
+            $mId = $wpdb->insert_id;
+
+            $arrReplace = array(
+                '0'=>array(
+                    'replace_match'=>'{wps.first_name}',
+                    'replace_value'=>$userFirstName,
+                ),
+                '1'=>array(
+                    'replace_match'=>'{wps.last_name}',
+                    'replace_value'=>$userLastName,
+                ),
+                '2'=>array(
+                    'replace_match'=>'{wps.email}',
+                    'replace_value'=>$userEmail,
+                ),
+                '3'=>array(),
+                '4'=>array(
+                    'replace_match'=>'{wps.coupon_details}',
+                    'replace_value'=>$couponMess,
+                ),
+                '5'=>array(
+                    'replace_match'=>"\n",
+                    'replace_value'=>"<br />",
+                ),
+                '6'=>array(
+                    'replace_match'=>'{wps.product_details}',
+                    'replace_value'=>$wpsProductDetails,
+                ),
+                '7'=>array(
+                    'replace_match'=>"{wps.cart_url}",
+                    'replace_value'=>$cartUrl,
+                ),
+                '8'=>array(
+                    'replace_match'=>"{wps.order_id}",
+                    'replace_value'=>$rowDetails['order_id'],
+                ),
+            );
+
+            $params = array(
+                'replace_arr'=>$arrReplace,
+            );
+
+            $blogUrl = get_bloginfo('url');
+
+            $subjectVal = 'Exclusive coupon for your order';
+            $messageVal = '
+            We are very happy to serve you and please use the following exclusive gift coupon for your upcoming order and get 10% discount on your order.
+            {wps.product_details}
+            {wps.coupon_details}
+            ';
+            $templateSubject = self::replaceTemplateMess($subjectVal, $arrReplace);
+            $templateMessage = self::replaceTemplateMess($messageVal, $arrReplace);
+
+
+            $layout = WpsWcAFR::getHtml('mail/_mail_template_guest_intent_default');
+            $templateMessage = str_ireplace('__MESSAGE__', $templateMessage, $layout);
+            $templateMessage = str_ireplace('__SITE_TITLE__', get_bloginfo('name'), $templateMessage);
+            $templateMessage = str_ireplace('__SITE_DESCRIPTION__', get_bloginfo('description'), $templateMessage);
+            $templateMessage = str_ireplace('__SITE_URL__', $blogUrl, $templateMessage);
+            $templateMessage = str_ireplace('__MID__', $mId, $templateMessage);
+
+            if(!empty($templateMessage)){
+                $wpdb->update(
+                    $wpdb->prefix.'wps_wcafr_mail_log',
+                    array(
+                        'wp_wps_id' => $wpsId,
+                        'template_id' => 0,
+                        'subject' => $templateSubject,
+                        'message' => $templateMessage,
+                        'send_to_email' => $userEmail,
+                        'params' => json_encode($params),
+                        'created' => date('Y-m-d H:i:s'),
+                        'mail_status' => 0,
+                        'is_deleted' => 0,
+                    ),
+                    array(
+                        'id'=>$mId,
+                    )
+                );
+            }
+            //echo $templateSubject; echo $templateMessage; exit;
+            self::processMailQueue();
         }
     }
 }

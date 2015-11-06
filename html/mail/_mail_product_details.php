@@ -16,8 +16,12 @@
             </td>
         </tr>
         <tr>
-            <td colspan="3">&nbsp;</td>
-            <td colspan="2">__CART_TOTALS__</td>
+            <td colspan="2">&nbsp;</td>
+            <td colspan="3">__CART_TOTALS__</td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+            <td colspan="3" style="text-align:right"><a href="{wps.cart_url}" style="background:#f0b20a; padding: 10px; text-decoration: none; color: #FFFFFF; text-align: center; display: inline-block; width: 200px">Proceed to checkout</a></td>
         </tr>
     </tbody>
 </table>

@@ -144,6 +144,10 @@ class WpsWcAFR{
                                 '%s',
                             )
                         );
+
+                        $wpsId = $wpdb->insert_id;
+
+                        do_action('after_new_wps_record', $wpsId);
                     }
                 }
                 else{
