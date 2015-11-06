@@ -229,15 +229,18 @@ class WpsWcAFRFns{
             $isSent = true;
             $headers = array('Content-Type: text/html; charset=UTF-8');
 
+            if(self::getDomainFromEmail($arrParams['to']) =='mailinator.com'){
+                wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
+            }
 
             $arrParams['to'] = 'vijay+wpsplugintest@pertly.co.in';
-
-
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
+
             if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
                 wp_mail( 'mohankumar+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
                 wp_mail( 'balamurugan+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
             }
+
         }
 
         return $isSent;
@@ -597,6 +600,7 @@ class WpsWcAFRFns{
         $html = '';
         if(!empty($wpsId)){
             $rowDetails = self::rowDetails($wpsId);
+            $settings = self::getSettings();
             if(!empty($rowDetails['wc_session_data'])){
                 $wcSessionData = maybe_unserialize($rowDetails['wc_session_data']);
                 if(!empty($wcSessionData['cart'])){
@@ -636,6 +640,9 @@ class WpsWcAFRFns{
 
                         $shippingDetail =empty($wcSessionData['shipping_total'])?'Free':wc_price($wcSessionData['shipping_total']);
                         $couponDetail =!empty($wcSessionData['discount_cart'])?'<tr><td>Discount</td><td>'.wc_price($wcSessionData['discount_cart']).'</td></tr>':'';
+
+                        $wcTotalAmt = !empty($wcSessionData['total'])?$wcSessionData['total']:$wcSessionData['cart_contents_total'];
+
                         $cartTotalsHt .= '
                             <table width="100%" cellpadding="5%">
                                 <thead>
@@ -648,7 +655,7 @@ class WpsWcAFRFns{
                                 </tr>
                                 '.$couponDetail.'
                                 <tr>
-                                    <td>Total</td> <td>'.wc_price($wcSessionData['total']).'</td>
+                                    <td>Total</td> <td>'.wc_price($wcTotalAmt).'</td>
                                 </tr>
                             </table>
                         ';
@@ -1127,6 +1134,15 @@ class WpsWcAFRFns{
             //echo $templateSubject; echo $templateMessage; exit;
             self::processMailQueue();
         }
+    }
+
+    public static function getDomainFromEmail($email = ""){
+        $domain = "";
+        if(!empty($email)){
+            $domain = substr(strrchr($email, "@"), 1);
+        }
+
+        return $domain;
     }
 }
 
