@@ -7,6 +7,8 @@
 		$data = array(
 			'enable_cron'=> true,
 			'send_mail_to_admin_after_recovery'=> true,
+			'exit_intent_is_send_coupon'=> false,
+			'exit_intent_coupon'=> "",
 			'admin_email'=> get_option( 'admin_email' ),
 			'cart_url'=> get_site_url(),
 			'cron_time_in_minutes'=> 15,
@@ -66,6 +68,24 @@
 					</th>
 					<td>
 						<input type="text" id="exit_intent_description" name="data[exit_intent_description]" value="<?php if (isset($data['exit_intent_description']) && !empty($data['exit_intent_description'])){ echo $data['exit_intent_description']; } ?>" >
+					</td>
+				</tr>
+
+<tr class="form-field form-required">
+					<th scope="row">
+						<label for="exit_intent_is_send_coupon">Exit intend send coupon mail</label>
+					</th>
+					<td>
+                        <input type="checkbox" id="exit_intent_is_send_coupon" name="data[exit_intent_is_send_coupon]" value="true" <?php if (isset($data['exit_intent_is_send_coupon']) && $data['exit_intent_is_send_coupon']){ echo " checked"; } ?>>
+					</td>
+				</tr>
+
+<tr class="form-field form-required">
+					<th scope="row">
+						<label for="exit_intent_is_send_coupon">Exit intend Coupon</label>
+					</th>
+					<td>
+                        <input type="text" id="exit_intent_coupon" name="data[exit_intent_coupon]" value="<?php if (!empty($data['exit_intent_coupon'])){ echo $data['exit_intent_coupon']; } ?>" >
 					</td>
 				</tr>
 

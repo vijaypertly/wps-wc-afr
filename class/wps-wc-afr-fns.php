@@ -83,6 +83,8 @@ class WpsWcAFRFns{
             $settings = array(
                 'enable_cron'=> true,
                 'send_mail_to_admin_after_recovery'=> true,
+                'exit_intent_is_send_coupon'=> false,
+                'exit_intent_coupon'=> "",
                 'admin_email'=> get_option( 'admin_email' ),
                 'cron_time_in_minutes'=> 15,
                 'abandoned_time_in_minutes'=> 15,
@@ -1008,12 +1010,18 @@ class WpsWcAFRFns{
 
     public static function sendCustomMailAfterGuestRegister($wpsId = 0){
         global $wpdb;
+        $settings = self::getSettings();
+
+        if(!$settings['exit_intent_is_send_coupon']){
+            return;
+        }
+
+        $exitIntentCoupon = $settings['exit_intent_coupon'];
 
         $wpsProductDetails = self::wpsProductDetails($wpsId);
         if(!empty($wpsProductDetails)){
 
             $rowDetails = self::rowDetails($wpsId);
-            $settings = self::getSettings();
 
             $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
 
@@ -1024,6 +1032,9 @@ class WpsWcAFRFns{
             $userEmail = $rowDetails['user_email'];
 
             $couponMess = '';
+            if(!empty($exitIntentCoupon)){
+                $couponMess = 'Use this discount code at the checkout - '.$exitIntentCoupon;
+            }
 
             $wpdb->insert(
                 $wpdb->prefix.'wps_wcafr_mail_log',
@@ -1080,8 +1091,8 @@ class WpsWcAFRFns{
             $subjectVal = 'Exclusive coupon for your order';
             $messageVal = '
             We are very happy to serve you and please use the following exclusive gift coupon for your upcoming order and get 10% discount on your order.
-            {wps.product_details}
             {wps.coupon_details}
+            {wps.product_details}
             ';
             $templateSubject = self::replaceTemplateMess($subjectVal, $arrReplace);
             $templateMessage = self::replaceTemplateMess($messageVal, $arrReplace);
