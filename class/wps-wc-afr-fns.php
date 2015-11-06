@@ -470,10 +470,22 @@ class WpsWcAFRFns{
         if(!empty($arrParams['wps_row_id']) && !empty($arrParams['template_id'])){
             $rowDetails = self::rowDetails($arrParams['wps_row_id']);
             if(!empty($rowDetails['user_email'])){
+                $mId = 0;
 
                 $userEmail = $rowDetails['user_email'];
                 $templateDetails = self::templateDetails($arrParams['template_id']);
                 if(!empty($templateDetails)){
+
+                    $wpdb->insert(
+                        $wpdb->prefix.'wps_wcafr_mail_log',
+                        array(
+                            'created' => date('Y-m-d H:i:s'),
+                            'mail_status' => 0,
+                            'is_deleted' => 0,
+                        )
+                    );
+                    $mId = $wpdb->insert_id;
+
                     $userDetails = (!empty($rowDetails['user_id']))?self::getUserDetails($rowDetails['user_id']):array();
                     $userFirstName = !empty($userDetails['first_name']['0'])?$userDetails['first_name']['0']:'';
                     $userLastName = !empty($userDetails['last_name']['0'])?$userDetails['last_name']['0']:'';
@@ -505,10 +517,7 @@ class WpsWcAFRFns{
                             'replace_match'=>'{wps.email}',
                             'replace_value'=>$userEmail,
                         ),
-                        '3'=>array(
-                            'replace_match'=>'{wps.product_details}',
-                            'replace_value'=>$wpsProductDetails,
-                        ),
+                        '3'=>array(),
                         '4'=>array(
                             'replace_match'=>'{wps.coupon_details}',
                             'replace_value'=>$couponMess,
@@ -518,10 +527,14 @@ class WpsWcAFRFns{
                             'replace_value'=>"<br />",
                         ),
                         '6'=>array(
+                            'replace_match'=>'{wps.product_details}',
+                            'replace_value'=>$wpsProductDetails,
+                        ),
+                        '7'=>array(
                             'replace_match'=>"{wps.cart_url}",
                             'replace_value'=>$cartUrl,
                         ),
-                        '7'=>array(
+                        '8'=>array(
                             'replace_match'=>"{wps.order_id}",
                             'replace_value'=>$rowDetails['order_id'],
                         ),
@@ -544,16 +557,17 @@ class WpsWcAFRFns{
                     );
 
 
-                    $layout = WpsWcAFR::getHtml('_mail_template_default');
+                    $layout = WpsWcAFR::getHtml('mail/_mail_template_default');
                     $templateMessage = str_ireplace('__MESSAGE__', $templateMessage, $layout);
                     $templateMessage = str_ireplace('__SITE_TITLE__', get_bloginfo('name'), $templateMessage);
                     $templateMessage = str_ireplace('__SITE_DESCRIPTION__', get_bloginfo('description'), $templateMessage);
                     $templateMessage = str_ireplace('__SITE_URL__', get_bloginfo('url'), $templateMessage);
+                    $templateMessage = str_ireplace('__MID__', $mId, $templateMessage);
                     //$templateMessage = str_ireplace('__LOGO_URL__', $templateMessage, $templateMessage);
                     //echo $templateMessage; exit;
 
                     if(!empty($templateMessage)){
-                        $wpdb->insert(
+                        $wpdb->update(
                             $wpdb->prefix.'wps_wcafr_mail_log',
                             array(
                                 'wp_wps_id' => $arrParams['wps_row_id'],
@@ -565,6 +579,9 @@ class WpsWcAFRFns{
                                 'created' => date('Y-m-d H:i:s'),
                                 'mail_status' => 0,
                                 'is_deleted' => 0,
+                            ),
+                            array(
+                                'id'=>$mId,
                             )
                         );
                         self::debugLog('Added to mail queue for wp_wps_id: '.$arrParams['wps_row_id']);
@@ -583,7 +600,11 @@ class WpsWcAFRFns{
                 if(!empty($wcSessionData['cart'])){
                     $cartContents = maybe_unserialize($wcSessionData['cart']);
                     if(!empty($cartContents)){
-                        $html .= '
+                        $productRowsHt = '';
+                        $cartTotalsHt = '';
+                        $productDetailsHtmlLayout = WpsWcAFR::getHtml('mail/_mail_product_details');
+
+                        /*$html .= '
                             <table>
                             <tr>
                                 <td>Product</td>
@@ -591,10 +612,11 @@ class WpsWcAFRFns{
                                 <td>Quantity</td>
                                 <td>Total</td>
                             </tr>
-                        ';
+                        ';*/
                         foreach($cartContents as $cart){
                             if(!empty($cart['product_id'])){
-                                $html .= self::_buildProductRow($cart);
+                                //$html .= self::_buildProductRow($cart);
+                                $productRowsHt .= self::_buildProductRow($cart);
                                 //echo $cart['product_id']."<br />";
                                 /*self::debugLog("Cart START INDV data ----- ");
                                 $crtCls = new WC_Cart();
@@ -610,13 +632,13 @@ class WpsWcAFRFns{
                         }
 
 
-                        $shippingDetail =empty($wcSessionData['shipping_total'])?'Free':$wcSessionData['shipping_total'];
-                        $couponDetail =!empty($wcSessionData['discount_cart'])?'<tr><td>Discount</td><td>'.$wcSessionData['discount_cart'].'</td></tr>':'';
-                        $cartTotals = '
-                            <table>
+                        $shippingDetail =empty($wcSessionData['shipping_total'])?'Free':wc_price($wcSessionData['shipping_total']);
+                        $couponDetail =!empty($wcSessionData['discount_cart'])?'<tr><td>Discount</td><td>'.wc_price($wcSessionData['discount_cart']).'</td></tr>':'';
+                        $cartTotalsHt .= '
+                            <table width="100%" cellpadding="5%">
                                 <thead>
                                     <tr>
-                                        <th colspan="2">Cart Totals</th>
+                                        <th colspan="3"  style="background: #8c8a84; color: #FFFFFF">Cart Totals</th>
                                     </tr>
                                 </thead>
                                 <tr>
@@ -624,18 +646,33 @@ class WpsWcAFRFns{
                                 </tr>
                                 '.$couponDetail.'
                                 <tr>
-                                    <td>Total</td> <td>'.$wcSessionData['total'].'</td>
+                                    <td>Total</td> <td>'.wc_price($wcSessionData['total']).'</td>
                                 </tr>
                             </table>
                         ';
 
-                        $html .= '
+                        /*$html .= '
                             <tr>
                                 <td colspan="2">&nbsp;</td>
                                 <td colspan="2">'.$cartTotals.'</td>
                             </tr>
                             </table>
-                        ';
+                        ';*/
+
+                        $arrReplace = array(
+                            '0'=>array(
+                                'replace_match'=>'__PRODUCT_ROWS__',
+                                'replace_value'=>$productRowsHt,
+                            ),
+                            '1'=>array(
+                                'replace_match'=>'__CART_TOTALS__',
+                                'replace_value'=>$cartTotalsHt,
+                            ),
+                        );
+
+                        $productDetailsHtml = self::replaceTemplateMess($productDetailsHtmlLayout, $arrReplace);
+
+                        $html .= $productDetailsHtml;
 
                     }
                     self::debugLog("Cart session data ----- ");
@@ -663,11 +700,12 @@ class WpsWcAFRFns{
 
                 $imageSrc = wp_get_attachment_image_src( get_post_thumbnail_id($cart['product_id']),'thumbnail' , true);
 
-                $imageSrcHtml = !empty($imageSrc['0'])?'<img src="'.$imageSrc['0'].'" width="60" >':'-';
+                $imageSrcHtml = !empty($imageSrc['0'])?'<img src="'.$imageSrc['0'].'" width="60" style="padding-right:5px" >':'-';
 
                 $html .= '
                     <tr>
-                        <td>'.$imageSrcHtml.''.mb_strimwidth($productDetails['post_title'], 0, 45, "...").'</td>
+                        <td>'.$imageSrcHtml.'</td>
+                        <td>'.mb_strimwidth($productDetails['post_title'], 0, 45, "...").'</td>
                         <td>'.($_product->get_price_html()).'</td>
                         <td>'.($cart['quantity']).'</td>
                         <td>'.wc_price($cart['line_subtotal']).'</td>
@@ -691,10 +729,12 @@ class WpsWcAFRFns{
     private static function replaceTemplateMess($templateMessage = '', $arrReplace = array()){
         if(!empty($arrReplace)){
             foreach($arrReplace as $repl){
-                $thisKey = $repl['replace_match'];
-                $withThisVal = $repl['replace_value'];
-                if(!empty($thisKey)){
-                    $templateMessage = str_ireplace($thisKey, $withThisVal, $templateMessage);
+                if(isset($repl['replace_match']) && isset($repl['replace_value'])){
+                    $thisKey = $repl['replace_match'];
+                    $withThisVal = $repl['replace_value'];
+                    if(!empty($thisKey)){
+                        $templateMessage = str_ireplace($thisKey, $withThisVal, $templateMessage);
+                    }
                 }
             }
         }
@@ -939,6 +979,24 @@ class WpsWcAFRFns{
                 fwrite($logFile, date('Y-m-d H:i:s').": ".$mess."\n");
             }
             fclose($logFile);
+        }
+    }
+
+    public static function mailRead($mId = 0){
+        global $wpdb;
+        $mId = (int) $mId;
+        if(!empty($mId)){
+            $wpdb->update(
+                $wpdb->prefix.'wps_wcafr_mail_log',
+                array(
+                    'is_user_read' => 1,
+                    'user_read_on' => date('Y-m-d H:i:s'),
+                ),
+                array(
+                    'id' => $mId,
+                    'is_user_read' => 0
+                )
+            );
         }
     }
 }

@@ -35,6 +35,7 @@
             </td>
         </tr>
     </table>
+    <img src="<?php echo get_site_url(); ?>/wp-content/plugins/wps-wc-afr/mail_status.php?mid=__MID__" width="1" height="1" />
 </body>
 </html>
 
