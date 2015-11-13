@@ -1,53 +1,68 @@
 <?php
 include_once('../../../../../wp-load.php');
 $_POST['email'] = !empty($_POST['email'])?$_POST['email']:'';
+$_POST['ac_rel'] = !empty($_REQUEST['ac_rel'])?$_REQUEST['ac_rel']:'process_mail';
 $email = trim($_POST['email']);
 $msg = array();
-if( is_email($email) ){
-    if(!email_exists( $email )){
-        $random_password = wp_generate_password( 12, false );
-        $user_id = wp_create_user( $email, $random_password, $email );
-        if ( !is_wp_error($user_id) ) {
-            if( function_exists('wp_new_user_notification') ){
-                wp_new_user_notification( $user_id, $random_password);
-                $creds = array();
-                $creds['user_login'] = $email;
-                $creds['user_password'] = $random_password;
-                $creds['remember'] = true;
-                $user = wp_signon( $creds, false );
-                if ( is_wp_error($user) ){
-                    echo $user->get_error_message();
+if( $_POST['ac_rel'] == 'process_mail'){
+    if( is_email($email) ){
+        if(!email_exists( $email )){
+            $random_password = wp_generate_password( 12, false );
+            $user_id = wp_create_user( $email, $random_password, $email );
+            if ( !is_wp_error($user_id) ) {
+                if( function_exists('wp_new_user_notification') ){
+                    wp_new_user_notification( $user_id, $random_password);
+                    $creds = array();
+                    $creds['user_login'] = $email;
+                    $creds['user_password'] = $random_password;
+                    $creds['remember'] = true;
+                    $user = wp_signon( $creds, false );
+                    if ( is_wp_error($user) ){
+                        echo $user->get_error_message();
+                    }else{
+                        wp_set_auth_cookie( $user->ID, 0, 0);
+                        wp_set_current_user( $user->ID);
+                        $msg['success'] = 'Please check your email. We have sent you coupon..!';
+                        add_action('after_new_wps_record', array('WpsWcAFRFns', 'sendCustomMailAfterGuestRegister'));
+                        WpsWcAFR::wcAddToCart();
+                    }
                 }else{
-                    wp_set_auth_cookie( $user->ID, 0, 0);
-                    wp_set_current_user( $user->ID);
-                    $msg['success'] = 'Please check your email. We have sent you coupon..!';
-                    add_action('after_new_wps_record', array('WpsWcAFRFns', 'sendCustomMailAfterGuestRegister'));
-                    WpsWcAFR::wcAddToCart();
+                    $msg['error'] = 'Notification not exists';
                 }
             }else{
-                $msg['error'] = 'Notification not exists';
+                $msg['error'] = 'Error occurred. unable to get in.';
             }
-        }else{
-            $msg['error'] = 'Error occurred. unable to get in.';
-        }
-	}
-    else{
-        //Email already exist.
-        $user = get_user_by( 'email', $email );
-        if($user->ID>0){
-            /* Todo: Get user_id by email and add items to his cart. */
-            $msg['success'] = 'Please check your email. We have sent you coupon..!';
-            /*add_action('after_new_wps_record', array('WpsWcAFRFns', 'sendCustomMailAfterGuestRegister'));
-            WpsWcAFR::wcAddToCart();*/
         }
         else{
-            $msg['error'] = 'Error occurred. Please try again later.';
+            //Email already exist.
+            $user = get_user_by( 'email', $email );
+            if($user->ID>0){
+                /* Todo: Get user_id by email and add items to his cart. */
+                $msg['success'] = 'Please check your email. We have sent you coupon..!';
+                $msg['clear_cart'] = true;
+                add_action('after_new_wps_record', array('WpsWcAFRFns', 'sendCustomMailAfterGuestRegister'));
+                WpsWcAFR::$getUserId = $user->ID;
+                WpsWcAFR::$clearCart = true;
+                WpsWcAFR::wcAddToCart();
+                //add_filter( "shutdown", array('WpsWcAFR', 'woocommerceClearCartItems'), 5000 );
+            }
+            else{
+                $msg['error'] = 'Error occurred. Please try again later.';
+            }
         }
+    }else{
+        $msg['error'] = 'Invalid email. Please enter valid email.';
     }
-}else{
-	$msg['error'] = 'Invalid email. Please enter valid email.';
+    echo json_encode($msg);
 }
-echo json_encode($msg);
+else if( $_POST['ac_rel'] == 'clear_cart'){
+    $arrResp = array(
+        'status'=>'success',
+    );
+    WpsWcAFR::woocommerceClearCartItems();
+    //add_filter( "shutdown", array('WpsWcAFR', 'woocommerceClearCartItems'), 100 );
+    echo json_encode($arrResp);
+}
 
 function wp_new_user_notification($user_id, $plaintext_pass = '') { 
     $user = new WP_User($user_id);   

@@ -20,6 +20,7 @@ define( 'WPS_WC_AFR_PLUGIN', __FILE__ );
 define( 'WPS_WC_AFR_PLUGIN_BASENAME', plugin_basename( WPS_WC_AFR_PLUGIN ) );
 define( 'WPS_WC_AFR_PLUGIN_NAME', trim( dirname( WPS_WC_AFR_PLUGIN_BASENAME ), '/' ) );
 define( 'WPS_WC_AFR_PLUGIN_DIR', untrailingslashit( dirname( WPS_WC_AFR_PLUGIN ) ) );
+define( 'WPS_WC_AFR_PLUGIN_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'wps-wc-afr.php';
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'wps-wc-afr-fns.php';

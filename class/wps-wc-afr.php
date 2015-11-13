@@ -4,6 +4,8 @@ defined('WPS_WC_AFR_ACCESS') or die();
 
 class WpsWcAFR{
     private static $logFile = '';
+    public static $getUserId = '';
+    public static $clearCart = false;
 
     public static function pluginSettingsLink($links){
         $settings_link = '<a href="'.get_site_url().'/wp-admin/admin.php?page=wps-wc-afr">' . __( 'Settings' ) . '</a>';
@@ -57,8 +59,16 @@ class WpsWcAFR{
         //$cartItems = self::woocommerceCartItems();
     }
 
+    public static function woocommerceClearCartItems(){
+        global $woocommerce;
+        if(!empty($woocommerce) && is_object($woocommerce)){
+            $woocommerce->cart->empty_cart();
+        }
+    }
+
     public static function woocommerceCartItems(){
         global $woocommerce, $wpdb;
+        $getUserId = self::$getUserId;
         /*
         $items = $woocommerce->cart->get_cart();
         echo "<pre>"; var_dump(count($items));var_dump($items);exit;
@@ -66,13 +76,13 @@ class WpsWcAFR{
             $wcProduct = $values['data']->post;
             var_dump($values);
         }*/
-        if(is_user_logged_in()){
+        if(is_user_logged_in() || $getUserId>0){
             //User already logged.
             /*
              * If user with status new, then update. Else create new record.
              * */
             self::debugLog('Logged user...');
-            $userId = get_current_user_id();
+            $userId = !empty($getUserId)?$getUserId:get_current_user_id();
 
             $newRecord = self::getNewRecord($userId);
             if(!empty($newRecord['id'])){
@@ -120,9 +130,10 @@ class WpsWcAFR{
 
                 $wcSessionData = serialize($wcSessionData);
                 */
-                $loggedUserDetails = wp_get_current_user();
+                //$loggedUserDetails = wp_get_current_user();
+                $loggedUserDetails = get_userdata($userId);
                 /*if(!empty($wcSessionCart)){*/
-                if(!empty($wcActiveCartSession['cart_data_alone'])){
+                if(!empty($wcActiveCartSession['cart_data_alone']) && !empty($loggedUserDetails)){
                     self::debugLog('Woocommerce session cart exist. So, creating new record in database.');
                     if(!self::isCartAddingWhileCheckout($loggedUserDetails->ID) && !self::isCartAddingAfterImmediateCancel($loggedUserDetails->ID)){
                         $wpdb->insert(
@@ -159,6 +170,11 @@ class WpsWcAFR{
             //For guest we can't able to do anything after adding to cart. We can able to do only after clicking proceed to cart.
             self::debugLog('Guest user. So, can\'t do anything.');
         }
+
+        /*if(self::$clearCart){
+            self::woocommerceClearCartItems();
+            self::$clearCart = false;
+        }*/
     }
 
     public static function isCartAddingWhileCheckout($userId = 0){

@@ -86,26 +86,39 @@ class ExitIntent{
 								type: "post",
 								url: "'.plugins_url("/wps-wc-afr/includes/ajax/exit-intent.php").'",
 								data: jQuery("#exit-intent-form").serialize(),
-								success: function(res){									
+								success: function(res){
 									rs = JSON.parse(res);
-									if( rs.error != "" && rs.error != undefined ){ 
+									if( rs.error != "" && rs.error != undefined ){
 										jQuery(".form-notice").removeClass("success").addClass("error");
 										jQuery(".form-notice").html(rs.error);
 										jQuery(".ei-btn-register").show();
 									}
-									if( rs.success != "" && rs.success != undefined ){ 
+									if( rs.success != "" && rs.success != undefined ){
 										jQuery(".form-notice").removeClass("error").addClass("success");
 										jQuery(".form-notice").html(rs.success);
-										window.location=redirecturl;	
+										if(typeof rs.clear_cart!="undefined"){
+                                            if(rs.clear_cart == true){
+                                                console.log("Clear Cart");
+                                                jQuery.ajax({
+                                                    url: "'.plugins_url("/wps-wc-afr/includes/ajax/exit-intent.php?ac_rel=clear_cart").'",
+                                                    context: document.body
+                                                    }).done(function() {
+                                                    window.location=redirecturl;
+                                                });
+                                            }
+                                        }
+                                        else{
+										    window.location=redirecturl;
+										}
 									}
 									jQuery("#wps-loading-ei").hide();
 								}
 							  });
 						 }
 					});
-											
+
 				  });
-			</script>';	
+			</script>';
 		}
 		echo stripslashes($str);
 	}

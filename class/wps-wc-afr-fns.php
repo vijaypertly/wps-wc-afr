@@ -507,7 +507,9 @@ class WpsWcAFRFns{
 
                     $settings = self::getSettings();
 
-                    $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+                    //$cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+
+                    $cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($mId);
 
                     $arrReplace = array(
                         '0'=>array(
@@ -668,7 +670,8 @@ class WpsWcAFRFns{
                             </table>
                         ';*/
 
-                        $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+                        //$cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+                        $cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($rowDetails['id']);
 
                         $arrReplace = array(
                             '0'=>array(
@@ -1143,6 +1146,77 @@ class WpsWcAFRFns{
         }
 
         return $domain;
+    }
+
+    public static function loadCartFor($wpsId = 0){
+        $wcls = new WC_Session_Handler();
+        $sessionCookie = $wcls->get_session_cookie();
+
+        $isSet = false;
+
+        $current_user = wp_get_current_user();
+        if(empty($current_user->ID)){
+            //Guest
+            if(empty($sessionCookie['0']) && empty($sessionCookie['1'])){
+                //Seems no active cart session found for guest in his browser. Create session now.
+
+                $wcAccessCookieKey = 'wp_woocommerce_session_' . COOKIEHASH;
+
+                $expiring = time() + intval( apply_filters( 'wc_session_expiring', 60 * 60 * 47 ) );
+                $expiration = time() + intval( apply_filters( 'wc_session_expiration', 60 * 60 * 48 ) );
+                $customer_id = $wcls->generate_customer_id();
+                $to_hash = $customer_id . $expiration;
+                $hash    = hash_hmac( 'md5', $to_hash, wp_hash( $to_hash ) );
+                $cookie_value = $customer_id."||".$expiration."||".$expiring."||".$hash;
+                wc_setcookie( $wcAccessCookieKey, $cookie_value, $expiration, apply_filters( 'wc_session_use_secure_cookie', false ) );
+                $sessionCookie = explode('||', $cookie_value);
+            }
+            //echo "GUEST"; var_dump($sessionCookie); exit;
+        }
+
+        if(!empty($wpsId) && !empty($current_user)){
+            $rowDetails = self::rowDetails($wpsId);
+            if(!empty($rowDetails['wc_session_data']) && (!empty($current_user->ID) || !empty($sessionCookie['0']) )){
+                if($rowDetails['user_id'] == $current_user->ID || empty($current_user->ID)){
+                    $expiring = time() + intval( apply_filters( 'wc_session_expiring', 60 * 60 * 47 ) );
+
+                    $wcCustId = !empty($sessionCookie['0'])?$sessionCookie['0']:$current_user->ID;
+                    $expiresTime = !empty($sessionCookie['1'])?$sessionCookie['1']:$expiring;
+
+                    $isSet = true;
+                    $opt_nm = '_wc_session_'.$wcCustId;
+                    $opt_nm_expires = '_wc_session_expires_'.$wcCustId;
+
+                    $wcSessionData = maybe_unserialize($rowDetails['wc_session_data']);
+
+                    if ( get_option( $opt_nm ) !== false ) {
+                        update_option( $opt_nm, $wcSessionData );
+                    } else {
+                        $deprecated = null;
+                        $autoload = 'no';
+                        add_option( $opt_nm, $wcSessionData, $deprecated, $autoload );
+                    }
+
+                    if ( get_option( $opt_nm_expires ) !== false ) {
+                        update_option( $opt_nm_expires, $expiresTime );
+                    } else {
+                        $deprecated = null;
+                        $autoload = 'no';
+                        add_option( $opt_nm_expires, $expiresTime, $deprecated, $autoload );
+                    }
+
+                }
+            }
+        }
+
+        if($isSet){
+            $settings = self::getSettings();
+            $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+            wp_redirect( $cartUrl ); exit;
+        }
+        else{
+            wp_redirect( home_url() ); exit;
+        }
     }
 }
 
