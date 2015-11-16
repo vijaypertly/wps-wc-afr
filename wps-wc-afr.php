@@ -77,4 +77,15 @@ WpsWcAFRFns::activateCron();
 //echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;
 //echo "<pre>"; var_dump(WpsWcAFRFns::followUpTimes()); exit;
 
+if(!function_exists('mb_strimwidth')){
+    function mb_strimwidth($str = '', $start = 0, $width = 0, $trimmarker = null){
+        $final = $str;
+        if(strlen($str)>$width){
+            $final = substr($final, 0, $width).$trimmarker;
+        }
+
+        return $final;
+    }
+}
+
 ?>

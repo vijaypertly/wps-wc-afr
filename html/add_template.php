@@ -1,5 +1,5 @@
 <?php defined( 'ABSPATH' ) or die(''); ?>
-<?php	
+<?php
 	global $post;
 	
 	$args = array(
@@ -21,9 +21,9 @@
 		$selected_coupon = get_posts( $sel_args );
 		$args['post__not_in'] = array($data['coupon_code']);
 	}
-	
-	$coupons = get_posts( $args );
-	
+
+	//$coupons = get_posts( $args );
+
 	//echo "<pre>";print_r($data);echo "</pre>";
 	$content = "";
 	if(isset($data['template_message'])){
@@ -138,13 +138,13 @@
 					</td>
 				</tr>
 				
-				<?php if((isset($coupons) && !empty($coupons)) || isset($selected_coupon)) { ?>
+				<?php /*if((isset($coupons) && !empty($coupons)) || isset($selected_coupon)) {*/ ?>
 					<tr class="form-field">
 						<th scope="row">
 							<label for="coupon_code">Coupon Code</label>
 						</th>
 						<td>
-							<select id="coupon_code" name="coupon_code" title="Coupon Code">	
+							<!-- <select id="coupon_code" name="coupon_code" title="Coupon Code">
 								<option value="">Select Option</option>
 								<?php foreach($selected_coupon as $coupon) { ?>
 									<option value="<?php echo $coupon->ID;?>" selected="selected"><?php echo $coupon->post_title;?></option>
@@ -153,7 +153,9 @@
 								<?php foreach($coupons as $coupon) { ?>
 									<option value="<?php echo $coupon->ID;?>"><?php echo $coupon->post_title;?></option>
 								<?php } ?>
-							</select>
+							</select> -->
+                            <input type="text" value="<?php echo $data['coupon_code'];?>" id="coupon_code" name="coupon_code" title="Coupon Code">
+
 						</td>
 					</tr>
 					<tr class="form-field">
@@ -179,7 +181,7 @@
 							<?php */ ?>
 						</td>
 					</tr>
-				<?php } ?>
+				<?php /*}*/ ?>
 				
 		</table>
 		<p class="submit">

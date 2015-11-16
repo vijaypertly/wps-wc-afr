@@ -476,7 +476,7 @@ class WpsWcAFR{
 	
     public static function adminAddTemplate($template_id = 0){
 		global $wpdb;
-		
+
         $arrResp = array(
             'status'=>'error',
             'mess'=>'Please try again later.',

@@ -237,6 +237,7 @@ class WpsWcAFRFns{
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
 
             if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
+                //wp_mail( 'sales+wpsplugintest@customcontrollersuk.co.uk', $arrParams['subject'], $arrParams['message'], $headers );
                 wp_mail( 'mohankumar+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
                 wp_mail( 'balamurugan+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
             }
@@ -1155,6 +1156,7 @@ class WpsWcAFRFns{
         $isSet = false;
 
         $current_user = wp_get_current_user();
+
         if(empty($current_user->ID)){
             //Guest
             if(empty($sessionCookie['0']) && empty($sessionCookie['1'])){
