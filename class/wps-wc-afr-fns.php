@@ -220,30 +220,9 @@ class WpsWcAFRFns{
         $isSent = false;
 
         if(!empty($arrParams['to']) && !empty($arrParams['subject']) && !empty($arrParams['message'])){
-            /*
-             * Todo: Send mail
-             * $arrParams = array(
-                        'to'=>'',
-                        'subject'=>'',
-                        'message'=>'',
-                    );
-             * */
             $isSent = true;
             $headers = array('Content-Type: text/html; charset=UTF-8');
-
-            if(self::getDomainFromEmail($arrParams['to']) =='mailinator.com'){
-                wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
-            }
-
-            $arrParams['to'] = 'vijay+wpsplugintest@pertly.co.in';
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
-
-            if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
-                wp_mail( 'sales+wpsplugintest@customcontrollersuk.co.uk', $arrParams['subject'], $arrParams['message'], $headers );
-                wp_mail( 'mohankumar+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
-                wp_mail( 'balamurugan+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
-            }
-
         }
 
         return $isSent;
@@ -1025,7 +1004,7 @@ class WpsWcAFRFns{
         global $wpdb;
         $settings = self::getSettings();
 
-        if(!$settings['exit_intent_is_send_coupon']){
+        if(!isset($settings['exit_intent_is_send_coupon'])){
             return;
         }
 

@@ -21,7 +21,7 @@ class WpsWcAFR{
             'wps-wc-afr',
             array('WpsWcAFR', 'wpsAdminDashboardPage')
         );*/
-        add_submenu_page('woocommerce', 'Boost Sale', 'Boost Sale', 'manage_woocommerce', 'wps-wc-afr', array('WpsWcAFR', 'wpsAdminDashboardPage'));
+        add_submenu_page('woocommerce', 'Abandoned/ Failed Recovery', 'Abandoned/ Failed Recovery', 'manage_woocommerce', 'wps-wc-afr', array('WpsWcAFR', 'wpsAdminDashboardPage'));
         //add_submenu_page('wps-wc-afr', 'Boost Sales', 'Boost Sales', 'manage_woocommerce', 'wps-wc-afr-ajax', array('WpsWcAFR', 'wpsAdminAjax'));
     }
 
@@ -424,12 +424,43 @@ class WpsWcAFR{
 					$_REQUEST['tabaction'] = 'list_ajax';
 					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
 				}
+				else if($ac == 'remove_wps'){
+                    $wpsId = !empty($_REQUEST['wps_id'])?$_REQUEST['wps_id']:0;
+					$arrResp = self::removeWpsRow($wpsId);
+				}
 				
             }
         }
 
         header( "Content-Type: application/json" );
         echo json_encode($arrResp); exit;
+    }
+
+    private static function removeWpsRow($wpsId = 0){
+        global $wpdb;
+
+        $arrResp = array(
+            'status'=>'error',
+            'mess'=>'Please try again later.',
+        );
+        if($wpsId>0){
+            if(current_user_can('manage_woocommerce')){
+                if($wpdb->delete( "".$wpdb->prefix."wps_wcafr", array( 'id' => $wpsId ), array( '%d' ) )){
+                    $arrResp['status'] = 'success';
+                    $arrResp['mess'] = 'Deleted.';
+                }
+                else{
+                    $arrResp['status'] = 'error';
+                    $arrResp['mess'] = 'Unable to delete. Please try again later.';
+                }
+            }
+            else{
+                $arrResp['status'] = 'error';
+                $arrResp['mess'] = 'No permissions to perform action.';
+            }
+        }
+
+        return $arrResp;
     }
 
     public static function adminLoadTabSection(){
@@ -682,8 +713,8 @@ class WpsWcAFR{
 						$suc = 0;
 					}
 				}
-				if($data_t['consider_un_recovered_order_after'] > 99999999){
-					$arrResp['mess'] = "Please enter maximum 99999999 for un-recovered order";
+				if($data_t['consider_un_recovered_order_after'] > 527040){//One year
+					$arrResp['mess'] = "Please enter maximum 527040 minutes (or) 1 Year for un-recovered order.";
 					$suc = 0;
 				}
 			}			

@@ -1,2 +1,2 @@
 # wps-wc-afr
-Woocommerce Abandoned, Failured cart follow up Plugin
+WPS Abandoned, Failured cart follow up Plugin

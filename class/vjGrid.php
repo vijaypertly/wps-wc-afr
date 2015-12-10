@@ -295,7 +295,7 @@ class VjGrid{
             $pageflag = 1;
         }
         else{
-            if(@$ppage!=''){$previouspage = "<li><a  class=\"prev-no\" title='Previous'>Previous</a></li>";	}
+            if(!empty($ppage)){$previouspage = "<li><a  class=\"prev-no\" title='Previous'>Previous</a></li>";	}
         }
         if($cur_page){
             $npage = $cur_page + 1;

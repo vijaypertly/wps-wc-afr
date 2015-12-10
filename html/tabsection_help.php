@@ -3,8 +3,9 @@
 <h2>Help</h2>
 
 <p>
-    Developed by <a href="http://www.wpsupport.io" target="_blank">www.wpsupport.io</a>
+    <a href="http://www.wpsupport.io/" target="_blank">Click here</a> for documentation.
 </p>
+<p>Developed by <a href="http://www.wpsupport.io" target="_blank">www.wpsupport.io</a>.</p>
 
 <h3 style="text-decoration: underline">Short codes to be used on template messages: </h3>
 

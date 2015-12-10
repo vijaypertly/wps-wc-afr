@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: WPS Woocommerce Abandon and Failed Customer Recovery
+Plugin Name: WC Abandoned Cart/ Failed Payment Recovery
 Plugin URI: http://www.wpsupport.io/
-Description: Woocommerce Abandon and Failed Customer Recovery by wpsupport.io team.
+Description: Abandon and Failed Customer Recovery by wpsupport.io team.
 Author: Vijay M
 Text Domain: wps-wc-afr
 Domain Path: /languages/
@@ -40,18 +40,6 @@ add_action( 'admin_menu', array('WpsWcAFR', 'pluginAdminLinks') );
 add_action('wp_ajax_wps_afr', array('WpsWcAFR', 'wpsAdminAjax'));
 add_action( 'admin_enqueue_scripts', array('WpsWcAFR', 'wpsWcAfrScripts') );
 
-
-//add_filter( "woocommerce_add_to_cart_handler", array('WpsWcAFR', 'wcAddToCart'), 10, 2 );//$product_type, $adding_to_cart
-//add_filter( "woocommerce_add_to_cart_redirect", array('WpsWcAFR', 'wcAddToCart'), 10, 1 );//$cart_url
-
-//add_filter( "woocommerce_add_to_cart_validation", array('WpsWcAFR', 'wcAddToCart'), 10, 1 );//$product_id
-
-
-//add_filter( "woocommerce_add_to_cart", array('WpsWcAFR', 'wcAddToCart'), 100, 5 );//$product_id = 0, $quantity = 1, $variation_id = 0, $variation = array(), $cart_item_data = array()
-
-//add_filter( "woocommerce_ajax_added_to_cart", array('WpsWcAFR', 'wcAddToCart'), 100 );//
-//add_filter( "shutdown", array('WpsWcAFR', 'wcAddToCart'), 100 );//
-
 add_filter( "woocommerce_cart_updated", array('WpsWcAFR', 'wcAddToCart'), 100 );//
 
 add_filter( "woocommerce_checkout_update_order_meta", array('WpsWcAFR', 'wcProceedCheckout'), 100, 2 );//
@@ -72,10 +60,12 @@ add_action( 'woocommerce_order_status_completed', array('WpsWcAFRFns', 'wcOrderS
 add_action( 'woocommerce_order_status_refunded', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
 add_action( 'woocommerce_order_status_cancelled', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
 
-//WpsWcAFRFns::processCron();
-//WpsWcAFRFns::activateCron();//Earlier enabled by default.
-//echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;
-//echo "<pre>"; var_dump(WpsWcAFRFns::followUpTimes()); exit;
+/*
+//For debugging
+WpsWcAFRFns::processCron();
+WpsWcAFRFns::activateCron();//Earlier enabled by default.
+echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;
+*/
 
 if(!function_exists('mb_strimwidth')){
     function mb_strimwidth($str = '', $start = 0, $width = 0, $trimmarker = null){

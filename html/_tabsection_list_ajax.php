@@ -40,10 +40,10 @@ $display_coloumns = array(
     'user_email'=>'Email',        
 	'mail_status'=>'Email Status',
 	'status'=>'Status',
-    'last_active_cart_added'=>'Last Updated Status',	
+    'last_active_cart_added'=>'Elapsed Time',
 	'order_id'=>'Order Id',
 	'last_mailed_for_minutes'=>'Last Mailed for minutes',	
-	'_custom_actions'=>'Minutes Elapsed',
+	'_custom_actions'=>'Actions',
 );
 
 
@@ -51,10 +51,10 @@ $mail_status = array(''=>'All','not_mailed'=>'Not Mailed','processed'=>'Processe
 $status = array(''=>'All','new'=>'New','abandoned'=>'Abandoned','order_created'=>'Order Created','order_processing'=>'Order Processing','order_cancelled'=>'Order Cancelled','payment_pending'=>'Payment Pending','payment_failed'=>'Payment Failed','recovered'=>'Recovered','deleted'=>'Deleted');
 $filter_coloumns = array(
     'user_id'=>array(
-        'label'=>'User',
-        'default_value'=>'0',
-        'type'=>'select', 
-		'options'=>getSendToUser(),  
+        'label'=>'User Id',
+        'default_value'=>'',
+        'type'=>'text',
+		/*'options'=>getSendToUser(),  */
     ),
     'user_email'=>array(
         'label'=>'Email',

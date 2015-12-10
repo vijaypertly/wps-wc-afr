@@ -11,19 +11,8 @@
 	}
 
 	function _admin_view_list_row_data_last($data=array(), $row_no=''){
-		if(isset($data) && !empty($data) && isset($data['last_active_cart_added']) && !empty($data['last_active_cart_added'])){
-			
-			$date1 = $data['last_active_cart_added'];
-			$date2 = date('Y-m-d H:i:s');
-			
-			$diff = abs(strtotime($date2) - strtotime($date1));
-			$mins = floor($diff / 60);
-			
-			$tr_app = array();			
-			$tr_app[] = '<td>'.getNiceTime($mins).'</td>';
-			if(!empty($tr_app) && is_array($tr_app)){
-				return implode('', $tr_app);
-			}
+		if(isset($data) && !empty($data['id'])){
+            return '<td> <a onclick="wpsAfr.removeFromWPSList(\''.$data['id'].'\')">X</a> </td>';
 		}
 		return '<td> - N/A - </td>';
 	}
@@ -113,7 +102,21 @@
 				return date('d-m-Y', strtotime($value));
 			}
 			elseif($key=='last_active_cart_added'){
-				return date('H:i:s d-m-Y', strtotime($value));
+                if(isset($data) && !empty($data) && isset($data['last_active_cart_added']) && !empty($data['last_active_cart_added'])){
+
+                    $date1 = $data['last_active_cart_added'];
+                    $date2 = date('Y-m-d H:i:s');
+
+                    $diff = abs(strtotime($date2) - strtotime($date1));
+                    $mins = floor($diff / 60);
+
+                    $tr_app = array();
+                    $tr_app[] = getNiceTime($mins);
+                    if(!empty($tr_app) && is_array($tr_app)){
+                        return implode('', $tr_app);
+                    }
+                }
+                return '<td> - N/A - </td>';
 			}
 			elseif($key=='last_mailed_for_minutes'){
 				if(empty($value))

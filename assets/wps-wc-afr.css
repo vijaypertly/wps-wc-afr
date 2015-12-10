@@ -208,3 +208,13 @@
     font-family: monospace;
     white-space: pre;
 }
+.wpswcafr_fieldset{
+    border: 1px solid #c0c0c0;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+.wpswcafr_fieldset legend{
+    font-weight: bold;
+    font-size: 16px;
+}

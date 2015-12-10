@@ -129,6 +129,35 @@ wpsAfr.updateSettings = function(){
 	
 };
 
+wpsAfr.removeFromWPSList = function(wpsId){
+    if(typeof wpsId!="undefined"){
+        if(confirm('Are you sure to remove from abandoned process check list?')){
+            var post = {action: 'wps_afr','ac': 'remove_wps', 'wps_id': wpsId};
+            jQuery.ajaxSettings.traditional = true;
+            jQuery.ajax({
+                type: "POST",
+                traditional: true,
+                url: ajaxurl,
+                dataType: "json",
+                data: post,
+                success: function(resp) {
+                    if(typeof resp.status!="undefined"){
+                        if(resp.status=='success'){
+                            jQuery('a.nav-tab-wps-afr[data-tabaction="list"]').click();
+                        }
+                        else{
+                            alert("Error occurred, please try again later.");
+                        }
+                    }
+                    else{
+                        alert("Error occurred, please try again later.");
+                    }
+                }
+            });
+        }
+    }
+};
+
 jQuery(document).ready(function(){
 		
     jQuery('.nav-tab-wps-afr').click(function(){
