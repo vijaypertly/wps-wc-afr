@@ -69,6 +69,10 @@ class WpsWcAFRFns{
   `send_mail_duration_time_type` varchar(10) DEFAULT 'mins' COMMENT 'mins,hours,days',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 ;";
+
+        $demoTemplateSql = file_get_contents('demo_template_sql.sql');
+        $sql[] = $demoTemplateSql;
+
         foreach($sql as $singleSql){
             $wpdb->query($singleSql);
         }
