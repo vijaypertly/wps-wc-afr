@@ -70,12 +70,26 @@ class WpsWcAFRFns{
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 ;";
 
-        $demoTemplateSql = file_get_contents('demo_template_sql.sql');
-        $sql[] = $demoTemplateSql;
-
         foreach($sql as $singleSql){
             $wpdb->query($singleSql);
         }
+
+        $wpdb->insert(
+            "".$wpdb->prefix."wps_wcafr_templates",
+            array(
+                'template_name' => 'Abandoned After 30 Mins',
+                'template_status' => 0,
+                'template_for' => 'abandoned_cart',
+                'send_mail_duration_in_minutes' => 30,
+                'template_subject' => 'Are you facing any issues while cart checkout?',
+                'template_message' => '<div class=\\"rc\\">Hi {wps.first_name},</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">It seems you left something in your cart, please let us know if you face any issues.</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">{wps.product_details}</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">Thanks</div>',
+                'coupon_code'=>'',
+                'coupon_messages'=>'Use the below voucher to avail offer'."\r\n".'Coupon Code : {wps.coupon_code}',
+                'send_mail_duration'=>30,
+                'is_deleted'=>0,
+                'send_mail_duration_time_type'=>'mins',
+            )
+        );
     }
 
     public static function deactivatePlugin(){
