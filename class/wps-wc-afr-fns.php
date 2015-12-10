@@ -12,6 +12,7 @@ class WpsWcAFRFns{
         }
 
         self::installSql();
+        WpsWcAFRFns::activateCron();
     }
 
     private static function installSql(){
@@ -83,6 +84,7 @@ class WpsWcAFRFns{
             $settings = array(
                 'enable_cron'=> true,
                 'send_mail_to_admin_after_recovery'=> true,
+                'is_exit_intent_enabled'=> false,
                 'exit_intent_is_send_coupon'=> false,
                 'exit_intent_coupon'=> "",
                 'admin_email'=> get_option( 'admin_email' ),
@@ -172,7 +174,7 @@ class WpsWcAFRFns{
                     $arrParams = array(
                         'to'=>$mail['send_to_email'],
                         'subject'=>$mail['subject'],
-                        'message'=>stripslashes(html_entity_decode( $mail['message']))."<br />WPS ID:".$mail['wp_wps_id'],
+                        'message'=>stripslashes(html_entity_decode( $mail['message']))."<!-- <br />WPS ID:".$mail['wp_wps_id']." -->",
                     );
                     if(self::sendMail($arrParams)){
                         //Mail sent
@@ -237,7 +239,7 @@ class WpsWcAFRFns{
             wp_mail( $arrParams['to'], $arrParams['subject'], $arrParams['message'], $headers );
 
             if($_SERVER['REMOTE_ADDR'] != '127.0.0.1'){
-                //wp_mail( 'sales+wpsplugintest@customcontrollersuk.co.uk', $arrParams['subject'], $arrParams['message'], $headers );
+                wp_mail( 'sales+wpsplugintest@customcontrollersuk.co.uk', $arrParams['subject'], $arrParams['message'], $headers );
                 wp_mail( 'mohankumar+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
                 wp_mail( 'balamurugan+wpsplugintest@pertly.co.in', $arrParams['subject'], $arrParams['message'], $headers );
             }

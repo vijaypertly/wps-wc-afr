@@ -73,7 +73,7 @@ add_action( 'woocommerce_order_status_refunded', array('WpsWcAFRFns', 'wcOrderSt
 add_action( 'woocommerce_order_status_cancelled', array('WpsWcAFRFns', 'wcOrderStatusChanged'));
 
 //WpsWcAFRFns::processCron();
-WpsWcAFRFns::activateCron();
+//WpsWcAFRFns::activateCron();//Earlier enabled by default.
 //echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit;
 //echo "<pre>"; var_dump(WpsWcAFRFns::followUpTimes()); exit;
 
@@ -87,5 +87,7 @@ if(!function_exists('mb_strimwidth')){
         return $final;
     }
 }
+
+//if($_SERVER['REMOTE_ADDR'] == '1.23.73.103'){    echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit; }
 
 ?>

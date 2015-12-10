@@ -40,7 +40,7 @@ class ExitIntent{
             $description = "Come back to our store now and get 10% off the items left in your shopping cart, Simply click the button below to redeem your discount and complete your purchase.";
 		}
 			
-		if ( WC()->cart->get_cart_contents_count() != 0 && !is_user_logged_in()  ) {			
+		if ( WC()->cart->get_cart_contents_count() != 0 && !is_user_logged_in() && $opts['is_exit_intent_enabled'] == true  ) {
 			$str .= '<div id="ouibounce-modal">';
 			$str .= '<div class="underlay"></div>';
 			$str .= '<div class="modal">';

@@ -659,6 +659,11 @@ class WpsWcAFR{
 			if(!isset($data_t['enable_cron'])){
 				$data_t['enable_cron'] = false;
 			}
+
+			if(!isset($data_t['is_exit_intent_enabled'])){
+				$data_t['is_exit_intent_enabled'] = false;
+			}
+
 			if(!isset($data_t['send_mail_to_admin_after_recovery'])){
 				$data_t['send_mail_to_admin_after_recovery'] = false;
 			}

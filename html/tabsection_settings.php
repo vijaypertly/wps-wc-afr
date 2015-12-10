@@ -6,6 +6,7 @@
 	if(empty($data)){
 		$data = array(
 			'enable_cron'=> true,
+			'is_exit_intent_enabled'=> false,
 			'send_mail_to_admin_after_recovery'=> true,
 			'exit_intent_is_send_coupon'=> false,
 			'exit_intent_coupon'=> "",
@@ -36,6 +37,15 @@
 			<tbody>
 				<tr class="form-field form-required">
 					<th scope="row">
+						<label for="enable_cron">Enable Exit Intent </label>
+					</th>
+					<td>
+						<input type="checkbox" id="is_exit_intent_enabled" name="data[is_exit_intent_enabled]" value="true" <?php if (isset($data['is_exit_intent_enabled']) && $data['is_exit_intent_enabled']){ echo " checked"; } ?>>
+					</td>
+				</tr>
+
+				<tr class="form-field form-required">
+					<th scope="row">
 						<label for="enable_cron">Is Enable Cron <span class="description">(required)</span></label>
 					</th>
 					<td>
@@ -44,7 +54,7 @@
 						<input type="hidden" value="update_settings" id="js-ac" name="ac">
 					</td>
 				</tr>
-				
+
 				<tr class="form-field form-required">
 					<th scope="row">
 						<label for="send_mail_to_admin_after_recovery">Is Send Mail To Admin After Recovery <span class="description">(required)</span></label>
