@@ -1149,6 +1149,7 @@ class WpsWcAFRFns{
     }
 
     public static function loadCartFor($wpsId = 0){
+        $wpsId = (int) $wpsId;
         $wcls = new WC_Session_Handler();
         $sessionCookie = $wcls->get_session_cookie();
 

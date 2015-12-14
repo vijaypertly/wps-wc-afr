@@ -1,10 +1,12 @@
 <?php
 include_once('../../../../../wp-load.php');
 $_POST['email'] = !empty($_POST['email'])?$_POST['email']:'';
-$_POST['ac_rel'] = !empty($_REQUEST['ac_rel'])?$_REQUEST['ac_rel']:'process_mail';
 $email = trim($_POST['email']);
+$email = sanitize_email($email);
+$acRel = !empty($_REQUEST['ac_rel']) ? sanitize_text_field($_REQUEST['ac_rel']):'process_mail';
+
 $msg = array();
-if( $_POST['ac_rel'] == 'process_mail'){
+if( $acRel == 'process_mail'){
     if( is_email($email) ){
         if(!email_exists( $email )){
             $random_password = wp_generate_password( 12, false );
@@ -55,7 +57,7 @@ if( $_POST['ac_rel'] == 'process_mail'){
     }
     echo json_encode($msg);
 }
-else if( $_POST['ac_rel'] == 'clear_cart'){
+else if( $acRel == 'clear_cart'){
     $arrResp = array(
         'status'=>'success',
     );

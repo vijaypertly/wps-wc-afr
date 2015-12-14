@@ -1,7 +1,13 @@
 <?php defined( 'ABSPATH' ) or die(''); ?>
 <?php
 $cur_page = (!empty($_POST['page_no'])) ? $_POST['page_no'] : 1;
-$filter_datas = json_decode(stripslashes(@$_POST['data']), true);//	Eg. {"created_date":"ad","pk_name":"asdasd","package_id":"1","contact_by":"phone"}
+$cur_page = intval($cur_page);
+$filter_datas = array();
+
+if(!empty($data['data'])){
+    $filter_datas = json_decode($data['data'], true);
+}
+//	Eg. {"created_date":"ad","pk_name":"asdasd","package_id":"1","contact_by":"phone"}
 $filter_datas = VjGrid::formatDataForSql($filter_datas);
 
 $resp = array();

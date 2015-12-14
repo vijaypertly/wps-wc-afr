@@ -398,35 +398,147 @@ class WpsWcAFR{
         );
 
         if(current_user_can('manage_woocommerce')){
-            $ac = @$_REQUEST['ac'];
+            $ac = sanitize_text_field($_REQUEST['ac']);
+
             if(!empty($ac)){
                 if($ac == 'load_tab'){
                     $arrResp = self::adminLoadTabSection();
                 }
 				else if($ac == 'add_template'){
-					$arrResp = self::adminAddTemplate(@$_REQUEST['template_id']);
+                    $template_id = intval($_REQUEST['template_id']);
+					$arrResp = self::adminAddTemplate($template_id);
 				}
 				else if($ac == 'update_template'){
-					$arrResp = self::adminUpdateTemplate($_REQUEST);
+                    $arrParams = array();
+
+                    $arrParams['template_name'] = sanitize_text_field($_REQUEST['template_name']);
+                    $arrParams['id'] = intval($_REQUEST['id']);
+                    $arrParams['action'] = sanitize_text_field($_REQUEST['action']);
+                    $arrParams['ac'] = $ac;
+                    $arrParams['template_for'] = sanitize_text_field($_REQUEST['template_for']);
+                    $arrParams['send_mail_duration_time_type'] = sanitize_text_field($_REQUEST['send_mail_duration_time_type']);
+                    $arrParams['template_subject'] = sanitize_text_field($_REQUEST['template_subject']);
+                    $arrParams['template_message'] = esc_html($_REQUEST['template_message']);
+                    $arrParams['coupon_code'] = sanitize_text_field($_REQUEST['coupon_code']);
+                    $arrParams['coupon_messages'] = esc_html($_REQUEST['coupon_messages']);
+
+                    $arrParams['template_status'] = intval($_REQUEST['template_status']);
+                    $arrParams['send_mail_duration'] = intval($_REQUEST['send_mail_duration']);
+
+
+
+					$arrResp = self::adminUpdateTemplate($arrParams);
 				}
 				else if($ac == 'update_settings'){
-					$arrResp = self::adminUpdateSettings($_REQUEST);
+
+                    $arrParams = array();
+                    $data = $_REQUEST['data'];
+
+                    $newData['enable_cron'] = sanitize_text_field($data['enable_cron']);
+                    $newData['send_mail_to_admin_after_recovery'] = sanitize_text_field($data['send_mail_to_admin_after_recovery']);
+                    $newData['admin_email'] = sanitize_email($data['admin_email']);
+                    $newData['cart_url'] = sanitize_text_field($data['cart_url']);
+                    $newData['cron_time_in_minutes'] = intval($data['cron_time_in_minutes']);
+                    $newData['abandoned_time_in_minutes'] = intval($data['abandoned_time_in_minutes']);
+                    $newData['consider_un_recovered_order_after'] = intval($data['consider_un_recovered_order_after']);
+                    $newData['consider_un_recovered_order_after_time_type'] = sanitize_text_field($data['consider_un_recovered_order_after_time_type']);
+                    $newData['exit_intent_title'] = sanitize_text_field($data['exit_intent_title']);
+                    $newData['exit_intent_description'] = sanitize_text_field($data['exit_intent_description']);
+                    $newData['exit_intent_is_send_coupon'] = sanitize_text_field($data['exit_intent_is_send_coupon']);
+                    $newData['exit_intent_coupon'] = sanitize_text_field($data['exit_intent_coupon']);
+
+                    $arrParams['data'] = $newData;
+                    $arrParams['action'] = sanitize_text_field($_REQUEST['action']);
+                    $arrParams['ac'] = $ac;
+
+                    $arrResp = self::adminUpdateSettings($arrParams);
 				}
 				else if($ac == '_view_templates_list'){
-					$_REQUEST['tabaction'] = 'templates_ajax';
-					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
+                    $arrParams = array();
+
+                    $arrParams['tabaction'] = 'templates_ajax';
+                    $arrParams['ves_action'] = sanitize_text_field($_REQUEST['ves_action']);
+                    $arrParams['disp_on'] = sanitize_text_field($_REQUEST['disp_on']);
+                    $arrParams['page_no'] = intval($_REQUEST['page_no']);
+
+                    if(!empty($_REQUEST['data'])){
+                        $data = json_decode(stripslashes($_REQUEST['data']),true);
+
+                        $newData['template_for'] = sanitize_text_field($data['template_for']);
+                        $newData['template_status'] = intval($data['template_status']);
+
+                        $arrParams['data'] = json_encode($newData);
+                    }else{
+                        $arrParams['data'] = '';
+                    }
+
+                    $arrParams['action'] = sanitize_text_field($_REQUEST['action']);
+                    $arrParams['ac'] = $ac;
+
+                    $arrResp = self::adminLoadTabSectionPagination($arrParams);
 				}
 				else if($ac == '_view_log_mail_list'){
-					$_REQUEST['tabaction'] = 'mail_log_ajax';
-					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
+
+                    $arrParams = array();
+                    $arrParams['tabaction'] = 'mail_log_ajax';
+					$arrParams['ves_action'] = sanitize_text_field($_REQUEST['ves_action']);
+                    $arrParams['disp_on'] = sanitize_text_field($_REQUEST['disp_on']);
+                    $arrParams['page_no'] = intval($_REQUEST['page_no']);
+
+                    if(!empty($_REQUEST['data'])){
+                        $data = json_decode(stripslashes($_REQUEST['data']),true);
+
+                        $newData['template_id'] = intval($data['template_id']);
+                        $newData['send_to_email'] = sanitize_email($data['send_to_email']);
+                        $newData['mail_sent_from'] = sanitize_email($data['mail_sent_from']);
+                        $newData['mail_sent_to'] = sanitize_email($data['mail_sent_to']);
+                        $newData['mail_status'] = intval($data['mail_status']);
+                        $newData['is_user_read'] = intval($data['is_user_read']);
+
+                        $arrParams['data'] = json_encode($newData);
+                    }else{
+                        $arrParams['data'] = '';
+                    }
+
+                    $arrParams['action'] = sanitize_text_field($_REQUEST['action']);
+                    $arrParams['ac'] = $ac;
+
+                    $arrResp = self::adminLoadTabSectionPagination($arrParams);
 				}
 				else if($ac == '_view_list'){
-					$_REQUEST['tabaction'] = 'list_ajax';
-					$arrResp = self::adminLoadTabSectionPagination($_REQUEST);
+
+                    $arrParams = array();
+
+                    $arrParams['tabaction'] = 'list_ajax';
+
+                    $arrParams['ves_action'] = sanitize_text_field($_REQUEST['ves_action']);
+                    $arrParams['disp_on'] = sanitize_text_field($_REQUEST['disp_on']);
+                    $arrParams['page_no'] = intval($_REQUEST['page_no']);
+
+                    if(!empty($_REQUEST['data'])){
+                        $data = json_decode($_REQUEST['data'],true);
+
+                        $newData['user_id'] = intval($data['user_id']);
+                        $newData['user_email'] = sanitize_email($data['user_email']);
+                        $newData['mail_status'] = sanitize_text_field($data['mail_status']);
+                        $newData['status'] = sanitize_text_field($data['status']);
+
+                        $arrParams['data'] = json_encode($newData);
+                    }else{
+                        $arrParams['data'] = '';
+                    }
+
+                    $arrParams['action'] = sanitize_text_field($_REQUEST['action']);
+                    $arrParams['ac'] = $ac;
+
+                    //print_r($arrParams);exit;
+
+					$arrResp = self::adminLoadTabSectionPagination($arrParams);
 				}
 				else if($ac == 'remove_wps'){
                     $wpsId = !empty($_REQUEST['wps_id'])?$_REQUEST['wps_id']:0;
-					$arrResp = self::removeWpsRow($wpsId);
+                    $wpsId = intval($wpsId);
+                    $arrResp = self::removeWpsRow($wpsId);
 				}
 				
             }
@@ -471,7 +583,7 @@ class WpsWcAFR{
         );
 
         if(!empty($_REQUEST['tabaction'])){
-            $tabAction = $_REQUEST['tabaction'];
+            $tabAction = sanitize_text_field($_REQUEST['tabaction']);
             $tab_file = WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'html'.DIRECTORY_SEPARATOR.'tabsection_'.$tabAction.'.php';
             if(file_exists($tab_file)){
                 $html = self::getHtml('tabsection_'.$tabAction);

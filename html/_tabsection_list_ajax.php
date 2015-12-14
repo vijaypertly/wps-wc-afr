@@ -1,7 +1,18 @@
 <?php defined( 'ABSPATH' ) or die(''); ?>
 <?php
 $cur_page = (!empty($_POST['page_no'])) ? $_POST['page_no'] : 1;
-$filter_datas = json_decode(stripslashes(@$_POST['data']), true);
+$cur_page = intval($cur_page);
+$filter_datas = array();
+
+if(!empty($_POST['data'])){
+    $postData = $_POST['data'];
+    $postDataArray = json_decode(stripslashes($postData), true);
+    $filter_datas['user_id'] = intval($postDataArray['user_id']);
+    $filter_datas['user_email'] = sanitize_email($postDataArray['user_email']);
+    $filter_datas['mail_status'] = sanitize_text_field($postDataArray['mail_status']);
+    $filter_datas['status'] = sanitize_text_field($postDataArray['status']);
+}
+
 $filter_datas = VjGrid::formatDataForSql($filter_datas);
 
 $resp = array();
