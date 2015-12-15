@@ -45,6 +45,7 @@
                             <input type="checkbox" id="enable_cron" name="data[enable_cron]" value="true" <?php if (isset($data['enable_cron']) && $data['enable_cron']){ echo " checked"; } ?>>
                             <input type="hidden" value="wps_afr" id="js-action" name="action">
                             <input type="hidden" value="update_settings" id="js-ac" name="ac">
+                            <input type="hidden" value="<?php echo self::getNonceFor('update_settings'); ?>" id="js-nonce" name="nonce">
                         </td>
                     </tr>
 

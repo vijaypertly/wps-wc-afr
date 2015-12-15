@@ -59,6 +59,7 @@
 						<input type="hidden" value="<?php echo $data['id'];?>" id="id" name="id">
 						<input type="hidden" value="wps_afr" id="js-action" name="action">
 						<input type="hidden" value="update_template" id="js-ac" name="ac">
+                        <input type="hidden" value="<?php echo self::getNonceFor('update_template'); ?>" id="js-nonce" name="nonce">
 					</td>
 				</tr>
 			<?php if(isset($template_status) && !empty($template_status)) { ?>

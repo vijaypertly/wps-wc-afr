@@ -399,6 +399,7 @@ class WpsWcAFR{
 
         if(current_user_can('manage_woocommerce')){
             $ac = sanitize_text_field($_REQUEST['ac']);
+            $nonce = !empty($_REQUEST['nonce'])?sanitize_text_field($_REQUEST['nonce']):'';
 
             if(!empty($ac)){
                 if($ac == 'load_tab'){
@@ -408,7 +409,7 @@ class WpsWcAFR{
                     $template_id = intval($_REQUEST['template_id']);
 					$arrResp = self::adminAddTemplate($template_id);
 				}
-				else if($ac == 'update_template'){
+				else if($ac == 'update_template' && wp_verify_nonce( $nonce, 'wps_wc_afr_no_'.$ac )){
                     $arrParams = array();
 
                     $arrParams['template_name'] = sanitize_text_field($_REQUEST['template_name']);
@@ -429,11 +430,12 @@ class WpsWcAFR{
 
 					$arrResp = self::adminUpdateTemplate($arrParams);
 				}
-				else if($ac == 'update_settings'){
+				else if($ac == 'update_settings' && wp_verify_nonce( $nonce, 'wps_wc_afr_no_'.$ac )){
 
                     $arrParams = array();
                     $data = $_REQUEST['data'];
 
+                    $data['exit_intent_is_send_coupon'] = !empty($data['exit_intent_is_send_coupon'])?$data['exit_intent_is_send_coupon']:'';
                     $newData['enable_cron'] = sanitize_text_field($data['enable_cron']);
                     $newData['send_mail_to_admin_after_recovery'] = sanitize_text_field($data['send_mail_to_admin_after_recovery']);
                     $newData['admin_email'] = sanitize_email($data['admin_email']);
@@ -844,6 +846,22 @@ class WpsWcAFR{
 			}
 		}
 		return $arrResp;
+    }
+
+    private static function getNonceFor($for = ''){
+        $nonce = '';
+
+        if(!empty($for)){
+            $arrValidActions = array(
+                'update_settings',
+                'update_template',
+            );
+            if(in_array($for, $arrValidActions)){
+                $nonce = wp_create_nonce( 'wps_wc_afr_no_'.$for );
+            }
+        }
+
+        return $nonce;
     }
 
 }
