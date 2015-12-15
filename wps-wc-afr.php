@@ -9,10 +9,6 @@ Domain Path: /languages/
 Version: 1.0
 */
 defined( 'ABSPATH' ) or die('');
-$timezone = get_option('timezone_string');
-$timezone = empty($timezone)?'Europe/London':$timezone;
-
-date_default_timezone_set($timezone);
 
 define( 'WPS_WC_AFR_ACCESS', true );
 define( 'WPS_WC_AFR', '1.0' );

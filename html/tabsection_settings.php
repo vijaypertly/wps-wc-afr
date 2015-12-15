@@ -23,13 +23,10 @@
 		);
 	}
 	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
-    $timezone = get_option('timezone_string');
-    $timezone = empty($timezone)?'Europe/London':$timezone;
 ?>
 <div class="complete-wrap">
 	<h1 id="js-settings">Settings</h1>
     <p>Set your settings here.</p>
-    <h4>Your current time zone is "<?php echo $timezone; ?>". If it seems not correct, <a href="<?php echo get_site_url().'/wp-admin/options-general.php#timezone_string'; ?>">click here</a> to change now. </h4>
 
 	<div class="js-error"></div>
 	<form id="js-afrsettings" action="javascript:void(0);" name="afrsettings" method="post">
