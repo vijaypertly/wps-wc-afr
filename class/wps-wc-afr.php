@@ -444,6 +444,7 @@ class WpsWcAFR{
                     $newData['abandoned_time_in_minutes'] = intval($data['abandoned_time_in_minutes']);
                     $newData['consider_un_recovered_order_after'] = intval($data['consider_un_recovered_order_after']);
                     $newData['consider_un_recovered_order_after_time_type'] = sanitize_text_field($data['consider_un_recovered_order_after_time_type']);
+					$newData['is_exit_intent_enabled'] = sanitize_text_field($data['is_exit_intent_enabled']);
                     $newData['exit_intent_title'] = sanitize_text_field($data['exit_intent_title']);
                     $newData['exit_intent_description'] = sanitize_text_field($data['exit_intent_description']);
                     $newData['exit_intent_is_send_coupon'] = sanitize_text_field($data['exit_intent_is_send_coupon']);
