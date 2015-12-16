@@ -76,4 +76,6 @@ if(!function_exists('mb_strimwidth')){
 
 //if($_SERVER['REMOTE_ADDR'] == '1.23.73.103'){    echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';exit; }
 
+WpsWcAFR::pluginInit();
+
 ?>

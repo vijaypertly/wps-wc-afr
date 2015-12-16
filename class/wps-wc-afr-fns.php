@@ -509,7 +509,8 @@ class WpsWcAFRFns{
 
                     //$cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
 
-                    $cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($mId);
+                    //$cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($mId);
+                    $cartUrl = admin_url('admin-ajax.php')."?action=wpsafr_ajx&wpsac=lc&wps=".base64_encode($mId);
 
                     $arrReplace = array(
                         '0'=>array(
@@ -671,7 +672,8 @@ class WpsWcAFRFns{
                         ';*/
 
                         //$cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
-                        $cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($rowDetails['id']);
+                        //$cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($rowDetails['id']);
+                        $cartUrl = admin_url('admin-ajax.php')."?action=wpsafr_ajx&wpsac=lc&wps=".base64_encode($rowDetails['id']);
 
                         $arrReplace = array(
                             '0'=>array(

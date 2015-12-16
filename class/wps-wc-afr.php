@@ -7,6 +7,41 @@ class WpsWcAFR{
     public static $getUserId = '';
     public static $clearCart = false;
 
+    public static function pluginInit(){
+        add_action( 'wp_ajax_nopriv_wpsafr_ajx', array( 'WpsWcAFR','ajaxReq' ) );
+    }
+
+    public static function ajaxReq(){
+        $wpsac = !empty($_REQUEST['wpsac'])?sanitize_text_field($_REQUEST['wpsac']):'';
+        if($wpsac == 'lc'){
+            //load cart
+            if(!class_exists('WpsWcAFRFns')){ return; }
+
+            $wpsId = !empty($_REQUEST['wps'])?base64_decode($_REQUEST['wps']):0;
+            $wpsId = intval($wpsId);
+            if(!empty($wpsId)){
+                WpsWcAFRFns::loadCartFor($wpsId);
+            }
+            else{
+                wp_redirect( home_url() ); exit;
+            }
+        }
+        else if($wpsac == 'rm'){
+            //Read Mail
+            if(!class_exists('WpsWcAFRFns')){ return; }
+
+            if(!empty($_REQUEST['mid'])){
+                $mid = intval($_REQUEST['mid']);
+                if(!empty($mid)){
+                    WpsWcAFRFns::mailRead($mid);
+                }
+            }
+            $im = file_get_contents(WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR."assets".DIRECTORY_SEPARATOR."pixel.gif");
+            header("Content-type: image/gif");
+            echo $im;
+        }
+    }
+
     public static function pluginSettingsLink($links){
         $settings_link = '<a href="'.get_site_url().'/wp-admin/admin.php?page=wps-wc-afr">' . __( 'Settings' ) . '</a>';
         array_push( $links, $settings_link );
