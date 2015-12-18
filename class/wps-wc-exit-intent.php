@@ -12,13 +12,13 @@ class ExitIntent{
 	
 	// Load Front end scripts
 	public function frontend_scripts(){
-		wp_enqueue_style('intent', plugins_url('/wps-wc-afr/assets/exit-intent/ouibounce.min.css?v=0.0.11') );
-		wp_enqueue_script('intent', plugins_url('/wps-wc-afr/assets/exit-intent/ouibounce.min.js'), '', '0.0.11', true );
+		wp_enqueue_style('intent', WPS_WC_AFR_PLUGIN_URL.'/assets/exit-intent/ouibounce.min.css?v=0.0.11' );
+		wp_enqueue_script('intent', WPS_WC_AFR_PLUGIN_URL.'/assets/exit-intent/ouibounce.min.js', '', '0.0.11', true );
 		if ( !wp_script_is( 'jquery', 'enqueued' ) ) {
 			wp_enqueue_script( 'jquery' );
 		}
 		if ( !wp_script_is( 'jquery-validation-plugin', 'enqueued' ) ) {
-			wp_register_script('jquery-validation-plugin', plugins_url('/wps-wc-afr/assets/exit-intent/jquery.validate.min.js'), '', '1.11.1', true );
+			wp_register_script('jquery-validation-plugin', WPS_WC_AFR_PLUGIN_URL.'/assets/exit-intent/jquery.validate.min.js', '', '1.11.1', true );
 			wp_enqueue_script('jquery-validation-plugin');
 		}
 		wp_localize_script( 'intent', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
@@ -57,7 +57,7 @@ class ExitIntent{
             $str .= '<p class="form-notice"></p>';
 			$str .= '<div class="ei-inpt-bx-holder"><input id="exit-email" type="text" name="email" placeholder="you@email.com"></div>';
 			$str .= '<div class="ei-btn-bx-holder ei-btn-register"><input type="submit" value="Get Coupon &raquo;"></div>';
-			$str .= '<img id="wps-loading-ei" src="'.plugins_url("/wps-wc-afr/assets/wpspin_light.gif").'" style="display:none;">';
+			$str .= '<img id="wps-loading-ei" src="'.WPS_WC_AFR_PLUGIN_URL."/assets/wpspin_light.gif".'" style="display:none;">';
 			$str .= '</form>';
 			$str .= '</div>';
 			$str .= '<div class="modal-footer">';

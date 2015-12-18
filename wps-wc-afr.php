@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: WC Abandoned/ Failed Payment Cart Recovery
+Plugin Name: WC Abandoned Cart Recovery
 Plugin URI: http://www.wpsupport.io/
 Description: Abandon and Failed Customer Recovery by wpsupport.io team.
 Author: Vijay M

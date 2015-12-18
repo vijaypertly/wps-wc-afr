@@ -154,8 +154,8 @@ $vj_grid->filter_coloumns = $filter_coloumns;
 $vj_grid->filter_datas = $filter_datas;
 $vj_grid->mod_row_data_fn = '_admin_view_mail_log_row_data';
 $vj_grid->setPage($cur_page);
-$vj_grid->pagination_prev_icon = '<img src="'.plugins_url( '/wps-wc-afr/assets/arleft.png' ).'">';
-$vj_grid->pagination_next_icon = '<img src="'.plugins_url( '/wps-wc-afr/assets/arright.png' ).'">';
+$vj_grid->pagination_prev_icon = '<img src="'.WPS_WC_AFR_PLUGIN_URL.'/assets/arleft.png'.'">';
+$vj_grid->pagination_next_icon = '<img src="'.WPS_WC_AFR_PLUGIN_URL.'/assets/arright.png'.'">';
 $vj_grid->next_to_buttons_html = $js_datepicker;
 
 echo $vj_grid->generateTable();

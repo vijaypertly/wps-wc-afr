@@ -1,4 +1,4 @@
-=== WC Abandoned/ Failed Payment Cart Recovery ===
+=== WC Abandoned Cart Recovery ===
 
 Contributors: wpsupport.io
 Donate link: http://wpsupport.io/
@@ -28,9 +28,9 @@ Extract all files from the ZIP file, making sure to keep the file/folder structu
 
 == Frequently Asked Questions ==
 
-= What is "WC Abandoned/ Failed Payment Cart Recovery" plugin? =
+= What is "WC Abandoned Cart Recovery" plugin? =
 
-"WC Abandoned/ Failed Payment Cart Recovery" plugin works as a daemon for Woocommerce powered sites. Sending followup mails to site customers who left cart abandoned, facing issues in payment i.e Cancelled Payment or Failed Payment.
+"WC Abandoned Cart Recovery" plugin works as a daemon for Woocommerce powered sites. Sending followup mails to site customers who left cart abandoned, facing issues in payment i.e Cancelled Payment or Failed Payment.
 
 = What is the minimum requirement for this plugin? =
 
