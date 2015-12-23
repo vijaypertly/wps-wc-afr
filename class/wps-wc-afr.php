@@ -880,6 +880,14 @@ class WpsWcAFR{
 				$arrResp['status'] = 'success';
 				$arrResp['mess'] = "Updated the settings";
 			}
+
+            //Modify existing cron time
+            if(isset($data['data']['enable_cron']) && $data['data']['enable_cron'] == 'true'){
+                WpsWcAFRFns::activateCron();
+            }
+            else{
+                WpsWcAFRFns::deactivateCron();
+            }
 		}
 		return $arrResp;
     }

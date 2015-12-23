@@ -74,22 +74,28 @@ class WpsWcAFRFns{
             $wpdb->query($singleSql);
         }
 
-        $wpdb->insert(
-            "".$wpdb->prefix."wps_wcafr_templates",
-            array(
-                'template_name' => 'Abandoned After 30 Mins',
-                'template_status' => 0,
-                'template_for' => 'abandoned_cart',
-                'send_mail_duration_in_minutes' => 30,
-                'template_subject' => 'Are you facing any issues while cart checkout?',
-                'template_message' => '<div class=\\"rc\\">Hi {wps.first_name},</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">It seems you left something in your cart, please let us know if you face any issues.</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">{wps.product_details}</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">Thanks</div>',
-                'coupon_code'=>'',
-                'coupon_messages'=>'Use the below voucher to avail offer'."\r\n".'Coupon Code : {wps.coupon_code}',
-                'send_mail_duration'=>30,
-                'is_deleted'=>0,
-                'send_mail_duration_time_type'=>'mins',
-            )
-        );
+        $queryChk = "SELECT count(*)as total_count FROM ".$wpdb->prefix."wps_wcafr_templates";
+        $check = $wpdb->get_results($queryChk, ARRAY_A);
+
+        if(empty($check['0']['total_count'])){
+            $wpdb->insert(
+                "".$wpdb->prefix."wps_wcafr_templates",
+                array(
+                    'template_name' => 'Abandoned After 30 Mins',
+                    'template_status' => 0,
+                    'template_for' => 'abandoned_cart',
+                    'send_mail_duration_in_minutes' => 30,
+                    'template_subject' => 'Are you facing any issues while cart checkout?',
+                    'template_message' => '<div class=\\"rc\\">Hi {wps.first_name},</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">It seems you left something in your cart, please let us know if you face any issues.</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">{wps.product_details}</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">Thanks</div>',
+                    'coupon_code'=>'',
+                    'coupon_messages'=>'Use the below voucher to avail offer'."\r\n".'Coupon Code : {wps.coupon_code}',
+                    'send_mail_duration'=>30,
+                    'is_deleted'=>0,
+                    'send_mail_duration_time_type'=>'mins',
+                )
+            );
+        }
+
     }
 
     public static function deactivatePlugin(){
@@ -106,7 +112,7 @@ class WpsWcAFRFns{
                 'exit_intent_is_send_coupon'=> false,
                 'exit_intent_coupon'=> "",
                 'admin_email'=> get_option( 'admin_email' ),
-                'cron_time_in_minutes'=> 15,
+                'cron_time_in_minutes'=> 5,
                 'abandoned_time_in_minutes'=> 15,
                 'consider_un_recovered_order_after_minutes'=> 2*24*60,
                 'consider_un_recovered_order_after'=> 2,
@@ -158,6 +164,13 @@ class WpsWcAFRFns{
 
         if($settings['enable_cron'] == true){
             self::debugLog('Cron enabled.');
+
+            if (FALSE === get_option('wps_wc_afr_last_cron_timeon') && FALSE === update_option('wps_wc_afr_last_cron_timeon',FALSE)){
+                add_option('wps_wc_afr_last_cron_timeon', time());
+            }else{
+                update_option('wps_wc_afr_last_cron_timeon', time());
+            }
+
             $activeRows = self::activeWpsRows();
             if(!empty($activeRows)){
                 $totalActiveRows = count($activeRows);

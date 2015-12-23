@@ -81,7 +81,7 @@
                             <label for="cron_time_in_minutes">Cron Time in minutes <span class="description">(required)</span></label>
                         </th>
                         <td>
-                            <input type="number" size="6" min="15" max="99999999" value="<?php echo $data['cron_time_in_minutes'];?>" id="cron_time_in_minutes" name="data[cron_time_in_minutes]" required="required" title="Cron Time in minutes">
+                            <input type="number" size="6" min="5" max="99999999" value="<?php echo $data['cron_time_in_minutes'];?>" id="cron_time_in_minutes" name="data[cron_time_in_minutes]" required="required" title="Cron Time in minutes">
                         </td>
                     </tr>
 
