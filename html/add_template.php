@@ -38,6 +38,13 @@
 	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
 $data['template_message'] = html_entity_decode(stripslashes($data['template_message']));
 $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_messages']));
+if(empty($data['template_message'])){
+    $data['template_message'] = "  ";
+}
+
+if(empty($data['coupon_messages'])){
+    $data['coupon_messages'] = "  ";
+}
 ?>
 <div class="wrap">
 	<?php if(isset($data['id']) && $data['id'] > 0){?> 
