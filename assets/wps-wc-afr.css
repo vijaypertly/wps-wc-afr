@@ -142,7 +142,7 @@
 }
 
 .wps_wc_afr_css_block:after{
-	background: url('wpspin_light-2x.gif') center center no-repeat;
+	background: url('wpspin_light-2x.gif') top center no-repeat;
 	content:'';
 	display: block;
 	position: absolute;

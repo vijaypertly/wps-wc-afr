@@ -30,7 +30,7 @@
 		$content = $data['template_message'];
 	}
 	$editor_id = "template_message";
-	$settings = array('textarea_name' => 'template_message');
+	$settings = array('textarea_name' => 'template_message', 'media_buttons' => false);
 ?>
 <?php
 	$template_for = array('abandoned_cart'=> 'Abandoned Cart','failed_payment' => 'Failed Payment','cancelled_payment' => 'Cancelled Payment');
@@ -125,7 +125,7 @@
 						<textarea id="template_subject" name="template_subject" title="Template Subject" required="required"><?php echo $data['template_subject'];?></textarea>
 					</td>
 				</tr>
-				<tr class="form-field form-required">
+				<tr class="form-required">
 					<th scope="row">
 						<label for="template_message">Template Message <span class="description">(required)</span></label>
 					</th>
@@ -159,7 +159,7 @@
 
 						</td>
 					</tr>
-					<tr class="form-field">
+					<tr class="">
 						<th scope="row">
 							<label for="coupon_messages">Coupon Message</label>
 						</th>
@@ -174,7 +174,7 @@
 									$content = $data['coupon_messages'];
 								}
 								$editor_id = "coupon_messages";
-								$settings = array('textarea_name' => 'coupon_messages');
+								$settings = array('textarea_name' => 'coupon_messages', 'media_buttons' => false);
 								wp_editor( html_entity_decode(stripslashes($content)), $editor_id, $settings);
 							?>
 							<?php /* ?>

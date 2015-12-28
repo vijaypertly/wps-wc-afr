@@ -1,5 +1,8 @@
 var wpsAfr = {};
 
+if(typeof wps_wc_afr_purl == "undefined"){
+    var wps_wc_afr_purl = "";
+}
 wpsAfr.loaderIcon = wps_wc_afr_purl+'/assets/loader.gif';
 
 wpsAfr.loadTab = function(elem){
@@ -87,6 +90,7 @@ wpsAfr.updateTemplate = function(){
 				else{
 					jQuery('.js-error').html(resp.mess);
 					jQuery('.js-error').css({"color":"red","display":"table"});
+                    window.scrollTo(0,0);
 				}
 			}
 			else{

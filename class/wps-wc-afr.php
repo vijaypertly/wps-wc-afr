@@ -86,6 +86,9 @@ class WpsWcAFR{
         wp_enqueue_style( 'wps-wc-afr-css', WPS_WC_AFR_PLUGIN_URL . '/assets/wps-wc-afr.css' );
         wp_enqueue_script( 'wps-wc-afr-js', WPS_WC_AFR_PLUGIN_URL . '/assets/wps-wc-afr.js', array(), '1.0.0', true);
         wp_enqueue_script( 'wps-wc-vjgrid-js', WPS_WC_AFR_PLUGIN_URL . '/assets/vjgrid.js', array(), '1.0.0', true);
+
+        wp_enqueue_script('jquery-ui-datepicker');
+        wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
     }
 
     public static function wcAddToCart(/*$product_id = 0, $quantity = 1, $variation_id = 0, $variation = array(), $cart_item_data = array()*/ ){
