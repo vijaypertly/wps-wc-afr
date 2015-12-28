@@ -55,6 +55,9 @@ Woocommerce powered shopping sites
 
 == Changelog ==
 
+= 1.2 =
+* Added new text editor - As, facing multiple issues on using different versions of wordpress.
+
 = 1.1 =
 * Fixes done
 
