@@ -39,11 +39,11 @@
 $data['template_message'] = html_entity_decode(stripslashes($data['template_message']));
 $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_messages']));
 if(empty($data['template_message'])){
-    $data['template_message'] = "  ";
+    $data['template_message'] = '<div class="rc"><div class="rc">Hi,&nbsp;</div><div class="rc"><br></div><div class="rc">It seems you have left before purchase. Please let us know if you feel anything difficulty while checkout, we are happy to help.</div><div class="rc"><br></div><div class="rc">{wps.product_details}</div><div class="rc">&nbsp;</div><div class="rc">{wps.coupon_details}</div></div>';
 }
 
 if(empty($data['coupon_messages'])){
-    $data['coupon_messages'] = "  ";
+    $data['coupon_messages'] = "Use the below voucher to avail offer <br/> Coupon Code : {wps.coupon_code}";
 }
 ?>
 <div class="wrap">
