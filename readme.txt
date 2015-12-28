@@ -55,6 +55,9 @@ Woocommerce powered shopping sites
 
 == Changelog ==
 
+= 1.1 =
+* Fixes done
+
 = 1.0 =
 * Hatching
 
