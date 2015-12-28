@@ -36,6 +36,8 @@
 	$template_for = array('abandoned_cart'=> 'Abandoned Cart','failed_payment' => 'Failed Payment','cancelled_payment' => 'Cancelled Payment');
 	$template_status = array(1 => 'Active',0=> 'Inactive');
 	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
+$data['template_message'] = html_entity_decode(stripslashes($data['template_message']));
+$data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_messages']));
 ?>
 <div class="wrap">
 	<?php if(isset($data['id']) && $data['id'] > 0){?> 
@@ -131,11 +133,11 @@
 					</th>
 					<td>
 						<?php 
-							wp_editor( html_entity_decode(stripslashes($content)), $editor_id, $settings);
+							//wp_editor( html_entity_decode(stripslashes($content)), $editor_id, $settings);
 						?>
-						<?php /* ?>
-						<textarea id="template_message" name="template_message" title="Template Message" required="required"><?php echo $data['template_message'];?></textarea>
-						<?php */ ?>
+						<?php  ?>
+						<textarea id="template_message" name="template_message" title="Template Message" required="required" style="width: 600px; height: 200px"><?php echo $data['template_message'];?></textarea>
+						<?php  ?>
 					</td>
 				</tr>
 				
@@ -175,11 +177,11 @@
 								}
 								$editor_id = "coupon_messages";
 								$settings = array('textarea_name' => 'coupon_messages', 'media_buttons' => false);
-								wp_editor( html_entity_decode(stripslashes($content)), $editor_id, $settings);
+								//wp_editor( html_entity_decode(stripslashes($content)), $editor_id, $settings);
 							?>
-							<?php /* ?>
-							<textarea id="coupon_messages" name="coupon_messages" title="Coupon Message"><?php echo $data['coupon_messages'];?></textarea>
-							<?php */ ?>
+							<?php  ?>
+							<textarea id="coupon_messages" name="coupon_messages" title="Coupon Message" style="width: 600px; height: 200px"><?php echo $data['coupon_messages'];?></textarea>
+							<?php  ?>
 						</td>
 					</tr>
 				<?php /*}*/ ?>
@@ -200,7 +202,11 @@
 	</form>
 </div>
 <?php 
-	\_WP_Editors::enqueue_scripts();
+	/*\_WP_Editors::enqueue_scripts();
 	print_footer_scripts();
-	\_WP_Editors::editor_js();
+	\_WP_Editors::editor_js();*/
 ?>
+<script>
+    var couponMessagesEditor = new nicEditor({fullPanel : true, iconsPath : '<?php echo WPS_WC_AFR_PLUGIN_URL; ?>/assets/nicEditorIcons.gif'}).panelInstance('coupon_messages');
+    var templateMessagesEditor = new nicEditor({fullPanel : true, iconsPath : '<?php echo WPS_WC_AFR_PLUGIN_URL; ?>/assets/nicEditorIcons.gif'}).panelInstance('template_message');
+</script>

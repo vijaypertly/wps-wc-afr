@@ -510,10 +510,11 @@ class WpsWcAFRFns{
 
                     $couponMess = "";
                     if(!empty($templateDetails['coupon_code']) && !empty($templateDetails['coupon_messages'])){
-                        $couponDetails = get_post($templateDetails['coupon_code']);
-                        if(!empty($couponDetails->post_title)){
-                            $couponMess = str_ireplace('{wps.coupon_code}', $couponDetails->post_title, $templateDetails['coupon_messages']);
-                        }
+                        //$couponDetails = get_post($templateDetails['coupon_code']);
+                        //if(!empty($couponDetails->post_title)){
+                            //$couponMess = str_ireplace('{wps.coupon_code}', $couponDetails->post_title, $templateDetails['coupon_messages']);
+                            $couponMess = str_ireplace('{wps.coupon_code}', $templateDetails['coupon_code'], $templateDetails['coupon_messages']);
+                        //}
                     }
 
                     $wpsProductDetails = self::wpsProductDetails($arrParams['wps_row_id']);

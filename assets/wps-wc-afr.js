@@ -52,10 +52,10 @@ wpsAfr.addTemplate = function(template_id){
 	}).done(function( resp ) {
 		if(typeof resp.status!="undefined"){
 			if(resp.status=='success'){
-				jQuery('#wps_afr_postbox').addClass('wps_wc_afr_css_block');
+				//jQuery('#wps_afr_postbox').addClass('wps_wc_afr_css_block');
 				jQuery('.mce-toolbar-grp').remove();
 				jQuery('#wps_afr_postbox').html(resp.html);
-				setTimeout(function(){ jQuery('#wps_afr_postbox').removeClass('wps_wc_afr_css_block'); }, 3000);				
+				//setTimeout(function(){ jQuery('#wps_afr_postbox').removeClass('wps_wc_afr_css_block'); }, 3000);
 			}
 			else{
 				jQuery('#wps_afr_postbox').html('');
@@ -75,13 +75,13 @@ wpsAfr.updateTemplate = function(){
 		dataType: "json",
 		data: jQuery('form#js-afrcreatetemplate').serialize(),
 		beforeSend : function(xhrObj){
-			jQuery('form#js-afrcreatetemplate').addClass('wps_wc_afr_css_block');
+			//jQuery('form#js-afrcreatetemplate').addClass('wps_wc_afr_css_block');
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
-			jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
+			//jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
 		},
 		success: function(resp) {	
-			jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
+			//jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
 			if(typeof resp.status!="undefined"){
 				if(resp.status=='success'){
 					var temp = jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]');

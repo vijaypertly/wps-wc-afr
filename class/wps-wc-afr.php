@@ -87,6 +87,8 @@ class WpsWcAFR{
         wp_enqueue_script( 'wps-wc-afr-js', WPS_WC_AFR_PLUGIN_URL . '/assets/wps-wc-afr.js', array(), '1.0.0', true);
         wp_enqueue_script( 'wps-wc-vjgrid-js', WPS_WC_AFR_PLUGIN_URL . '/assets/vjgrid.js', array(), '1.0.0', true);
 
+        wp_enqueue_script( 'nicedit', WPS_WC_AFR_PLUGIN_URL . '/assets/nicEdit.js', array(), '0.9', true);
+
         wp_enqueue_script('jquery-ui-datepicker');
         wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
     }
