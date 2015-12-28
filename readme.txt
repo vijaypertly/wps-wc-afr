@@ -5,7 +5,7 @@ Donate link: http://wpsupport.io/
 Tags: woocommerce abandoned cart, woocommerce, woocommerce failed recovery, woocommerce followup order
 Requires at least: 4.2
 Tested up to: 4.3.1
-Stable tag: 1
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
