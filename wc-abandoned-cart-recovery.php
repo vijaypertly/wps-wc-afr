@@ -6,12 +6,12 @@ Description: Abandon and Failed Customer Recovery by wpsupport.io team.
 Author: Vijay M
 Text Domain: wps-wc-afr
 Domain Path: /languages/
-Version: 1.1
+Version: 1.2
 */
 defined( 'ABSPATH' ) or die('');
 
 define( 'WPS_WC_AFR_ACCESS', true );
-define( 'WPS_WC_AFR', '1.1' );
+define( 'WPS_WC_AFR', '1.2' );
 define( 'WPS_WC_AFR_PLUGIN', __FILE__ );
 define( 'WPS_WC_AFR_PLUGIN_BASENAME', plugin_basename( WPS_WC_AFR_PLUGIN ) );
 define( 'WPS_WC_AFR_PLUGIN_NAME', trim( dirname( WPS_WC_AFR_PLUGIN_BASENAME ), '/' ) );
