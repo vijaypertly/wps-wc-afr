@@ -34,6 +34,7 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
 add_filter( "plugin_action_links_".WPS_WC_AFR_PLUGIN_BASENAME, array('WpsWcAFR', 'pluginSettingsLink') );
 add_action( 'admin_menu', array('WpsWcAFR', 'pluginAdminLinks') );
 add_action('wp_ajax_wps_afr', array('WpsWcAFR', 'wpsAdminAjax'));
+add_action('wp_ajax_wpsafr_ajx', array('WpsWcAFR', 'ajaxReq'));
 add_action( 'admin_enqueue_scripts', array('WpsWcAFR', 'wpsWcAfrScripts') );
 
 add_filter( "woocommerce_cart_updated", array('WpsWcAFR', 'wcAddToCart'), 100 );//

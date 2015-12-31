@@ -86,9 +86,9 @@ class WpsWcAFRFns{
                     'template_for' => 'abandoned_cart',
                     'send_mail_duration_in_minutes' => 30,
                     'template_subject' => 'Are you facing any issues while cart checkout?',
-                    'template_message' => '<div class=\\"rc\\">Hi {wps.first_name},</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">It seems you left something in your cart, please let us know if you face any issues.</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">{wps.product_details}</div>'."\r\n".'<div class=\\"rc\\"></div>'."\r\n".'<div class=\\"rc\\">Thanks</div>',
+                    'template_message' => 'Hi {wps.first_name}, <br><br>It seems you left something in your cart, please let us know if you face any issues. <br>This is next line.<br><br>{wps.product_details}<br><br>{wps.coupon_details}<br><br>Thanks',
                     'coupon_code'=>'',
-                    'coupon_messages'=>'Use the below voucher to avail offer'."\r\n".'Coupon Code : {wps.coupon_code}',
+                    'coupon_messages'=>'Use Coupon Code : {wps.coupon_code}<br>',
                     'send_mail_duration'=>30,
                     'is_deleted'=>0,
                     'send_mail_duration_time_type'=>'mins',
@@ -517,14 +517,19 @@ class WpsWcAFRFns{
                         //}
                     }
 
-                    $wpsProductDetails = self::wpsProductDetails($arrParams['wps_row_id']);
+                    $wpsProductDetails = self::wpsProductDetails($arrParams['wps_row_id'], $templateDetails['coupon_code']);
 
                     $settings = self::getSettings();
 
                     //$cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
 
                     //$cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($mId);
-                    $cartUrl = admin_url('admin-ajax.php')."?action=wpsafr_ajx&wpsac=lc&wps=".base64_encode($mId);
+                    $qCouponCode = "";
+                    if(!empty($templateDetails['coupon_code'])){
+                        $qCouponCode = "&ccd=".$templateDetails['coupon_code'];
+                    }
+
+                    $cartUrl = admin_url('admin-ajax.php')."?action=wpsafr_ajx&wpsac=lc&wps=".base64_encode($mId).$qCouponCode;
 
                     $arrReplace = array(
                         '0'=>array(
@@ -543,11 +548,11 @@ class WpsWcAFRFns{
                         '4'=>array(
                             'replace_match'=>'{wps.coupon_details}',
                             'replace_value'=>$couponMess,
-                        ),
+                        )/*,
                         '5'=>array(
                             'replace_match'=>"\n",
                             'replace_value'=>"<br />",
-                        ),
+                        )*/,
                         '6'=>array(
                             'replace_match'=>'{wps.product_details}',
                             'replace_value'=>$wpsProductDetails,
@@ -613,7 +618,7 @@ class WpsWcAFRFns{
         }
     }
 
-    public static function wpsProductDetails($wpsId = 0){
+    public static function wpsProductDetails($wpsId = 0, $couponCode = ""){
         $html = '';
         if(!empty($wpsId)){
             $rowDetails = self::rowDetails($wpsId);
@@ -687,7 +692,12 @@ class WpsWcAFRFns{
 
                         //$cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
                         //$cartUrl = WPS_WC_AFR_PLUGIN_URL.'/loadcart.php?wps='.base64_encode($rowDetails['id']);
-                        $cartUrl = admin_url('admin-ajax.php')."?action=wpsafr_ajx&wpsac=lc&wps=".base64_encode($rowDetails['id']);
+                        $qCouponCode = "";
+                        if(!empty($couponCode)){
+                            $qCouponCode = "&ccd=".$couponCode;
+                        }
+
+                        $cartUrl = admin_url('admin-ajax.php')."?action=wpsafr_ajx&wpsac=lc&wps=".base64_encode($rowDetails['id']).$qCouponCode;
 
                         $arrReplace = array(
                             '0'=>array(
@@ -1044,7 +1054,7 @@ class WpsWcAFRFns{
 
         $exitIntentCoupon = $settings['exit_intent_coupon'];
 
-        $wpsProductDetails = self::wpsProductDetails($wpsId);
+        $wpsProductDetails = self::wpsProductDetails($wpsId, $exitIntentCoupon);
         if(!empty($wpsProductDetails)){
 
             $rowDetails = self::rowDetails($wpsId);
@@ -1089,11 +1099,11 @@ class WpsWcAFRFns{
                 '4'=>array(
                     'replace_match'=>'{wps.coupon_details}',
                     'replace_value'=>$couponMess,
-                ),
+                )/*,
                 '5'=>array(
                     'replace_match'=>"\n",
                     'replace_value'=>"<br />",
-                ),
+                )*/,
                 '6'=>array(
                     'replace_match'=>'{wps.product_details}',
                     'replace_value'=>$wpsProductDetails,
@@ -1230,10 +1240,42 @@ class WpsWcAFRFns{
         if($isSet){
             $settings = self::getSettings();
             $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
-            wp_redirect( $cartUrl ); exit;
+
+            $couponCode = !empty($_REQUEST['ccd'])?sanitize_text_field($_REQUEST['ccd']):'';
+            if(!empty($couponCode)){
+                global $woocommerce;
+                $woocommerce->cart->add_discount($couponCode);
+                /*$GLOBALS['wooComAfterUpdate_wpsid'] = $wpsId;
+                $GLOBALS['wooComAfterUpdate_sesnm'] = $opt_nm;
+                add_filter( "shutdown", array('WpsWcAFRFns', 'wooComAfterUpdate'), 500 );*/
+            }
+
+            //wp_redirect( $cartUrl ); exit;
         }
         else{
             wp_redirect( home_url() ); exit;
+        }
+    }
+
+    public function wooComAfterUpdate(){
+        global $woocommerce, $wpdb;
+        $wpsId = !empty($GLOBALS['wooComAfterUpdate_wpsid'])?$GLOBALS['wooComAfterUpdate_wpsid']:0;
+        if(!empty($wpsId)){
+            $opt_nm = $GLOBALS['wooComAfterUpdate_sesnm'];
+            $wcSessionData = get_option($opt_nm);
+            $wcSessionData['wc_notices'] = null;
+            $sessionData = serialize($wcSessionData);
+            if(!empty($sessionData)){
+                //update_option( $opt_nm, $wcSessionData );
+
+                $wpdb->update(
+                    $wpdb->prefix.'wps_wcafr',
+                    array(
+                        'wc_session_data' => $sessionData,
+                    ),
+                    array( 'id' => $wpsId)
+                );
+            }
         }
     }
 }

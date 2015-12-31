@@ -38,13 +38,8 @@
 	$time_types = array('mins'=> 'Minutes','hours' => 'Hours','days' => 'Days');
 $data['template_message'] = html_entity_decode(stripslashes($data['template_message']));
 $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_messages']));
-if(empty($data['template_message'])){
-    $data['template_message'] = '<div class="rc"><div class="rc">Hi,&nbsp;</div><div class="rc"><br></div><div class="rc">It seems you have left before purchase. Please let us know if you feel anything difficulty while checkout, we are happy to help.</div><div class="rc"><br></div><div class="rc">{wps.product_details}</div><div class="rc">&nbsp;</div><div class="rc">{wps.coupon_details}</div></div>';
-}
 
-if(empty($data['coupon_messages'])){
-    $data['coupon_messages'] = "Use the below voucher to avail offer <br/> Coupon Code : {wps.coupon_code}";
-}
+
 ?>
 <div class="wrap">
 	<?php if(isset($data['id']) && $data['id'] > 0){?> 
@@ -143,7 +138,7 @@ if(empty($data['coupon_messages'])){
 							//wp_editor( html_entity_decode(stripslashes($content)), $editor_id, $settings);
 						?>
 						<?php  ?>
-						<textarea id="template_message" name="template_message" title="Template Message" required="required" style="width: 600px; height: 200px"><?php echo $data['template_message'];?></textarea>
+						<textarea id="template_message" name="template_message" title="Template Message" style="width: 600px; height: 200px"><?php echo $data['template_message'];?></textarea>
 						<?php  ?>
 					</td>
 				</tr>
@@ -175,7 +170,7 @@ if(empty($data['coupon_messages'])){
 						<td>
 							<?php 
 								if(!isset($data['coupon_messages']) || empty($data['coupon_messages'])){
-									$data['coupon_messages'] = "Use the below voucher to avail offer <br/> Coupon Code : {wps.coupon_code}";
+									//$data['coupon_messages'] = "Use the below voucher to avail offer <br/> Coupon Code : {wps.coupon_code}";
 								}
 								
 								$content = "";

@@ -689,6 +689,11 @@ class WpsWcAFR{
 				$templateData = $temp;
 			}
 		}
+        else{
+            //Adding new template
+            $templateData['template_message'] = 'Hi {wps.first_name}, <br><br>It seems you left something in your cart, please let us know if you face any issues. <br>This is next line.<br><br>{wps.product_details}<br><br>{wps.coupon_details}<br><br>Thanks';
+            $templateData['coupon_messages'] = 'Use Coupon Code : {wps.coupon_code}<br>';
+        }
 		$arrResp['status'] = 'success';
 		$arrResp['html'] = self::getHtml('add_template', $templateData);
 
