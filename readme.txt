@@ -3,8 +3,8 @@
 Contributors: wpsupport.io
 Donate link: http://wpsupport.io/
 Tags: woocommerce abandoned cart, woocommerce, woocommerce failed recovery, woocommerce followup order
-Requires at least: 4.2
-Tested up to: 4.3.1
+Requires at least: 3.9
+Tested up to: 4.4
 Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -22,8 +22,23 @@ It requires active Woocommerce plugin to work.
 Minimum Requirements:
 It requires active Woocommerce plugin to work.
 
-Uploading The Plugin
-Extract all files from the ZIP file, making sure to keep the file/folder structure intact, and then upload it to plugins directory by default it would be "/wp-content/plugins/".
+Extract the downloaded .zip file and upload the extracted folder to wp-content/plugins/ directory.
+Activate the plugin through Plugins Menu in Wordpress.
+Configure the plugin by navigating to Abandoned/Failed Recovery under Woocommerce menu.
+
+Configuration Steps:
+1. Navigate to Settings and enter values for the below.
+Cron Time – The frequency in which the Cron must run on the site.
+Abandon Time – Minimum Time  to consider for which the product stays in the cart without being checked out.
+2. If you want to enable exit intent to alert your customer immediately if the customer leaves the cart page kindly check ‘Enable Exit Intend’.
+3. Type a description you wish your users must see in exit intend in ‘Exit intend description’.
+4. If you wish to provide a coupon, Create a coupon Manually in Woocommerce-> Coupons and provide the coupon code here.
+5. Once you are done, Click Update to update the settings.
+6. Completing settings, Navigate to Templates tab in the plugin.
+7. Click Edit Template and select ‘Template Status’ as Active or Add a New Template by filling in required information.
+8. If you want to send Coupons to your customers, Kindly create a coupon Manually in Woocommerce-> Coupons and provide the coupon code here.
+9. Once you are done, Click Update to update the settings.
+10. Now your plugin configuration is complete and ready for use.
 
 
 == Frequently Asked Questions ==
@@ -34,15 +49,21 @@ Extract all files from the ZIP file, making sure to keep the file/folder structu
 
 = What is the minimum requirement for this plugin? =
 
-Active installed Woocommerce
+Wordpress 3.9, Woocommerce 2.3.0
 
 = What are the Wordpress Versions tested in order to use this plugin? =
 
-4.2
+Wordpress Versions - Woocommerce Versions
+3.9                - 2.3.0
+4.0                - 2.3.13
+4.1                - 2.4.12
+4.2                - 2.4.12
+4.3                - 2.4.12
+4.4                - 2.4.12
 
-= For Whom this plugin is used for? =
+= For whom this plugin is useful? =
 
-Woocommerce powered shopping sites
+Woocommerce powered shopping sites losing customers who add a product to cart and abandon it feeling high price on product or due to shipping charges. They can retain such customers by sending emails with special offers using this plugin.
 
 == Screenshots ==
 
