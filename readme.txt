@@ -27,6 +27,7 @@ Activate the plugin through Plugins Menu in Wordpress.
 Configure the plugin by navigating to Abandoned/Failed Recovery under Woocommerce menu.
 
 Configuration Steps:
+
 1. Navigate to Settings and enter values for the below.
 Cron Time - The frequency in which the Cron must run on the site.
 Abandon Time - Minimum Time  to consider for which the product stays in the cart without being checked out.
