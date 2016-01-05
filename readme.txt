@@ -15,7 +15,29 @@ Plugin works as a daemon for Woocommerce powered sites. Sending followup mails t
 
 Plugin works as a daemon for Woocommerce powered sites. Sending followup mails to site customers who left cart abandoned, facing issues in payment i.e Cancelled Payment or Failed Payment.
 
+= Installation =
+
+Minimum Requirements:
 It requires active Woocommerce plugin to work.
+
+Extract the downloaded .zip file and upload the extracted folder to wp-content/plugins/ directory.
+Activate the plugin through Plugins Menu in Wordpress.
+Configure the plugin by navigating to Abandoned/Failed Recovery under Woocommerce menu.
+
+Configuration Steps:
+
+1. Navigate to Settings and enter values for the below.  
+Cron Time - The frequency in which the Cron must run on the site.  
+Abandon Time - Minimum Time  to consider for which the product stays in the cart without being checked out.  
+2. If you want to enable exit intent to alert your customer immediately if the customer leaves the cart page kindly check ‘Enable Exit Intend’. 
+3. Type a description you wish your users must see in exit intend in ‘Exit intend description’.
+4. If you wish to provide a coupon, Create a coupon Manually in Woocommerce-> Coupons and provide the coupon code here.
+5. Once you are done, Click Update to update the settings.
+6. Completing settings, Navigate to Templates tab in the plugin.
+7. Click Edit Template and select ‘Template Status’ as Active or Add a New Template by filling in required information.
+8. If you want to send Coupons to your customers, Kindly create a coupon Manually in Woocommerce-> Coupons and provide the coupon code here.
+9. Once you are done, Click Update to update the settings.
+10. Now your plugin configuration is complete and ready for use.
 
 == Installation ==
 
