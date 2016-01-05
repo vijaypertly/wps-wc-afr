@@ -63,6 +63,7 @@ Wordpress Versions - Woocommerce Versions
 4.3                - 2.4.12
 4.4                - 2.4.12
 
+
 = For whom this plugin is useful? =
 
 Woocommerce powered shopping sites losing customers who add a product to cart and abandon it feeling high price on product or due to shipping charges. They can retain such customers by sending emails with special offers using this plugin.
