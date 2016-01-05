@@ -54,14 +54,13 @@ Wordpress 3.9, Woocommerce 2.3.0
 
 = What are the Wordpress Versions tested in order to use this plugin? =
 
-Wordpress Versions - Woocommerce Versions 
-
-3.9                - 2.3.0 
-4.0                - 2.3.13 
-4.1                - 2.4.12 
-4.2                - 2.4.12 
-4.3                - 2.4.12 
-4.4                - 2.4.12 
+Wordpress Versions - Woocommerce Versions
+(3.9 - 2.3.0) 
+(4.0 - 2.3.13) 
+(4.1 - 2.4.12) 
+(4.2 - 2.4.12) 
+(4.3 - 2.4.12) 
+(4.4 - 2.4.12) 
 
 
 = For whom this plugin is useful? =
