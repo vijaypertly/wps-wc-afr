@@ -28,10 +28,10 @@ Configure the plugin by navigating to Abandoned/Failed Recovery under Woocommerc
 
 Configuration Steps:
 
-1. Navigate to Settings and enter values for the below.
-Cron Time - The frequency in which the Cron must run on the site.
+1. Navigate to Settings and enter values for the below. 
+Cron Time - The frequency in which the Cron must run on the site. 
 Abandon Time - Minimum Time  to consider for which the product stays in the cart without being checked out.
-2. If you want to enable exit intent to alert your customer immediately if the customer leaves the cart page kindly check ‘Enable Exit Intend’.
+2. If you want to enable exit intent to alert your customer immediately if the customer leaves the cart page kindly check ‘Enable Exit Intend’. 
 3. Type a description you wish your users must see in exit intend in ‘Exit intend description’.
 4. If you wish to provide a coupon, Create a coupon Manually in Woocommerce-> Coupons and provide the coupon code here.
 5. Once you are done, Click Update to update the settings.
@@ -55,13 +55,17 @@ Wordpress 3.9, Woocommerce 2.3.0
 = What are the Wordpress Versions tested in order to use this plugin? =
 
 Wordpress Versions - Woocommerce Versions
+3.9                - 2.3.0 
 
-3.9                - 2.3.0
-4.0                - 2.3.13
-4.1                - 2.4.12
-4.2                - 2.4.12
-4.3                - 2.4.12
-4.4                - 2.4.12
+4.0                - 2.3.13 
+
+4.1                - 2.4.12 
+
+4.2                - 2.4.12 
+
+4.3                - 2.4.12 
+
+4.4                - 2.4.12 
 
 
 = For whom this plugin is useful? =
