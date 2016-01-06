@@ -1251,7 +1251,7 @@ class WpsWcAFRFns{
                 add_filter( "shutdown", array('WpsWcAFRFns', 'wooComAfterUpdate'), 500 );*/
             }
 
-            //wp_redirect( $cartUrl ); exit;
+            wp_redirect( $cartUrl ); exit;
         }
         else{
             wp_redirect( home_url() ); exit;
