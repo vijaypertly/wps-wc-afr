@@ -106,6 +106,19 @@ class WpsWcAFR{
         }
     }
 
+    public static function woocommerceCartItems_NEW(){
+        global $woocommerce, $wpdb;
+        $getUserId = self::$getUserId;
+        if(is_user_logged_in() || $getUserId>0){
+            $wcActiveCartSession = self::getActiveCartData();
+            echo "<pre>"; var_dump($wcActiveCartSession); exit;
+        }
+        else{
+            //For guest we can't able to do anything after adding to cart. We can able to do only after clicking proceed to cart.
+            self::debugLog("Guest user. So, can't do anything.");
+        }
+    }
+
     public static function woocommerceCartItems(){
         global $woocommerce, $wpdb;
         $getUserId = self::$getUserId;
@@ -141,6 +154,7 @@ class WpsWcAFR{
 
                     $arrUpdt = array(
                         'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
+                        'cart_items_n_quantity_hash' => $wcActiveCartSession['cart_items_n_quantity_hash'],
                         /*'status' => $cStatus,*/
                     );
                     if($newRecord['status'] == 'new'){
@@ -182,6 +196,7 @@ class WpsWcAFR{
                                 'user_email' => $loggedUserDetails->user_email,
                                 'user_id' => $loggedUserDetails->ID,
                                 'wc_session_data' => $wcActiveCartSession['wc_session_data_serialized'],
+                                'cart_items_n_quantity_hash' => $wcActiveCartSession['cart_items_n_quantity_hash'],
                                 'created' => date('Y-m-d H:i:s'),
                                 'last_active_cart_added' => date('Y-m-d H:i:s'),
                                 'status' => 'new',
@@ -189,6 +204,7 @@ class WpsWcAFR{
                             array(
                                 '%s',
                                 '%d',
+                                '%s',
                                 '%s',
                                 '%s',
                                 '%s',
@@ -244,10 +260,11 @@ class WpsWcAFR{
         global $wpdb;
         $isExist = false;
         $wcActiveCartSession = self::getActiveCartData();
-        $mdFiveLastWC = md5($wcActiveCartSession['wc_session_data_serialized']);
+        //$mdFiveLastWC = md5($wcActiveCartSession['wc_session_data_serialized']);
+        $activeCartItemsNQuantityHash = $wcActiveCartSession['cart_items_n_quantity_hash'];
 
         if(!empty($userId)){
-            $q = "SELECT * FROM `".$wpdb->prefix."wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=15 AND ( `status` = 'order_created' OR `status` = 'order_cancelled' ) AND MD5(`wc_session_data`) = '".$mdFiveLastWC."'  AND `user_id` = '".$userId."' ";
+            $q = "SELECT * FROM `".$wpdb->prefix."wps_wcafr` WHERE  TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."') <=15 AND ( `status` = 'order_created' OR `status` = 'order_cancelled' ) AND `cart_items_n_quantity_hash` = '".$activeCartItemsNQuantityHash."'  AND `user_id` = '".$userId."' ";
             $results = $wpdb->get_results($q);
             if(!empty($results)){
                 $isExist = true;
@@ -265,6 +282,7 @@ class WpsWcAFR{
         $details = array(
             'cart_data_alone'=>array(),
             'wc_session_data_serialized'=>'',
+            'cart_items_n_quantity_hash'=>array(),
         );
 
         $wcSession = new WC_Session_Handler();
@@ -277,10 +295,32 @@ class WpsWcAFR{
             if(!empty($wcSessionData)){
                 $details['cart_data_alone'] = unserialize($wcSessionData['cart']);
                 $details['wc_session_data_serialized'] = serialize($wcSessionData);
+                $details['cart_items_n_quantity_hash'] = WpsWcAFR::getItemsNQuantityHashFromWcSession($wcSessionData);
             }
         }
 
         return $details;
+    }
+
+    public static function getItemsNQuantityHashFromWcSession($wcSessionData = ""){
+        $hash = "";
+        $arrHash = array();
+
+        if(!empty($wcSessionData)){
+            $wcSessionDataArray = maybe_unserialize($wcSessionData);
+            $cartArr = maybe_unserialize($wcSessionDataArray['cart']);
+            if(!empty($cartArr)){
+                foreach($cartArr as $itemHash=>$cartAr){
+                    $arrHash[] = array(
+                        'hash'=>$itemHash,
+                        'quantity'=>$cartAr['quantity'],
+                    );
+                }
+            }
+        }
+        $hash = md5(json_encode($arrHash));
+
+        return $hash;
     }
 
     public static function wcProceedCheckout($order_id, $postData){
@@ -382,8 +422,9 @@ class WpsWcAFR{
             $settings = WpsWcAFRFns::getSettings();
             $maxExp = !empty($settings['consider_un_recovered_order_after_minutes'])?$settings['consider_un_recovered_order_after_minutes']:0;
             $wcActiveCartSession = self::getActiveCartData();
-            $wcSessionData = $wcActiveCartSession['wc_session_data_serialized'];
-            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND (`mail_status` = 'not_mailed' OR MD5(`wc_session_data`) = '".md5($wcSessionData)."') AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."')<".$maxExp." AND (status = 'new' OR status = 'abandoned') limit 1", ARRAY_A );
+            //$wcSessionData = $wcActiveCartSession['wc_session_data_serialized'];
+            $activeCartItemsNQuantityHash = $wcActiveCartSession['cart_items_n_quantity_hash'];
+            $results = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."wps_wcafr WHERE user_id = '".$userId."' AND (`mail_status` = 'not_mailed' OR `cart_items_n_quantity_hash` = '".$activeCartItemsNQuantityHash."') AND TIMESTAMPDIFF(MINUTE, `last_active_cart_added`, '".date('Y-m-d H:i:s')."')<".$maxExp." AND (status = 'new' OR status = 'abandoned') limit 1", ARRAY_A );
             if(!empty($results['0'])){
                 $details = $results['0'];
             }

@@ -25,6 +25,7 @@ class WpsWcAFRFns{
   `user_email` varchar(255) DEFAULT NULL,
   `user_id` bigint(20) DEFAULT NULL,
   `wc_session_data` longtext,
+  `cart_items_n_quantity_hash` varchar(255) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_active_cart_added` datetime DEFAULT NULL,
   `order_id` bigint(20) DEFAULT NULL,
