@@ -1184,7 +1184,15 @@ class WpsWcAFRFns{
 
         $current_user = wp_get_current_user();
 
-        if(empty($current_user->ID)){
+        if(!empty($_REQUEST['aplycpn'])){
+            global $woocommerce;
+            $settings = self::getSettings();
+            $couponCode = !empty($_REQUEST['ccd'])?sanitize_text_field($_REQUEST['ccd']):'';
+            $woocommerce->cart->add_discount($couponCode);
+            $cartUrl = !empty($settings['cart_url'])?$settings['cart_url']:get_site_url();
+            wp_redirect( $cartUrl ); exit;
+        }
+        else if(empty($current_user->ID)){
             //Guest
             if(empty($sessionCookie['0']) && empty($sessionCookie['1'])){
                 //Seems no active cart session found for guest in his browser. Create session now.
@@ -1244,8 +1252,12 @@ class WpsWcAFRFns{
 
             $couponCode = !empty($_REQUEST['ccd'])?sanitize_text_field($_REQUEST['ccd']):'';
             if(!empty($couponCode)){
-                global $woocommerce;
-                $woocommerce->cart->add_discount($couponCode);
+                $cartUrlApplyCoupon = admin_url('admin-ajax.php')."?action=wpsafr_ajx&aplycpn=yes&wpsac=lc&wps=".base64_encode($wpsId)."&ccd=".$couponCode;
+                //echo $cartUrlApplyCoupon;exit;
+                wp_redirect( $cartUrlApplyCoupon ); exit;
+
+                /*global $woocommerce;
+                $woocommerce->cart->add_discount($couponCode);*/
                 /*$GLOBALS['wooComAfterUpdate_wpsid'] = $wpsId;
                 $GLOBALS['wooComAfterUpdate_sesnm'] = $opt_nm;
                 add_filter( "shutdown", array('WpsWcAFRFns', 'wooComAfterUpdate'), 500 );*/
