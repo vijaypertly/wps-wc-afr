@@ -121,6 +121,7 @@ class WpsWcAFRFns{
                 'cart_url'=> get_site_url(),
                 'exit_intent_title'=> 'Are you sure to leave site?',
                 'exit_intent_description'=> '',
+                'default_first_name'=> '',
             );
 
             if (FALSE === get_option('wps_wc_afr_settings') && FALSE === update_option('wps_wc_afr_settings',FALSE)){
@@ -508,6 +509,11 @@ class WpsWcAFRFns{
                     $userDetails = (!empty($rowDetails['user_id']))?self::getUserDetails($rowDetails['user_id']):array();
                     $userFirstName = !empty($userDetails['first_name']['0'])?$userDetails['first_name']['0']:'';
                     $userLastName = !empty($userDetails['last_name']['0'])?$userDetails['last_name']['0']:'';
+
+                    if(empty($userFirstName) && empty($userLastName)){
+                        $settings = self::getSettings();
+                        $userFirstName = !empty($settings['default_first_name'])?$settings['default_first_name']:'Customer';
+                    }
 
                     $couponMess = "";
                     if(!empty($templateDetails['coupon_code']) && !empty($templateDetails['coupon_messages'])){
@@ -1065,6 +1071,11 @@ class WpsWcAFRFns{
             $userDetails = (!empty($rowDetails['user_id']))?self::getUserDetails($rowDetails['user_id']):array();
             $userFirstName = !empty($userDetails['first_name']['0'])?$userDetails['first_name']['0']:'';
             $userLastName = !empty($userDetails['last_name']['0'])?$userDetails['last_name']['0']:'';
+
+            if(empty($userFirstName) && empty($userLastName)){
+                $settings = self::getSettings();
+                $userFirstName = !empty($settings['default_first_name'])?$settings['default_first_name']:'Customer';
+            }
 
             $userEmail = $rowDetails['user_email'];
 
