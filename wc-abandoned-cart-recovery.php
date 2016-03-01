@@ -27,7 +27,20 @@ require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARAT
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'ajax_fns.php';
 require_once WPS_WC_AFR_PLUGIN_DIR.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'Mobile_Detect.php';
 
+if(!function_exists('selfDeactivateWpsWcAfrPlugin')){
+    function selfDeactivateWpsWcAfrPlugin(){
+        deactivate_plugins(WPS_WC_AFR_PLUGIN_BASENAME);
+    }
+}
+if(!function_exists('selfDeactivateWpsWcAfrPluginMess')){
+    function selfDeactivateWpsWcAfrPluginMess() {
+        echo '<div class="error"><p><strong>WC Abandoned Cart Recovery</strong> has been <strong>deactivated</strong>. As, this plugin requires active WooCommerce.</p></div>';
+    }
+}
+
 if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    add_action( 'admin_init', 'selfDeactivateWpsWcAfrPlugin' );
+    add_action( 'admin_notices', 'selfDeactivateWpsWcAfrPluginMess' );
     return;
 }
 
