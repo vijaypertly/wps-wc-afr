@@ -59,7 +59,7 @@ $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_message
 						<label for="template_name">Template Name <span class="description">(required)</span></label>
 					</th>
 					<td>
-						<input type="text" value="<?php echo $data['template_name'];?>" id="template_name" name="template_name" required="required" title="Template Name">
+						<input type="text" value="<?php echo $data['template_name'];?>" id="template_name" name="template_name" title="Template Name">
 						<input type="hidden" value="<?php echo $data['id'];?>" id="id" name="id">
 						<input type="hidden" value="wps_afr" id="js-action" name="action">
 						<input type="hidden" value="update_template" id="js-ac" name="ac">
@@ -69,11 +69,10 @@ $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_message
 			<?php if(isset($template_status) && !empty($template_status)) { ?>
 				<tr class="form-field form-required">
 					<th scope="row">
-						<label for="template_status">Template Status <span class="description">(required)</span></label>
+						<label for="template_status">Template Status </label>
 					</th>
 					<td>
-						<select id="template_status" name="template_status" required="required" title="Template Status">							
-							<option value="" <?php if(!isset($data['template_status']) || !in_array($data['template_status'],$template_status)){ ?> selected="selected"<?php }?> >Select Option</option>
+						<select id="template_status" name="template_status" title="Template Status">							
 							<?php foreach($template_status as $key=>$value) { ?>
 								<option value="<?php echo $key;?>" <?php if(isset($data['template_status']) && is_numeric($data['template_status']) && $data['template_status'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
 							<?php } ?>
@@ -84,11 +83,10 @@ $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_message
 			<?php if(isset($template_for) && !empty($template_for)) { ?>
 				<tr class="form-field form-required">
 					<th scope="row">
-						<label for="template_for">Template For <span class="description">(required)</span></label>
+						<label for="template_for">Template For </label>
 					</th>
 					<td>
 						<select id="template_for" name="template_for" required="required" title="Template For">	
-							<option value="">Select Option</option>
 							<?php foreach($template_for as $key=>$value) { ?>
 								<option value="<?php echo $key;?>" <?php if(isset($data['template_for']) && $data['template_for'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
 							<?php } ?>
@@ -111,9 +109,8 @@ $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_message
 						<label for="send_mail_duration">Send Mail Duration <span class="description">(required)</span></label>
 					</th>
 					<td>
-						<input style="float:left; margin-right:2%;width:50%;" type="number" size="6" min="1" value="<?php echo $data['send_mail_duration'];?>" id="send_mail_duration" name="send_mail_duration" required="required" title="Send Mail Duration">
-						<select style="float:left;width:43%;" id="send_mail_duration_time_type" name="send_mail_duration_time_type" required="required" title="Time Type">	
-							<option value="">Select Time Type</option>
+						<input style="float:left; margin-right:2%;width:50%;" type="number" size="6" min="1" value="<?php echo $data['send_mail_duration'];?>" id="send_mail_duration" name="send_mail_duration" title="Send Mail Duration">
+						<select style="float:left;width:43%;" id="send_mail_duration_time_type" name="send_mail_duration_time_type" title="Time Type">	
 						<?php foreach($time_types as $key=>$value) { ?>
 							<option value="<?php echo $key;?>" <?php if(isset($data['send_mail_duration_time_type']) && $data['send_mail_duration_time_type'] == $key){?> selected="selected"<?php } ?> ><?php echo $value;?></option>
 						<?php } ?>
@@ -126,7 +123,7 @@ $data['coupon_messages'] = html_entity_decode(stripslashes($data['coupon_message
 						<label for="template_subject">Template Subject <span class="description">(required)</span></label>
 					</th>
 					<td>
-						<textarea id="template_subject" name="template_subject" title="Template Subject" required="required"><?php echo $data['template_subject'];?></textarea>
+						<textarea id="template_subject" name="template_subject" title="Template Subject"><?php echo $data['template_subject'];?></textarea>
 					</td>
 				</tr>
 				<tr class="form-required">

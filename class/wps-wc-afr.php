@@ -487,25 +487,25 @@ class WpsWcAFR{
                     $arrResp = self::adminLoadTabSection();
                 }
 				else if($ac == 'add_template'){
-                    $template_id = intval($_REQUEST['template_id']);
+                    $template_id = intval(trim(@$_REQUEST['template_id']));
 					$arrResp = self::adminAddTemplate($template_id);
 				}
 				else if($ac == 'update_template' && wp_verify_nonce( $nonce, 'wps_wc_afr_no_'.$ac )){
                     $arrParams = array();
 
-                    $arrParams['template_name'] = sanitize_text_field($_REQUEST['template_name']);
-                    $arrParams['id'] = intval($_REQUEST['id']);
-                    $arrParams['action'] = sanitize_text_field($_REQUEST['action']);
+                    $arrParams['template_name'] = sanitize_text_field(trim(@$_REQUEST['template_name']));
+                    $arrParams['id'] = intval(trim(@$_REQUEST['id']));
+                    $arrParams['action'] = sanitize_text_field(trim(@$_REQUEST['action']));
                     $arrParams['ac'] = $ac;
-                    $arrParams['template_for'] = sanitize_text_field($_REQUEST['template_for']);
-                    $arrParams['send_mail_duration_time_type'] = sanitize_text_field($_REQUEST['send_mail_duration_time_type']);
-                    $arrParams['template_subject'] = sanitize_text_field($_REQUEST['template_subject']);
+                    $arrParams['template_for'] = sanitize_text_field(trim(@$_REQUEST['template_for']));
+                    $arrParams['send_mail_duration_time_type'] = sanitize_text_field(trim(@$_REQUEST['send_mail_duration_time_type']));
+                    $arrParams['template_subject'] = sanitize_text_field(trim(@$_REQUEST['template_subject']));
                     $arrParams['template_message'] = esc_html($_REQUEST['template_message']);
-                    $arrParams['coupon_code'] = sanitize_text_field($_REQUEST['coupon_code']);
+                    $arrParams['coupon_code'] = sanitize_text_field(trim(@$_REQUEST['coupon_code']));
                     $arrParams['coupon_messages'] = esc_html($_REQUEST['coupon_messages']);
 
-                    $arrParams['template_status'] = intval($_REQUEST['template_status']);
-                    $arrParams['send_mail_duration'] = intval($_REQUEST['send_mail_duration']);
+                    $arrParams['template_status'] = intval(trim(@$_REQUEST['template_status']));
+                    $arrParams['send_mail_duration'] = intval(trim(@$_REQUEST['send_mail_duration']));
 
 
 
@@ -760,16 +760,7 @@ class WpsWcAFR{
 			}else{
 				$arrResp['mess'] = "Please enter the template name";
 				return $arrResp;
-			}
-			
-			if((isset($data['template_message']) && !empty($data['template_message'])))
-			{
-				$data_t['template_message'] = trim($data['template_message']);
-				$format_t[] = "%s";
-			}else{
-				$arrResp['mess'] = "Please enter the template message";
-				return $arrResp;
-			}
+			}			
 			
 			if((isset($data['template_status'])))
 			{
@@ -785,6 +776,25 @@ class WpsWcAFR{
 				$arrResp['mess'] = "Please enter the send mail duration";
 				return $arrResp;
 			}
+			
+			
+			if(isset($data['template_subject']) && !empty($data['template_subject'])){
+				$data_t['template_subject'] = trim($data['template_subject']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please enter the template subject";
+				return $arrResp;
+			}
+			
+			if((isset($data['template_message']) && !empty($data['template_message'])))
+			{
+				$data_t['template_message'] = trim($data['template_message']);
+				$format_t[] = "%s";
+			}else{
+				$arrResp['mess'] = "Please enter the template message";
+				return $arrResp;
+			}
+			
 			
 			$time_types = array('mins'=> 1,'hours' => 60,'days' => 24*60);
 			
@@ -832,12 +842,8 @@ class WpsWcAFR{
 			}else{
 				$arrResp['mess'] = "Please select the template for";
 				return $arrResp;
-			}
+			}			
 			
-			if(isset($data['template_subject'])){
-				$data_t['template_subject'] = trim($data['template_subject']);
-				$format_t[] = "%s";
-			}
 			
 			if(isset($data['coupon_code'])){
 				$data_t['coupon_code'] = trim($data['coupon_code']);
