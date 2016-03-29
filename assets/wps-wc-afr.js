@@ -77,7 +77,7 @@ wpsAfr.updateTemplate = function(){
 	jQuery('#send_mail_duration').removeClass('border-color-red');
 	jQuery('#template_subject').removeClass('border-color-red');
 	
-	var err_str = "";
+	var err_str = "",err_str_tmp = "",count = 0;
 	jQuery('.js-error').html(err_str);
 	
 	if(template_name != "" && send_mail_duration != "" && template_subject != ""){
@@ -115,16 +115,26 @@ wpsAfr.updateTemplate = function(){
 		});
 	}else{
 		err_str = "Please fill the all required fields";
-		if(template_name == ""){			
+		if(template_name == ""){
+			err_str_tmp = "Please enter the template name";
+			count++;
 			jQuery('#template_name').addClass('border-color-red');
 		}
 		if(send_mail_duration == ""){
+			err_str_tmp = "Please enter the send mail duration";
+			count++;
 			jQuery('#send_mail_duration').addClass('border-color-red');
 		}
 		if(template_subject == ""){
+			err_str_tmp = "Please enter the template subject";
+			count++;
 			jQuery('#template_subject').addClass('border-color-red');			
 		}
-		jQuery('.js-error').html(err_str);
+		if(count == 1){
+			jQuery('.js-error').html(err_str_tmp);
+		}else{
+			jQuery('.js-error').html(err_str);
+		}		
 		jQuery('.js-error').css({"color":"red","display":"table"});
 		window.scrollTo(0,0);
 	}	
@@ -196,6 +206,23 @@ jQuery(document).ready(function(){
 	jQuery(document).on("click blur touchend", "#template_name, #send_mail_duration,#template_subject", function () {
 		jQuery(this).removeClass('border-color-red');
 	});
+	
+	jQuery(document).on("keydown", "#send_mail_duration", function (e) {
+		jQuery(this).removeClass('border-color-red');
+		if (jQuery.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode == 65 && ( e.ctrlKey === true || e.metaKey === true ) ) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                 // let it happen, don't do anything
+                 return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+	});
+	
 		
     jQuery('.nav-tab-wps-afr').click(function(){
         wpsAfr.loadTab(this);
