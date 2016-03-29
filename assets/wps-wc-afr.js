@@ -68,37 +68,66 @@ wpsAfr.addTemplate = function(template_id){
 	
 };
 
-wpsAfr.updateTemplate = function(){	
-	jQuery.ajax({
-		url: ajaxurl,
-		type:"POST",
-		dataType: "json",
-		data: jQuery('form#js-afrcreatetemplate').serialize(),
-		beforeSend : function(xhrObj){
-			//jQuery('form#js-afrcreatetemplate').addClass('wps_wc_afr_css_block');
-		},
-		error: function( jqXHR, textStatus, errorThrown ){
-			//jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
-		},
-		success: function(resp) {	
-			//jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
-			if(typeof resp.status!="undefined"){
-				if(resp.status=='success'){
-					var temp = jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]');
-					wpsAfr.loadTab(temp);
+wpsAfr.updateTemplate = function(){
+	var template_name = jQuery.trim(jQuery('#template_name').val());
+	var send_mail_duration = jQuery.trim(jQuery('#send_mail_duration').val());
+	var template_subject = jQuery.trim(jQuery('#template_subject').val());
+	
+	jQuery('#template_name').removeClass('border-color-red');
+	jQuery('#send_mail_duration').removeClass('border-color-red');
+	jQuery('#template_subject').removeClass('border-color-red');
+	
+	var err_str = "";
+	jQuery('.js-error').html(err_str);
+	
+	if(template_name != "" && send_mail_duration != "" && template_subject != ""){
+		jQuery.ajax({
+			url: ajaxurl,
+			type:"POST",
+			dataType: "json",
+			data: jQuery('form#js-afrcreatetemplate').serialize(),
+			beforeSend : function(xhrObj){
+				//jQuery('form#js-afrcreatetemplate').addClass('wps_wc_afr_css_block');
+			},
+			error: function( jqXHR, textStatus, errorThrown ){
+				//jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
+			},
+			success: function(resp) {	
+				//jQuery('form#js-afrcreatetemplate').removeClass('wps_wc_afr_css_block');
+				if(typeof resp.status!="undefined"){
+					if(resp.status=='success'){
+						var temp = jQuery('a.nav-tab-wps-afr[data-tabaction="templates"]');
+						wpsAfr.loadTab(temp);
+					}
+					else{
+						if(typeof resp.js_id!="undefined"){
+							jQuery('#'+resp.js_id).addClass('border-color-red');	
+						}
+						jQuery('.js-error').html(resp.mess);
+						jQuery('.js-error').css({"color":"red","display":"table"});
+						window.scrollTo(0,0);
+					}
 				}
 				else{
-					jQuery('.js-error').html(resp.mess);
-					jQuery('.js-error').css({"color":"red","display":"table"});
-                    window.scrollTo(0,0);
+					jQuery('.js-error').html('Please try again');
 				}
 			}
-			else{
-				jQuery('.js-error').html('Please try again');
-			}
+		});
+	}else{
+		err_str = "Please fill the all required fields";
+		if(template_name == ""){			
+			jQuery('#template_name').addClass('border-color-red');
 		}
-	});
-	
+		if(send_mail_duration == ""){
+			jQuery('#send_mail_duration').addClass('border-color-red');
+		}
+		if(template_subject == ""){
+			jQuery('#template_subject').addClass('border-color-red');			
+		}
+		jQuery('.js-error').html(err_str);
+		jQuery('.js-error').css({"color":"red","display":"table"});
+		window.scrollTo(0,0);
+	}	
 };
 
 wpsAfr.updateSettings = function(){	
@@ -163,6 +192,10 @@ wpsAfr.removeFromWPSList = function(wpsId){
 };
 
 jQuery(document).ready(function(){
+	
+	jQuery(document).on("click blur touchend", "#template_name, #send_mail_duration,#template_subject", function () {
+		jQuery(this).removeClass('border-color-red');
+	});
 		
     jQuery('.nav-tab-wps-afr').click(function(){
         wpsAfr.loadTab(this);

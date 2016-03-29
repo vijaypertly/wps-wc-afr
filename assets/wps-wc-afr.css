@@ -218,3 +218,6 @@
     font-weight: bold;
     font-size: 16px;
 }
+.border-color-red{
+	border:1px solid red !important;
+}

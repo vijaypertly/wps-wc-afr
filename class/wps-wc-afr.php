@@ -758,6 +758,7 @@ class WpsWcAFR{
 				$data_t['template_name'] = trim($data['template_name']);
 				$format_t[] = "%s";
 			}else{
+				$arrResp['js_id'] = "template_name";
 				$arrResp['mess'] = "Please enter the template name";
 				return $arrResp;
 			}			
@@ -773,6 +774,7 @@ class WpsWcAFR{
 			
 			if(!isset($data['send_mail_duration']) || empty($data['send_mail_duration']) || !is_numeric($data['send_mail_duration']))
 			{
+				$arrResp['js_id'] = "send_mail_duration";
 				$arrResp['mess'] = "Please enter the send mail duration";
 				return $arrResp;
 			}
@@ -782,6 +784,7 @@ class WpsWcAFR{
 				$data_t['template_subject'] = trim($data['template_subject']);
 				$format_t[] = "%s";
 			}else{
+				$arrResp['js_id'] = "template_subject";
 				$arrResp['mess'] = "Please enter the template subject";
 				return $arrResp;
 			}
@@ -807,11 +810,13 @@ class WpsWcAFR{
 			if($data['send_mail_duration_time_type'] == 'mins')
 			{
 				if($data['send_mail_duration'] < 15 ){
+					$arrResp['js_id'] = "send_mail_duration";
 					$arrResp['mess'] = "Please enter the send mail duration minimum 15 mins";
 					return $arrResp;
 				}				
 			}
 			if($data['send_mail_duration'] > 99999999 ){
+				$arrResp['js_id'] = "send_mail_duration";
 				$arrResp['mess'] = "Please enter the send mail duration max 99999999";
 				return $arrResp;
 			}
