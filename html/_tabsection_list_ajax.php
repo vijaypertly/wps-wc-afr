@@ -41,9 +41,10 @@ if(!empty($filter_datas['user_id']) && is_numeric($filter_datas['user_id']) && $
 $q_filters = (!empty($filters))?implode(' ', $filters):'';
 
 $order_by = ' ORDER BY `id` DESC ';
+global $wpdb;
 
-$query = "SELECT * FROM `wp_wps_wcafr` WHERE 1=1  ".$q_filters .$order_by;
-$query_count = "SELECT count(*) FROM `wp_wps_wcafr` WHERE 1=1  ".$q_filters .$order_by;
+$query = "SELECT * FROM `".$wpdb->prefix."wps_wcafr` WHERE 1=1  ".$q_filters .$order_by;
+$query_count = "SELECT count(*) FROM `".$wpdb->prefix."wps_wcafr` WHERE 1=1  ".$q_filters .$order_by;
 
 $display_coloumns = array(
     'id'=>'ID',
