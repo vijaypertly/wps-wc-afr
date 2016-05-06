@@ -101,6 +101,9 @@ Woocommerce powered shopping sites losing customers who add a product to cart an
 
 == Changelog ==
 
+= 1.2.1 =
+* Fixed BUG - Not showing templates, mail log due to the default table prefix.
+
 = 1.2 =
 * Added new text editor - As, facing multiple issues on using different versions of wordpress.
 
